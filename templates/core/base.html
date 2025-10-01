@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Essential Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>{% block title %}Chat Autopilot{% endblock title %}</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{{ meta_description }}">
+    <meta name="keywords" content="{{ meta_keywords }}">
+    <meta name="author" content="{{ meta_author }}">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    
+    <!-- Open Graph Meta Tags (Facebook, LinkedIn) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ meta_title }}">
+    <meta property="og:description" content="{{ meta_description }}">
+    <meta property="og:image" content="{{ meta_image }}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:locale" content="{{ meta_locale }}">
+
+    <!-- Favicon and Touch Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'img/logo.png' %}">
+    
+    <!-- Performance and Preloading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "{{ meta_title }}",
+        "description": "{{ meta_description }}",
+        "url": "{{ request.build_absolute_uri }}",
+        "author": {
+            "@type": "Person",
+            "name": "{{ meta_author }}"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "{{ site_name }}",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "{% static 'img/logo.png' %}"
+            }
+        }
+    }
+    </script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
+    <script defer src="{% static "js/alpine.js" %}"></script>
+</head>
+<body class="overflow-x-hidden">
+    {% block body %}
+    {% endblock body %}
+    
+    {% block scripts %}
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/header.js' %}"></script>
+
+    {% endblock scripts %}
+
+</body>
+</html>
+
+
+    

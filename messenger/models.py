@@ -11,7 +11,6 @@ class Config(models.Model):
     
     def __str__(self):
         return f'Config: {self.user.username}'
-    
         
 class Conversation(models.Model):
     page_id = models.CharField(max_length=100)

@@ -11,7 +11,7 @@ def process_attachment(attachment, role: str, api_key: str):
     attachment_type = attachment["type"]
     if attachment_type in SUPPORTED_MEDIA_TYPES:
         url = attachment["payload"]["url"]
-        message = read_media(url, api_key=api_key)
+        message = read_media(url, api_key=api_key) if role == 'user' else url
         return f"> {role} sent an {attachment_type}: {message}"
     else:
         return f"> {role} sent an {attachment_type} - can't read"
@@ -38,7 +38,7 @@ def make_readable(json_data, role: str, api_key: str = "") -> str:
                 read += process_attachment(attachment, role, api_key=api_key)
     
     elif "attachment" in json_data:
-        read += process_attachment(json_data["attachment"], role)
+        read += process_attachment(json_data["attachment"], role, api_key=api_key)
 
     return read if read else f"> {role} sent unknown message"
 

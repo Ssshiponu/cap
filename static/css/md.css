@@ -1,0 +1,250 @@
+.markdown {
+  @apply text-neutral-800 leading-relaxed;
+  @apply antialiased;
+}
+
+/* Headings */
+.markdown h1 {
+  @apply text-4xl font-bold mb-8 mt-12 first:mt-0;
+  @apply text-neutral-900 border-b border-neutral-200 pb-4;
+  @apply tracking-tight;
+}
+
+.markdown h2 {
+  @apply text-2xl sm:text-3xl font-semibold mb-6;
+  @apply text-neutral-900 border-b border-neutral-100 pb-3;
+  @apply tracking-tight;
+}
+
+.markdown h3 {
+  @apply text-2xl font-semibold mb-4 mt-8;
+  @apply text-neutral-800;
+  @apply tracking-tight;
+}
+
+.markdown h4 {
+  @apply text-xl font-medium mb-3 mt-6;
+  @apply text-neutral-800;
+}
+
+.markdown h5 {
+  @apply text-lg font-medium mb-3 mt-6;
+  @apply text-neutral-700;
+}
+
+.markdown h6 {
+  @apply text-base font-medium mb-2 mt-4;
+  @apply text-neutral-700 uppercase tracking-wide;
+}
+
+/* Paragraphs and text */
+.markdown p {
+  @apply mb-6 text-base leading-7;
+  @apply text-neutral-700;
+}
+
+.markdown strong {
+  @apply font-semibold text-neutral-900;
+}
+
+.markdown em {
+  @apply italic text-neutral-800;
+}
+
+.markdown small {
+  @apply text-sm text-neutral-600;
+}
+
+/* Links */
+.markdown a {
+  @apply text-neutral-900 underline decoration-neutral-400;
+  @apply hover:decoration-neutral-600 hover:text-neutral-950;
+  @apply transition-colors duration-200;
+  @apply font-medium;
+}
+
+.markdown a:visited {
+  @apply text-neutral-700 decoration-neutral-300;
+}
+
+/* Lists */
+.markdown ul {
+  @apply mb-4 ml-4 space-y-2;
+}
+
+.markdown ol {
+  @apply mb-4 ml-4 space-y-2;
+}
+
+.markdown li {
+  @apply text-neutral-700 leading-7;
+}
+
+.markdown ol li {
+  @apply list-decimal;
+}
+
+.markdown ul li {
+  @apply list-disc;
+}
+
+.markdown li::marker {
+  @apply text-neutral-500;
+}
+
+/* Nested lists */
+.markdown ul ul,
+.markdown ol ol,
+.markdown ul ol,
+.markdown ol ul {
+  @apply mb-0 mt-2;
+}
+
+/* Code */
+.markdown code {
+  @apply bg-neutral-100 text-neutral-800 p-1 rounded;
+  @apply text-sm font-mono;
+  @apply border border-neutral-200;
+}
+
+.markdown pre {
+  @apply bg-neutral-50 border border-neutral-200 rounded-lg;
+  @apply py-2 px-3 mb-6 overflow-x-auto;
+  @apply text-sm leading-6;
+}
+
+.markdown pre code {
+  @apply bg-transparent border-0 p-0 text-neutral-800;
+  @apply font-mono;
+}
+
+/* Blockquotes */
+.markdown blockquote {
+  @apply border-l-4 border-neutral-300 pl-6 mb-6;
+  @apply bg-neutral-50 py-4 pr-4 rounded-r;
+  @apply text-neutral-700 italic;
+}
+
+.markdown blockquote p {
+  @apply mb-4 last:mb-0;
+}
+
+.markdown blockquote cite {
+  @apply text-neutral-600 text-sm not-italic block mt-2;
+}
+
+/* Tables */
+.markdown table {
+  @apply w-full mb-6 border-collapse;
+  @apply bg-white border border-neutral-200 rounded-lg overflow-hidden;
+}
+
+.markdown th {
+  @apply bg-neutral-100 px-4 py-3 text-left;
+  @apply font-semibold text-neutral-900 text-sm uppercase tracking-wide;
+  @apply border-b border-neutral-200;
+}
+
+.markdown td {
+  @apply px-4 py-3 border-b border-neutral-100;
+  @apply text-neutral-700;
+}
+
+.markdown tr:last-child td {
+  @apply border-b-0;
+}
+
+.markdown tr:hover {
+  @apply bg-neutral-50;
+}
+
+/* Horizontal rules */
+.markdown hr {
+  @apply border-0 border-t border-neutral-300 my-12;
+}
+
+/* Images */
+.markdown img {
+  @apply max-w-full h-auto rounded-lg mb-6;
+  @apply border border-neutral-200;
+  @apply shadow-sm;
+}
+
+.markdown figure {
+  @apply mb-8;
+}
+
+.markdown figcaption {
+  @apply text-sm text-neutral-600 mt-2 text-center italic;
+}
+
+/* Definition lists */
+.markdown dl {
+  @apply mb-6;
+}
+
+.markdown dt {
+  @apply font-semibold text-neutral-900 mb-1;
+}
+
+.markdown dd {
+  @apply text-neutral-700 mb-4 ml-4;
+}
+
+/* Task lists */
+.markdown input[type="checkbox"] {
+  @apply mr-2 accent-neutral-600;
+}
+
+.markdown .task-list-item {
+  @apply list-none;
+}
+
+/* Abbreviations */
+.markdown abbr {
+  @apply border-b border-dotted border-neutral-400 cursor-help;
+}
+
+/* Keyboard keys */
+.markdown kbd {
+  @apply bg-neutral-200 border border-neutral-300 rounded px-2 py-1;
+  @apply text-sm font-mono shadow-sm;
+  @apply text-neutral-800;
+}
+
+/* Marks/highlights */
+.markdown mark {
+  @apply bg-neutral-200 text-neutral-900 px-1 rounded;
+}
+
+/* Subscript and superscript */
+.markdown sub,
+.markdown sup {
+  @apply text-xs;
+}
+
+/* Focus styles for accessibility */
+.markdown a:focus {
+  @apply outline-2 outline-neutral-500 outline-offset-2;
+}
+
+.markdown button:focus,
+.markdown input:focus {
+  @apply outline-2 outline-neutral-500 outline-offset-2;
+}
+
+/* Print styles */
+@media print {
+  .markdown {
+    @apply text-black;
+  }
+  
+  .markdown a {
+    @apply text-black no-underline;
+  }
+  
+  .markdown a:after {
+    content: " (" attr(href) ")";
+    @apply text-sm text-neutral-600;
+  }
+}

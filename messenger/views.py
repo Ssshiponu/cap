@@ -12,10 +12,13 @@ from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404
 
 from core.ai import ai_reply
+from core.models import App
 
 from .models import Message, User, Conversation
 from .messenger import Messenger
 from .reader import make_readable
+
+
 
 logging.basicConfig(level=logging.DEBUG, filename='.log',)
 logger = logging.getLogger(__name__)
@@ -102,7 +105,7 @@ def process_event(event: dict, api_key: str, access_token: str):
                 content = make_readable(reply_part, role="assistant"),
             )
         else:
-            logger.error(f"Failed to send message: {sent}")
+            logger.error(f"Failed to send message: {reply_part}. Response: {sent}")
             
     return True
 
@@ -126,15 +129,16 @@ def verify_signature(request, app_secret) -> bool:
 
 @require_http_methods(["GET", "POST"])
 @csrf_exempt
-def webhook_view(request, username):
+def webhook_view(request, app_id):
     """Main webhook endpoint for Facebook Messenger."""
-    user = get_object_or_404(User, username=username)
-    
-    ACCSS_TOKEN = user.config.fb_access_key
-    APP_SECRET = user.config.fb_app_secret
-    VERIFY_TOKEN = user.config.webhook_verify_token
-    API_KEY = user.config.gemini_api_key
-    
+    app = get_object_or_404(App, id=app_id)
+    if not app:
+        return HttpResponse("App not found", status=404)
+
+    ACCESS_TOKEN = app.fb_access_key
+    VERIFY_TOKEN = app.webhook_verify_token
+    API_KEY = os.getenv("GEMENI_API_KEY")
+
     if request.method == "GET":
         mode = request.GET.get("hub.mode")
         token = request.GET.get("hub.verify_token")
@@ -145,24 +149,22 @@ def webhook_view(request, username):
         logger.warning(f"Webhook verification failed. Mode: {mode}, Token: {token}")
         return HttpResponseForbidden("Verification failed")
 
-    # --- POST: Handle Incoming Events ---
-    if not verify_signature(request, APP_SECRET):
-        logger.warning("Invalid signature in webhook request.")
-        return HttpResponseForbidden("Invalid signature")
+    elif request.method == "POST":
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+        except json.JSONDecodeError:
+            logger.error("Invalid JSON received in webhook request body.")
+            return HttpResponse("Invalid JSON", status=400)
 
-    try:
-        data = json.loads(request.body.decode("utf-8"))
-    except json.JSONDecodeError:
-        logger.error("Invalid JSON received in webhook request body.")
-        return HttpResponse("Invalid JSON", status=400)
-
-    for entry in data.get("entry", []):
-        for event in entry.get("messaging", []):
-            try:
-                if process_event(event, API_KEY, ACCSS_TOKEN):
-                    return JsonResponse({"success": True})
-            except Exception as e:
-                # Catch errors in single event processing to not fail the whole batch
-                logger.error(f"Error processing event: {data}. Exception: {e}", exc_info=True)
-                
+        for entry in data.get("entry", []):
+            for event in entry.get("messaging", []):
+                try:
+                    if process_event(event, API_KEY, ACCESS_TOKEN):
+                        return JsonResponse({"success": True})
+                except Exception as e:
+                    # Catch errors in single event processing to not fail the whole batch
+                    logger.error(f"Error processing event: {data}. Exception: {e}", exc_info=True)
+                    
+        
+                    
     return JsonResponse({"success": True})

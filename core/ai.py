@@ -38,6 +38,7 @@ CORE BEHAVIOR:
 
 * Any line starts with ">" in history is an system log
 * Response array should have only one quick reply object at the end. but quik replies is optional
+* image should be in a absolute url format like "https://nixagone.pythonanywhere.com/media/products/heroic1.jpg"
 
 RESPONSE FORMAT EXAMPLES:
 [{"text": "Your message here"}]

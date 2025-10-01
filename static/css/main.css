@@ -1,0 +1,137 @@
+@import "tailwindcss";
+@import "./md.css";
+
+@source "../templates/**/*.html";
+
+:root {
+    --s: 0; /* scroll progress 0..1 */
+}
+
+header {
+    /* smooth transitions and hardware-accelerated transform */
+    transition: box-shadow 200ms ease, background-color 200ms ease;
+    will-change: transform, height, width, border-radius, border-width;
+    background-clip: padding-box;
+}
+
+/* Use the --s variable to animate properties in CSS only */
+.header-inner {
+    border-radius: calc(var(--s) * 12px);
+    border-width: calc(var(--s) * 2px);
+    transform: translateY(calc(var(--s) * 12px));
+    height: calc(5rem - calc(var(--s) * 0.9rem)); /* from 80px down to ~48px */
+    width: calc(100dvw - calc(var(--s) * 2rem));
+    max-width: 1158px;
+    margin: 0 auto;
+    /* padding-inline: calc(1rem - calc(var(--s) * 0.5rem)); */
+}
+
+/* Subtle shadow and border change when scrolled */
+.scrolled {
+    box-shadow: 0 calc(var(--s) * 6px) calc(var(--s) * 20px) rgba(16,24,40,0.08);
+    border-color: #e5e5e5;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .header-inner { transition: none !important; }
+    header { transition: none !important; }
+}
+
+ul.features {
+    @apply flex flex-col gap-2 text-neutral-700 font-medium;
+}
+ul.features li::before {
+    content: '✓';
+    @apply mr-2 text-black font-bold;
+}
+
+ul.features li[no]::before {
+    content: '✗';
+    @apply mr-2 text-black font-bold;
+}
+
+.markdown-body {
+    @apply w-[100%] max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-5;
+}
+
+@layer base {
+    body {
+        font-family: 'Saira', 'Hind Siliguri', sans-serif;
+    }
+    .h1 {
+        @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-[600];
+    }
+
+    .h {
+        @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl font-[600];
+    }
+
+    .h3 {
+        @apply text-lg sm:text-xl text-neutral-900 font-[600];
+    }
+
+    .input {
+        @apply border-2 border-neutral-200 rounded-lg bg-white text-neutral-800 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:border-transparent transition-all duration-200 ease-in-out;
+        @apply py-1.5 px-3;
+    }
+
+
+/* custom scrollbar */
+    .scrollbar-thin {
+        scrollbar-width: thin;
+        scrollbar-color: #e0e0e0 transparent;
+    }
+    .scrollbar-thin::-webkit-scrollbar {
+        width: 8px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .scrollbar-thin:hover ::-webkit-scrollbar-thumb {
+        background-color: #ff0000;
+        border-radius: 20px;
+        border: 3px solid transparent;
+        background-clip: content-box;
+    }
+    .scrollbar-invisible {
+        scrollbar-width: none;
+    }
+    .scrollbar-invisible::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+
+
+@layer components {
+    .btn {
+        @apply inline-block hover:cursor-pointer bg-neutral-50 hover:bg-neutral-100 active:bg-neutral-200 text-neutral-800 border-2 border-neutral-200 text-nowrap font-medium py-1.5 px-5 rounded-lg;
+    }
+    .btn-primary {
+        @apply bg-neutral-950 hover:bg-neutral-800 active:bg-neutral-700 text-white border-2 border-neutral-700;
+    }
+
+    .bold-underline {
+        @apply absolute -bottom-1 left-0 w-full h-1.5 sm:h-2 bg-neutral-200 -z-10;
+    }
+    .transition-border {
+        @apply border-2 border-neutral-200 hover:border-neutral-800 transition-colors duration-200 ease-in-out;
+    }
+
+    .btn-link {
+        @apply hover:cursor-pointer hover:underline text-neutral-800 hover:bg-neutral-50 active:bg-neutral-100 text-nowrap font-medium py-1.5 px-3 rounded-md flex flex-row items-center gap-2;
+    }
+
+    .link {
+        @apply text-neutral-800 hover:text-black underline-offset-2 underline transition-colors duration-200 ease-in-out;
+    }
+    .info {
+        @apply text-neutral-600 text-sm flex items-center gap-2;
+    }
+    .info::before {
+        content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3E%3Ccircle cx="12" cy="12" r="10"/%3E%3Cpath d="M12 16v-4"/%3E%3Cpath d="M12 8h.01"/%3E%3C/svg%3E');
+        display: inline-block;
+        margin-top: 4px;
+    }
+}

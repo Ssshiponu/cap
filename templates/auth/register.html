@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Complete Registration | Chat Autopilot{% endblock %}
+
+{% block body %}
+
+    <div class="relative flex flex-col gap-6 items-center justify-center min-h-screen p-8">
+
+        <header>
+            {% include "brand.html" %}
+        </header>
+                        
+        <div class="relative w-full max-w-sm mx-auto">
+            <div class="relative text-center">
+                
+                <div class="flex flex-col mb-6 space-y-2">
+                    <h1 class="text-xl font-semibold tracking-tight">Complete your registration</h1>
+                    <p class="text-sm text-neutral-500">Create your account with email</p>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mb-3 p-2 rounded-lg text-sm {% if message.tags == 'error' %}bg-red-50 text-red-800 border-2 border-red-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form action="{% url 'register' %}" method="post" class="space-y-3 text-left">
+                    {% csrf_token %}
+                    <div class="space-y-1">
+                        <label for="email" class="text-sm font-medium">Email</label>
+                        <input type="email" id="email" name="email" value="{{ email }}" placeholder="e.g name@example.com" required class="input w-full">
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <label for="full_name" class="text-sm font-medium">Full Name</label>
+                        <input type="text" id="full_name" name="full_name" value="{{ full_name }}" placeholder="e.g Asraf Uddin" required class="input w-full">
+                    </div>
+                    <div class="space-y-1" x-data="{ username: '{{ username }}', message: 'Used in webhook URL', color: 'neutral', loading: false }">
+                        <label for="username" class="text-sm font-medium">Username</label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            placeholder="e.g asraf" 
+                            required 
+                            class="input w-full"
+                            x-model="username"
+                            @input.debounce.500ms="
+                                loading = true;
+                                fetch('{% url 'username_exists' %}?username=' + encodeURIComponent(username))
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        message = data.message;
+                                        color = data.exists ? 'green' : 'red';
+                                        loading = false;
+                                    })
+                                    .catch(() => {
+                                        message = 'Error checking username';
+                                        color = 'red';
+                                        loading = false;
+                                    });
+                            "
+                        >
+                        <p id="username-message" class="text-xs" :class="{'text-red-500': color === 'red', 'text-green-500': color === 'green', 'text-neutral-500': color === 'neutral'}" x-text="loading ? 'Checking...' : message"></p>
+                    </div>
+
+                    <div class="space-y-1" x-data="{ show: false }">
+                        <label for="password" class="text-sm font-medium">Password</label>
+                        <div class="relative items-center justify-center">
+                            <svg @click="show = !show" x-show="!show" class="absolute right-3 cursor-pointer top-1/2 transform -translate-y-1/2 stroke-neutral-600" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-icon lucide-eye"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+                            <svg @click="show = !show" x-show="show" class="absolute right-3 cursor-pointer top-1/2 transform -translate-y-1/2 stroke-neutral-600" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-closed-icon lucide-eye-closed"><path d="m15 18-.722-3.25"/><path d="M2 8a10.645 10.645 0 0 0 20 0"/><path d="m20 15-1.726-2.05"/><path d="m4 15 1.726-2.05"/><path d="m9 18 .722-3.25"/></svg>
+                            <input :type="show ? 'text' : 'password'" id="password" name="password" placeholder="••••••••" required class="input w-full">
+                        </div>
+                        <p class="text-xs text-neutral-500">Must be at least 8 characters</p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-full mt-6">
+                        Create Account
+                    </button>
+                </form>
+            </div>
+            <p class="mt-6 text-sm text-center text-neutral-500">Already have an account? <a href="{% url 'login' %}" class="link">Login here</a></p>
+            <p class="px-8 mt-1 text-sm text-center text-neutral-500">By continuing, you agree to our <a class="link" href="/terms">Terms</a> and <a class="link" href="/privacy">Policy</a>.</p>
+        </div>
+    </div>
+{% endblock %}
