@@ -98,7 +98,14 @@ def process_event(event: dict):
     messenger.send_action("typing_on")
     reply = ai_reply(h, page_id=recipient_id, api_key = api_key)
     messenger.send_action("typing_off")
-    for reply_part in reply:
+    
+    conversation.input_tokens = conversation.input_tokens + reply.usage_metadata.prompt_token_count
+    conversation.output_tokens = conversation.output_tokens + (reply.usage_metadata.candidates_token_count + reply.usage_metadata.thoughts_token_count)
+    conversation.save()
+    print('IN:',reply.usage_metadata.prompt_token_count, 'OUT:', reply.usage_metadata.candidates_token_count + reply.usage_metadata.thoughts_token_count)
+        
+        
+    for reply_part in json.loads(reply.text):
         sent = messenger.send_reply(reply_part)
         
         if sent and "message_id" in sent:
@@ -110,7 +117,11 @@ def process_event(event: dict):
             )
         else:
             logger.error(f"Failed to send message: {reply_part}. Response: {sent}")
-            
+        
+    avrage_input_tokens = conversation.input_tokens / conversation.messages.filter(role="assistant").count()
+    avrage_output_tokens = conversation.output_tokens / conversation.messages.filter(role="assistant").count() 
+    print('AV_IN:',avrage_input_tokens, 'AV_OUT:', avrage_output_tokens)
+    
     return True
 
 def verify_signature(request, app_secret) -> bool:

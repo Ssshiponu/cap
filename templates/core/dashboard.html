@@ -7,8 +7,8 @@
 
 
             <div class="flex gap-4">
-                <button class="btn border-none p-2 aspect-square" @click="sidebar = !sidebar; console.log(sidebar)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu-icon lucide-menu"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>
+                <button class="lg:hidden btn border-none p-2 aspect-square" @click="sidebar = !sidebar; console.log(sidebar)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu-icon lucide-menu"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>
                 </button>
                 {% include "brand.html" %}
             </div>
@@ -81,10 +81,9 @@
     <div class="flex-1 flex transition-all">
         <div x-show="sidebar" @click="sidebar = false" class="lg:hidden absolute z-1 inset-0 bg-white/50 backdrop-blur-xs" x-transition style="display: none;"></div>
         <aside x-show="sidebar"
-
         class="absolute pt-16  lg:pt-4 lg:static inset-y-0 left-0 overflow-hidden bg-white border-r-2 border-neutral-200 w-60 h-full z-2 transition-transform duration-300 ease-in-out"
         :class="{'-translate-x-full': !sidebar, 'translate-x-0': sidebar}"
-        >
+        x-cloak>
         <div class="p-4">
             <div class="flex flex-col gap-4 pt-4">
                 <a href="/dashboard/" class="btn-link  {% if request.path == '/dashboard/' %} bg-neutral-100 {% endif %}">
@@ -122,10 +121,10 @@
                     <h1 class="h">Dashboard</h1>
                     <hr class="mb-8">
 
-                    <div class="flex flex-col gap-3 mb-8">
+                    <div class="flex flex-col gap-6 mb-8">
                         <div class="flex items-center justify-between">
                             <h2 class="h2">Pages</h2>
-                            <a href="{% url "fb_login" %}" class="btn text-sm py-1.5 px-3 flex items-center gap-2">
+                            <a href="{% url "fb_login" %}" class="btn btn-primary text-sm py-1.5 px-3 flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                                 Add Page
                             </a>
@@ -135,7 +134,7 @@
                             {% for page in pages %}
                                 <li class="flex items-center justify-between gap-4">
                                     <a href="{% url "page" page.id %}" class="btn-link p-3">
-                                        <img class="w-6 h-6 rounded-full" src="https://placehold.co/24/e0e0e0/b0b0b0?text={{ page.page_name | slice:":1" }}" alt="">
+                                        <img class="w-7 h-7 rounded-full" src="{{ page.picture }}" alt="">
                                         {{ page.page_name }}
                                     </a>
                                     <div class="flex items-center gap-2 sm:gap-4">

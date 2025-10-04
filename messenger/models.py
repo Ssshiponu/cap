@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 class Conversation(models.Model):
     page_id = models.CharField(max_length=100)
     user_id = models.CharField(max_length=100)
+    input_tokens = models.IntegerField(default=0)
+    output_tokens = models.IntegerField(default=0)
+    active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

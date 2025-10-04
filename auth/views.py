@@ -5,7 +5,7 @@ from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
 from django.conf import settings
 
-
+import base64
 import requests
 import json
 import uuid
@@ -59,17 +59,20 @@ def fb_callback(request):
         return HttpResponse("Failed to get access token: " + json.dumps(data), status=400)
     
     
-    me_url = "https://graph.facebook.com/v17.0/me"
-    r = requests.get(me_url, params={"access_token": user_access_token, "fields": "id,name,email"})
-    me = r.json()
-
-    user = User.objects.filter(email=me.get("email")).first()
-
+    # me_url = "https://graph.facebook.com/v17.0/me"
+    # r = requests.get(me_url, params={"access_token": user_access_token, "fields": "id,name,email"})
+    # me = r.json()
 
     # Get pages the user manages (me/accounts)
     pages_url = "https://graph.facebook.com/v17.0/me/accounts"
     r = requests.get(pages_url, params={"access_token": user_access_token})
     pages = r.json().get("data", [])
+    
+    for page in pages:
+        page_id = page.get("id")
+        resp = requests.get(f"https://graph.facebook.com/v17.0/{page_id}/picture/?type=small")
+        picture_data = base64.b64encode(resp.content).decode("utf-8")
+        page["picture"] = f'data:image/png;base64,{picture_data}'
     
     return render(request, 'auth/connect_page.html', {"pages": pages})
     
@@ -79,14 +82,14 @@ def fb_callback(request):
 def connect_page(request):
     if request.method == 'POST':
         pages = request.POST['pages']
-        print(pages)
         pages = json.loads(pages)
         for page in pages:
             page_id = page.get("id")
             page_name = page.get("name")
             page_access_token = page.get("access_token")
-            
-            print(page)
+            page_category = page.get("category", "No category")
+            picture_data = page.get("picture")
+
             
             page = FacebookPage.objects.filter(id=page_id).first()
             
@@ -94,7 +97,9 @@ def connect_page(request):
             
             if page is not None:
                 page.page_name = page_name
-                page.page_access_token = page_access_token
+                page.page_category = page_category
+                page.access_token = page_access_token
+                page.picture = picture_data
                 page.save()
                 continue
             
@@ -102,6 +107,8 @@ def connect_page(request):
                 id = page_id,
                 user=request.user,
                 page_name=page_name,
+                page_category=page_category,
+                picture=picture_data,
                 access_token=page_access_token,
             )
             
@@ -111,6 +118,7 @@ def connect_page(request):
                 params={"access_token": page_access_token},
                 json={"subscribed_fields": ["messages", "messaging_postbacks"]}
             )
+            print(r)
             
         return redirect('dashboard')
     return HttpResponse("Method not allowed")

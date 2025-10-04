@@ -1,6 +1,6 @@
 import requests
 
-API_URL = "https://graph.facebook.com/v19.0/me/messages"
+API_URL = "https://graph.facebook.com/v23.0/me/messages"
 
 class Messenger:
     def __init__(self, access_token, sender_id, page_id):

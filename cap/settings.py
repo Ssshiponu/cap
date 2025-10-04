@@ -158,6 +158,8 @@ PLANS = {
         'price': 0,
         'max_page': 1,
         'max_message': 1000,
+        'max_system_prompt_length': 1000,
+        'max_business_context_length': 2600
     },
     'business': {
         'price': 1200,

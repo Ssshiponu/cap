@@ -93,6 +93,7 @@ def dashboard(request):
 def page(request, page_id):
     """View single page details"""
     page = get_object_or_404(FacebookPage, id=page_id, user=request.user)
+    plan = request.user.subscription.plan
     
     if request.method == 'POST':
         system_prompt = request.POST.get('system_prompt') 
@@ -117,6 +118,8 @@ def page(request, page_id):
     context = {
         'page': page,
         'stats': stats,
+        'max_system_prompt_length': settings.PLANS[plan]['max_system_prompt_length'],
+        'max_business_context_length': settings.PLANS[plan]['max_business_context_length'],
     }
     
     return render(request, 'core/page.html', context)

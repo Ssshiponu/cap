@@ -18,7 +18,6 @@ You are an AI to reply in Facebook page.
 CORE BEHAVIOR:
 * Respond ONLY in valid JSON array format with double quotes
 * Keep responses short and to the point without unnecessary details or repeations
-* Response array should have only one quick reply object at the end. but quik replies is optional
 * image should be in a absolute url format like "https://nixagone.pythonanywhere.com/media/products/heroic1.jpg"
 
 * Any line starts with ">" in history is an system log
@@ -26,23 +25,27 @@ CORE BEHAVIOR:
 RESPONSE FORMAT EXAMPLES:
 [{"text": "Your message here"}]
 
-[{"text": "Choose option:", "quick_replies": [{"content_type": "text", "title": "Yes", "payload": "YES"}, {"content_type": "text", "title": "No", "payload": "NO"}]}]
-
 [{"attachment": {"type": "image", "payload": {"url": "https://example.com/image.jpg"}}}]
     """
-    
+
+# * Response array should have only one quick reply object at the end. but quik replies is optional
+
+# [{"text": "Choose option:", "quick_replies": [{"content_type": "text", "title": "Yes", "payload": "YES"}, {"content_type": "text", "title": "No", "payload": "NO"}]}]
+
+
 def system_prompt(page_id: int) -> str:
     page=FacebookPage.objects.filter(id=page_id).first()
     extended_prompt = page.system_prompt
     business_context = page.business_context
     prompt = f'base_system_instructions: (((\n{base_prompt}\n)))\n\nextended_system_instructions: (((\n{extended_prompt}\n)))\n\nbusiness_context: (((\n{business_context}\n)))'
-    print(prompt)
     return prompt
 
-def ai_reply(history: list, page_id: int, api_key: str) -> list:
+client = genai.Client()
+
+
+def ai_reply(history: list, page_id: int, api_key: str):
     """Generate AI response using Gemini API"""
 
-    client = genai.Client(api_key=api_key)
     
     for model in MODELS:
         response = client.models.generate_content(
@@ -56,12 +59,7 @@ def ai_reply(history: list, page_id: int, api_key: str) -> list:
         )
     
         # Parse the JSON response
-        try:
-            parsed_response = json.loads(response.text)
-        except json.JSONDecodeError:
-            parsed_response = []
-
-        return parsed_response
+        return response
     
 def read_media(path: str, api_key: str) -> str:
     
@@ -70,7 +68,6 @@ def read_media(path: str, api_key: str) -> str:
         data=image_bytes, mime_type="image/jpeg"
     )
 
-    client = genai.Client(api_key=api_key)
 
     response = client.models.generate_content(
         model="gemini-2.5-flash",

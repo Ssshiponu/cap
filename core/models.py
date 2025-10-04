@@ -71,7 +71,8 @@ class FacebookPage(models.Model):
     page_name = models.CharField(max_length=255)
     page_username = models.CharField(max_length=255, blank=True, null=True)
     page_category = models.CharField(max_length=255, blank=True, null=True)
-    page_picture_data = models.URLField(blank=True, null=True)
+    
+    picture = models.TextField(blank=True, null=True)
     
     # OAuth tokens
     access_token = models.TextField()
@@ -102,7 +103,7 @@ class FacebookPage(models.Model):
 
 
     def __str__(self):
-        return f"{self.page_name} ({self.page_id})"
+        return f"{self.page_name} ({self.id})"
 
 
 
