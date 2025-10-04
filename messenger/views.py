@@ -10,11 +10,12 @@ from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 
 from core.ai import ai_reply
-from core.models import App
+from core.models import FacebookPage, User
 
-from .models import Message, User, Conversation
+from .models import Message, Conversation
 from .messenger import Messenger
 from .reader import make_readable
 
@@ -46,9 +47,12 @@ def get_conversation_json(conv):
 
     return conversation
 
-def process_event(event: dict, api_key: str, access_token: str):
+def process_event(event: dict):
     sender_id = event.get("sender", {}).get("id")
     recipient_id = event.get("recipient", {}).get("id")
+    
+    access_token = get_object_or_404(FacebookPage, id=recipient_id).access_token
+    api_key = os.environ.get("GENAI_API_KEY")
     
     if not sender_id or not recipient_id:
         return False
@@ -92,7 +96,7 @@ def process_event(event: dict, api_key: str, access_token: str):
     h = str(history[-20:])
 
     messenger.send_action("typing_on")
-    reply = ai_reply(h, api_key)
+    reply = ai_reply(h, page_id=recipient_id, api_key = api_key)
     messenger.send_action("typing_off")
     for reply_part in reply:
         sent = messenger.send_reply(reply_part)
@@ -129,15 +133,10 @@ def verify_signature(request, app_secret) -> bool:
 
 @require_http_methods(["GET", "POST"])
 @csrf_exempt
-def webhook_view(request, app_id):
+def webhook_view(request):
     """Main webhook endpoint for Facebook Messenger."""
-    app = get_object_or_404(App, id=app_id)
-    if not app:
-        return HttpResponse("App not found", status=404)
-
-    ACCESS_TOKEN = app.fb_access_key
-    VERIFY_TOKEN = app.webhook_verify_token
-    API_KEY = os.getenv("GEMENI_API_KEY")
+    
+    VERIFY_TOKEN = settings.FB_VERIFY_TOKEN
 
     if request.method == "GET":
         mode = request.GET.get("hub.mode")
@@ -159,7 +158,7 @@ def webhook_view(request, app_id):
         for entry in data.get("entry", []):
             for event in entry.get("messaging", []):
                 try:
-                    if process_event(event, API_KEY, ACCESS_TOKEN):
+                    if process_event(event):
                         return JsonResponse({"success": True})
                 except Exception as e:
                     # Catch errors in single event processing to not fail the whole batch

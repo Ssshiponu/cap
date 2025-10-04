@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login | Chat Autopilot{% endblock %}
+
+{% block body %}
+
+    <div class="relative flex flex-col gap-6 items-center justify-center min-h-screen p-8">
+
+        <header>
+            {% include "brand.html" %}
+        </header>
+                        
+        <div class="relative w-full max-w-sm mx-auto lg:mb-0">
+            <div class="relative text-center">
+                
+                <div class="flex flex-col mb-6 space-y-2">
+                    <h1 class="text-xl font-semibold tracking-tight">What is your email?</h1>
+                    <p class="text-sm text-neutral-500">Enter your email address to continue</p>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mb-3 p-2 rounded-lg text-sm {% if message.tags == 'error' %}bg-red-50 text-red-800 border-2 border-red-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form action="{% url 'login' %}" method="post" class="space-y-3 text-left">
+                    {% csrf_token %}
+                    
+                    <div class="space-y-1">
+                        <label for="email" class="text-sm font-medium">Email</label>
+                        <input type="text" id="email" name="email" placeholder="e.g name@example.com" required class="input w-full" value="{{ email }}">
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="btn">Continue</button>
+                    </div>
+
+                </form>
+            </div>
+            <p class="mt-6 text-sm text-center text-neutral-500">Don't have an account? <a href="{% url 'register_lander' %}" class="link">Sign Up</a></p>
+            <p class="px-8 mt-1 text-sm text-center text-neutral-500">By continuing, you agree to our <a class="link" href="/terms">Terms</a> and <a class="link" href="/privacy">Policy</a>.</p>
+        </div>
+    </div>
+{% endblock %}

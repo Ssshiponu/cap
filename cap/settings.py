@@ -32,7 +32,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = ['https://29b0a8b55b94.ngrok-free.app']
+CSRF_TRUSTED_ORIGINS = ['https://5738557e9926.ngrok-free.app']
 
 LOGIN_URL = '/auth/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-    'whatsapp',
     'messenger',
 ]
 
@@ -64,7 +63,7 @@ MIDDLEWARE = [
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',   
-    'auth.backends.UsernameOrEmailBackend',     
+    'auth.backends.EmailAuthBackend',     
 ]
 
 ROOT_URLCONF = 'cap.urls'
@@ -144,3 +143,45 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'core.User'
+
+# settings.py (add)
+FB_APP_ID = '1171689234865037'
+FB_APP_SECRET = '44e07ee25f393337f22770b986535346'
+FB_REDIRECT_URI = 'https://5738557e9926.ngrok-free.app/auth/fb-callback/'
+FB_VERIFY_TOKEN = 'kfgjheruivhuyjrghtjrtyetdrygery'
+
+#plans limit
+PLANS = {
+    'free': {
+        'price': 0,
+        'max_page': 1,
+        'max_message': 1000,
+    },
+    'business': {
+        'price': 1200,
+        'max_page': 3,
+        'max_message': 10000,
+    },
+    'enterprise': {
+        'price': 2500,
+        'max_page': 10,
+        'max_message': 30000,
+    }
+}
+
+COLORS = {
+    "red": "#FF0000",
+    "green": "#00FF00",
+    "blue": "#0000FF",
+    "yellow": "#FFFF00",
+    "cyan": "#00FFFF",
+    "magenta": "#FF00FF",
+    "orange": "#FFA500",
+    "purple": "#800080",
+    "pink": "#FFC0CB",
+    "brown": "#A52A2A",
+    "gray": "#808080",
+    "teal": "#008080"
+}

@@ -1,16 +1,6 @@
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
-
-class Config(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='config')
-    fb_access_key = models.CharField(max_length=255)
-    fb_app_secret = models.CharField(max_length=100)
-    webhook_verify_token = models.CharField(max_length=32)
-    gemini_api_key = models.CharField(max_length=100)
-    
-    def __str__(self):
-        return f'Config: {self.user.username}'
         
 class Conversation(models.Model):
     page_id = models.CharField(max_length=100)

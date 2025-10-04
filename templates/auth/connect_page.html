@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Connect Page | Chat Autopilot{% endblock %}
+
+{% block body %}
+
+    <div class="relative flex flex-col gap-6 items-center justify-center min-h-screen p-8">
+
+        <header>
+            {% include "brand.html" %}
+        </header>
+                        
+        <div x-data="{
+            pages: {{ pages }},
+        }"
+        
+        class="relative w-full max-w-sm mx-auto lg:mb-0">
+            <div class="relative text-center">
+                
+                <div class="flex flex-col mb-6 space-y-2">
+                    <h1 class="text-xl font-semibold tracking-tight">Connect Pages?</h1>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mb-3 p-2 rounded-lg text-sm {% if message.tags == 'error' %}bg-red-50 text-red-800 border-2 border-red-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form action="{% url "connect_page" %}" method="post" class="space-y-3 text-left">
+                    <template x-for="page in pages" :key="page.id">
+                        <div class="flex bg-neutral-100 rounded-xl p-4">
+                            <p x-text="page.name"></p>
+                        </div>
+                    </template>
+
+                    {% csrf_token %}
+                    <input type="hidden" name="pages" :value="JSON.stringify(pages)">
+                    
+                    <div class="flex justify-end">
+                        <button type="submit" class="btn">Connect All</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

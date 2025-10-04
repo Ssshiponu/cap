@@ -5,16 +5,16 @@ from .views import *
 urlpatterns = [
     path("", index, name="index"),
     path("dashboard/", dashboard, name="dashboard"),
-    path("apps/", apps, name="apps"),
-    path("apps/<str:app_id>/", app, name="app"),
-    
-    path("messenger/", messenger, name="messenger"),
-    path("whatsapp/", whatsapp, name="whatsapp"),
-    path("setup-messenger/", setup_messenger, name="setup-messenger"),
+    path("page/<int:page_id>", page, name="page"),
+    path("page-toggle/<int:page_id>", page_toggle, name="page_toggle"),
+    path('system-prompt-reset/<int:page_id>', system_prompt_reset, name="system_prompt_reset"),
+    path('business_context-reset/<int:page_id>', business_context_reset, name="business_context_reset"),
     
     # Webhooks
-    path('webhook/messenger/<str:app_id>/', webhook_view),
+    path('webhook/messenger/', webhook_view),
     
     # Auth
     path('auth/', include('auth.urls')),
+    
+    
 ]

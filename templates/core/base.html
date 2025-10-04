@@ -37,7 +37,7 @@
     <!-- Performance and Preloading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Sansation:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
     {
@@ -61,18 +61,57 @@
     }
     </script>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body x-data="{
+    api: {
+        baseUrl: 'https://{{ request.get_host }}/',
+        csrfToken: '{{ csrf_token }}',
+
+        async HTTPget(endpoint) {
+            try {
+                const res = await fetch(this.baseUrl + endpoint);
+                if (!res.ok) throw new Error(`GET ${endpoint} failed`);
+                return await res.json();
+            } catch (err) {
+                console.error(err);
+                return {};
+            }
+        },
+
+        async HTTPpost(endpoint, data) {
+            try {
+                const res = await fetch(this.baseUrl + endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.csrfToken
+                    },
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) throw new Error(`POST ${endpoint} failed`);
+                return await res.json();
+            } catch (err) {
+                console.error(err);
+                return {};
+            }
+        }
+    }
+}"
+
+
+class="overflow-x-hidden">
+    {% block body %}
+    {% endblock body %}
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
     <script defer src="{% static "js/alpine.js" %}"></script>
-</head>
-<body class="overflow-x-hidden">
-    {% block body %}
-    {% endblock body %}
-    
     {% block scripts %}
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/header.js' %}"></script>
-
+    
     {% endblock scripts %}
 
 </body>

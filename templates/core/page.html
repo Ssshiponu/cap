@@ -1,0 +1,37 @@
+{% extends "core/dashboard.html" %}
+
+{% block title %}{{ page.page_name }} - Page | Chat Autopilot{% endblock title %}
+
+{% block content %}
+<div class="p-6">
+    <h1 class="h">Page: {{ page.page_name }}</h1>
+    <hr class="mb-8">
+
+    <form action="" method="post" class="flex flex-col gap-6">
+        {% csrf_token %}
+        <div class="flex flex-col gap-3">
+            <h2 class="h2">System Instructions</h2>
+            <p class="info">Base instructions for AI behavior</p>
+            <textarea name="system_prompt" id="system_prompt" rows="10" class="input w-full">{{ page.system_prompt }}</textarea>
+            <div class="flex items-center justify-start gap-2">
+                <a href="{% url 'system_prompt_reset' page.id %}" class="btn">Reset</a>
+            </div>
+        </div>
+
+        <hr class="my-8">
+
+        <div class="flex flex-col gap-3">
+            <h2 class="h2">Business Context</h2>
+            <p class="info">Data and information about your business</p>
+            <textarea name="business_context" id="business_context" rows="10" class="input w-full">{{ page.business_context }}</textarea>
+            <div class="flex items-center justify-start gap-2">
+                <a href="{% url 'business_context_reset' page.id %}" class="btn">Reset</a>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}

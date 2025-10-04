@@ -62,6 +62,9 @@ ul.features li[no]::before {
     .h1 {
         @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-[600];
     }
+    .h2 {
+        @apply text-xl md:text-2xl text-neutral-700 font-[600];
+    }
 
     .h {
         @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl font-[600];
@@ -69,6 +72,9 @@ ul.features li[no]::before {
 
     .h3 {
         @apply text-lg sm:text-xl text-neutral-900 font-[600];
+    }
+    hr {
+        @apply border-0 border-t-2 border-neutral-200 my-4;
     }
 
     .input {
@@ -120,7 +126,7 @@ ul.features li[no]::before {
     }
 
     .btn-link {
-        @apply hover:cursor-pointer hover:underline text-neutral-800 hover:bg-neutral-50 active:bg-neutral-100 text-nowrap font-medium py-1.5 px-3 rounded-md flex flex-row items-center gap-2;
+        @apply hover:cursor-pointer hover:underline text-neutral-800 hover:bg-neutral-100 active:bg-neutral-200 text-nowrap font-medium py-1.5 px-3 rounded-md flex flex-row items-center gap-2;
     }
 
     .link {
@@ -129,9 +135,5 @@ ul.features li[no]::before {
     .info {
         @apply text-neutral-600 text-sm flex items-center gap-2;
     }
-    .info::before {
-        content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3E%3Ccircle cx="12" cy="12" r="10"/%3E%3Cpath d="M12 16v-4"/%3E%3Cpath d="M12 8h.01"/%3E%3C/svg%3E');
-        display: inline-block;
-        margin-top: 4px;
-    }
+
 }

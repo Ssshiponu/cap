@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Message, Config, Conversation
+from .models import Message, Conversation
 
 class ConversationAdmin(admin.ModelAdmin):
     list_display = ('user_id', 'page_id', 'updated_at')
@@ -23,4 +23,3 @@ class ConversationAdmin(admin.ModelAdmin):
 
 admin.site.register(Conversation, ConversationAdmin)
 admin.site.register(Message)
-admin.site.register(Config)
