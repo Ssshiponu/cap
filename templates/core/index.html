@@ -2,70 +2,216 @@
 {% extends "base.html" %}
 {% load static %}
 {% block body %}
-
   <header class="sticky top-0 z-50">
     <div id="header" class="header-inner bg-white/80 backdrop-blur-sm border-transparent">
       <div class="flex items-center justify-between h-full max-w-6xl px-4 mx-auto">
 
-        <div class="flex items-center gap-3">
-          <img src="{% static "img/logo.png" %}" alt="logo" class="w-9 h-9 rounded" loading="lazy">
-          <h1 class="text-xl sm:text-2xl font-bold text-nowrap">Chat Autopilot</h1>
-        </div>
+        {% include "brand.html" %}
 
-        <nav>
+        <nav class="hidden lg:block">
             <div class="flex items-center gap-2">
-                <a href="{% url "login" %}" class="btn">Login</a>
-                <a href="{% url "register" %}" class="btn btn-primary hidden sm:block">Sign Up</a>
+                <a href="#hero" class="btn-link">Home</a>
+                <a href="#features" class="btn-link">Features</a>
+                <a href="#pricing" class="btn-link">Pricing</a>
+                <a href="#" class="btn-link">About</a>
+                <a href="#" class="btn-link">Contact</a>
             </div>
         </nav>
+
+        <nav class="hidden lg:block">
+            <div class="flex items-center gap-2">
+                <a href="{% url "login" %}" class="btn">Login</a>
+                <a href="{% url "register" %}" class="btn btn-primary">Sign Up</a>
+            </div>
+        </nav>
+
+        <button class="lg:hidden btn border-none bg-white p-2 aspect-square" @click="mobileMenu = ! mobileMenu">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu-icon lucide-menu"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>
+        </button>
+        
 
       </div>
     </div>
   </header>
 
-<section class="flex flex-col items-center justify-center min-h-[32rem] p-5 pt-16 gap-8 max-w-6xl mx-auto">
+  <!-- mobile menu -->
+  <nav x-show="mobileMenu"
+  x-transition:enter="ease-out duration-200"
+  x-transition:enter-start="scale-y-50"
+  x-transition:enter-end="scale-y-100"
+  x-transition:leave="ease-in duration-100"
+  x-transition:leave-start="opacity-100"
+  x-transition:leave-end="opacity-0"
+  @click.outside="mobileMenu = false"
+  class="fixed top-22 inset-0 z-50 origin-top lg:hidden w-[calc(100dvw-64px)] max-w-72 p-6 rounded-xl shadow-2xl ml-auto mr-4 h-[calc(100dvh-112px)] border-2 border-neutral-200 bg-white/80 backdrop-blur-sm " x-cloak>
+    <div class="flex flex-col justify-between h-full">
+        <div class="flex flex-col gap-3">
+            <a href="#hero" class="btn-link">Home</a>
+            <a href="#features" class="btn-link">Features</a>
+            <a href="#pricing" class="btn-link">Pricing</a>
+            <a href="#" class="btn-link">About</a>
+            <a href="#" class="btn-link">Contact</a>
+        </div>
+        <div class="flex gap-3">
+            <a href="{% url "login" %}" class="btn flex-1">Login</a>
+            <a href="{% url "register" %}" class="btn btn-primary flex-1">Sign Up</a>
+        </div>
+    </div>
+    
+  </nav>
+
+<section id="hero" class="bg-whuite flex flex-col items-center justify-center min-h-[calc(100dvh-96px)] md:min-h-[550px] px-6 gap-8 max-w-6xl mx-auto">
     <h1 class="h1">AI কি
-      <div class="relative inline-block"> Whatsapp
+      <div class="relative inline-block"> Messenger
         <span class="bold-underline"></span>
       </div> এ রিপ্লাই দিতে পারে ?</h1>
     <div class="flex sm:flex-row flex-col-reverse gap-8 md:gap-12 lg:gap-16  max-w-4xl mx-auto">
             <lord-icon
                 src="https://cdn.lordicon.com/ndwqegog.json"
-                trigger="loop"
-                class="w-60 h-60 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 mx-auto absolute sm:static inset-x-0 top-56 opacity-15 sm:opacity-100 -z-10">
+                trigger="click"
+                class="not-sm:hidden sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 mx-auto absolute sm:static inset-x-0 top-56 opacity-15 sm:opacity-100 -z-10">
             </lord-icon>
         <div class="flex-1 flex flex-col justify-center gap-6">
-            <p class="text-neutral-700 sm:text-lg md:text-xl font-medium"><span class="text-black font-bold">হ্যাঁ</span> আমাদের তৈরি AI টি Messenger বা Whatsapp এর সাথে সংযুক্ত করলে আপনার বিজনেস ডাটা অনুসারে রিপ্লাই দিতে পারে। কাস্টমারের সাথে কথা বলা, অর্ডার কনফার্ম করা এমনকি e-commerce সাইট থাকলে সেখানে অর্ডার প্লেস করতে পারে। </p>
+            <p class="text-neutral-700 sm:text-lg md:text-xl font-medium"><span class="text-black font-bold">
+                হ্যাঁ</span> আমাদের তৈরি AI টি আপনার Facebook পেজের সাথে সংযুক্ত করলে আপনার দেওয়া নির্দেশনা এবং তথ্যের ভিত্তিতে মুহূর্তেই Messenger বা Whatsapp এ রিপ্লাই দিতে পারে</p>
             <div class="flex items-center flex-wrap gap-3">
-                <a href="{% url "register" %}" class="btn btn-primary">Start Setup for Free</a>
+                <a href="{% url "register" %}" class="btn btn-primary">Try 7 day Free</a>
                 <a href="#" class="btn">See Demo</a>
 
             </div>
         </div>
     </div>
+    <div>
+    <lord-icon
+        src="https://cdn.lordicon.com/ndwqegog.json"
+        trigger="click"
+        class="sm:hidden w-52 h-52 mx-auto">
+    </lord-icon>
+    </div>
+</section>
+
+<section id="features" class="py-16 sm:py-28 px-6 bg-neutral-50 flex justify-center">
+  <div class="flex flex-col gap-12 max-w-4xl mx-auto">
+    <h2 class="h text-center">এটা কেন দরকার?</h2>
+
+    <div class="flex flex-col md:flex-row gap-12 mx-auto">
+        <div class="flex gap-3">
+          <lord-icon
+              src="https://cdn.lordicon.com/xadyodkg.json"
+              trigger="hover"
+              style="width:80px;height:80px">
+          </lord-icon>
+          <div class="flex-1 flex flex-col gap-2">
+            <h3 class="h3">Fast</h3>
+            <p>ইউজার-কে মেসেজ করে রিপ্লাই এর জন্য অপেক্ষা করতে হয় না</p>
+          </div>
+          
+        </div>
+        <div class="flex gap-3">
+          <lord-icon
+              src="https://cdn.lordicon.com/acmootjs.json"
+              trigger="hover"
+              style="width:80px;height:80px">
+          </lord-icon>
+          <div class="flex-1 flex flex-col gap-2">
+            <h3 class="h3">Realistic</h3>
+            <p>রিপ্লাই যদি দ্রুত না হতো, ইউজার বুজতেই পারতো না যে সে AI এর সাথে কথা বলছে</p>
+          </div>
+          
+        </div>
+        <div class="flex gap-3">
+          <lord-icon
+              src="https://cdn.lordicon.com/qedxglkx.json"
+              trigger="hover"
+              style="width:80px;height:80px">
+          </lord-icon>
+          <div class="flex-1 flex flex-col gap-2">
+            <h3 class="h3">Multichating</h3>
+            <p>একই সময়ে অনেকজন ইউজারের সাথে চ্যাট করতে পারে</p>
+          </div>
+          
+        </div>
+    </div>
+    <p class="text-neutral-700 text-center">যুগের সাথে তাল মেলাতে সবাইকে সেই নতুন প্রযুক্তি গ্রহণ করতে হয়</p>
+  </div>
+</section>
+
+<section class="py-16 sm:py-24 p-6 max-w-4xl mx-auto bg-white">
+  <h2 class="h mb-16 text-center">এটা কিভাবে কাজ করে ?</h2>
+
+  <div class="grid grid-cols-5 gap-2 sm:gap-6 gap-y-4 sm:gap-y-8 max-w-2xl mx-auto">
+      <div class="box center col-span-2">
+        <p class=" text-neutral-800 text-lg font-medium">ইউসার Facebook পেজে মেসেজ পাঠায়</p>
+      </div>
+
+      <div class="center">
+        <lord-icon
+          src="https://cdn.lordicon.com/moedrfvp.json"
+          trigger="hover"
+          class="arrow">
+        </lord-icon>
+      </div>
+
+      <div class="center box col-span-2">
+        <p class="text-neutral-800 text-lg font-medium">Facebook সেই মেসেজ আমাদের AI এর কাছে ফরওয়ার্ড করে দেয়</p>
+      </div>
+
+      <div class="center col-span-2">
+        <lord-icon
+          src="https://cdn.lordicon.com/fuaumwut.json"
+          trigger="hover"
+          class="arrow">
+        </lord-icon>
+      </div>
+
+      <div></div>
+
+      <div class="center col-span-2">
+        <lord-icon
+          src="https://cdn.lordicon.com/kopdsdez.json"
+          trigger="hover"
+          class="arrow">
+        </lord-icon>
+      </div>
+
+      <div class="box center col-span-2">
+        <p class=" text-neutral-800 text-lg font-medium">সেই রিপ্লাই facebook কে পাঠায় এবং ফেসবুক ইউজারকে পাঠায়</p>
+      </div>
+
+      <div class="center">
+        <lord-icon
+          src="https://cdn.lordicon.com/ezcxsdmh.json" 
+          trigger="hover"
+          class="arrow">
+        </lord-icon>
+      </div>
+
+      <div class="center box col-span-2">
+        <p class="text-neutral-800 text-lg font-medium">আমাদের AI মেসেজটিকে প্রসেস করে এবং একটা রিপ্লাই জেনারেট করে</p>
+      </div>
+  </div>
+  <p class="text-neutral-700 text-center mt-16">এই সমস্ত কিছু মাত্র কয়েক সেকেন্ডের মধ্যে হয়</p>
 </section>
 
 
-
-<section class="py-16 bg-neutral-50 flex flex-col items-center" arial-label="Pricing">
-    <h2 class="h mb-12">Pricing Plans</h2>
+<section id="pricing" class="py-16 sm:py-22 bg-neutral-50 flex flex-col items-center" arial-label="Pricing">
+    <h2 class="h mb-16">দাম কত ?</h2>
     <div class="grid grid-cols-1 lg:grid-cols-3 max-w-6xl mx-auto">
        <div class="transition-border p-6 min-w-60 rounded-xl">
           <div class="flex flex-col items-center gap-4">
             <h3 class="h">Free</h3>
             <div class="flex items-center gap-2">
-              <span class="text-2xl font-bold">৳0</span>
+              <span class="text-2xl font-bold">৳{{ plans.free.price }}</span>
               <span class="text-sm text-neutral-600 font-medium"> 7 days trial</span>
             </div>
           </div>
           <div class="mt-6">
             <ul class="features flex flex-col gap-2 text-neutral-700 font-medium">
-              <li>200 replys per day</li>
-              <li>10 unique users per day</li>
-              <li>Setup you own</li>
-              <li>400 words of business info</li>
-              <li no>Connect website/database</li>
-              <li>Free support</li>
+              <li><span class="font-semibold text-black">{{ plans.free.max_message }}</span> replies 7 days</li>
+              <li><span class="font-semibold text-black">{{ plans.free.max_user }}</span> maximum users</li>
+              <li><span class="font-semibold text-black">{{ plans.free.max_system_prompt_length }}</span> charecter of system prompt</li>
+              <li {{ plans.free.database }}>Connect website/database</li>
+              <li {{ plans.free.support }}>Free support</li>
             </ul>
           </div>
           <div class="mt-8 flex justify-center">
@@ -76,18 +222,17 @@
           <div class="flex flex-col items-center gap-4">
             <h3 class="h">Business</h3>
             <div class="flex items-center gap-2">
-              <span class="text-2xl font-bold">৳1000</span>
+              <span class="text-2xl font-bold">৳{{ plans.business.price }}</span>
               <span class="text-sm text-neutral-600 font-medium"> / month</span>
             </div>
           </div>
           <div class="mt-6">
             <ul class="features flex flex-col gap-2 text-neutral-700 font-medium">
-              <li>10,000 replys per month</li>
-              <li>500 unique customers per month</li>
-              <li>We Setup everything</li>
-              <li>1,200 words of business info</li>
-              <li>Connect website/database</li>
-              <li>Free support</li>
+              <li><span class="font-semibold text-black">{{ plans.business.max_message }}</span> replies per month</li>
+              <li><span class="font-semibold text-black">{{ plans.business.max_user }}</span> users</li>
+              <li><span class="font-semibold text-black">{{ plans.business.max_system_prompt_length }}</span> charecter of system prompt</li>
+              <li {{ plans.business.database }}>Connect website/database</li>
+              <li {{ plans.business.support }}>Free support</li>
             </ul>
           </div>
           <div class="mt-10 flex justify-center">
@@ -98,18 +243,17 @@
           <div class="flex flex-col items-center gap-4">
             <h3 class="h">Custom</h3>
             <div class="flex items-center gap-2">
-              <span class="text-2xl font-bold">৳2000+</span>
+              <span class="text-2xl font-bold">৳{{ plans.custom.price }}</span>
               <span class="text-sm text-neutral-600 font-medium"> / month</span>
             </div>
           </div>
           <div class="mt-6">
             <ul class="features flex flex-col gap-2 text-neutral-700 font-medium">
-              <li>৳0.1 per replys</li>
-              <li>৳1 per unique users</li>
-              <li>We Setup everything</li>
-              <li>Unlimited business info</li>
-              <li>Connect website/database</li>
-              <li>Free support</li>
+              <li><span class="font-semibold text-black">{{ plans.custom.max_message }}, ৳{{ plans.custom.message_cost }}</span> per replies</li>
+              <li><span class="font-semibold text-black">{{ plans.custom.max_user }}</span> users</li>
+              <li><span class="font-semibold text-black">{{ plans.custom.max_system_prompt_length }}</span> Charecter of system prompt</li>
+              <li {{ plans.custom.database }}>Connect website/database</li>
+              <li {{ plans.custom.support }}>Free support</li>
             </ul>
           </div>
           <div class="mt-8 flex justify-center">
@@ -117,9 +261,70 @@
           </div>
        </div>
     </div>
+    <p class="text-neutral-700 text-center mt-16">কোনটি পছন্দ হয়েছে ? কোনটি না হলে আমাদের সাথে <a class="link" href="#">যোগাযোগ করুন</a></p>
 </section>
 
-<footer class="bg-neutral-100 p-8 md:p-12 mt-16">
+<section class="py-16 sm:py-24 p-6 max-w-4xl mx-auto bg-white">
+  <h2 class="h mb-16 text-center">কিভাবে শুরু করবো ?</h2>
+      <div class="flex flex-col md:flex-row gap-12 mx-auto">
+        <div class="flex gap-3">
+          <lord-icon
+              src="https://cdn.lordicon.com/zdedkaho.json"
+              trigger="hover"
+              style="width:80px;height:80px">
+          </lord-icon>
+          <div class="flex-1 flex flex-col gap-2">
+            <h3 class="h3">Account</h3>
+            <p>শুরুতে একটি একাউন্ট তৈরী করুন, আগে থেকে একাউন্ট থাকলে লগইন করুন</p>
+          </div>
+          
+        </div>
+        <div class="flex gap-3">
+          <lord-icon
+              src="https://cdn.lordicon.com/bqzrducy.json"
+              trigger="hover"
+              style="width:80px;height:80px">
+          </lord-icon>
+          <div class="flex-1 flex flex-col gap-2">
+            <h3 class="h3">Connecting pages</h3>
+            <p>ড্যাশবোর্ড থেকে Add page বাটনে ক্লিক করে আপনার Facebook পেজ সিলেক্ট করুন এবং connect করুন। </p>
+          </div>
+          
+        </div>
+        <div class="flex gap-3">
+          <lord-icon
+              src="https://cdn.lordicon.com/hikglskt.json"
+              trigger="hover"
+              style="width:80px;height:80px">
+          </lord-icon>
+          <div class="flex-1 flex flex-col gap-2">
+            <h3 class="h3">Settings</h3>
+            <p>এরপর পেজের সেটিংস থেকে system_prompt এ আপনার AI এর আচরণ ও ডাটা বর্ণনা করুন।</p>
+          </div>
+          
+        </div>
+    </div>
+    <p class="text-neutral-700 text-center mt-16">আমাদেরকে আপনার ব্যবসা বুঝিয়ে বললে আমরা system prompt তৈরী করে দেবো</p>
+</section>
+
+<section id="cta" class="py-16 sm:py-24 p-6 bg-neutral-50">
+    <div class="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-12 max-w-2xl mx-auto">
+      <div class="flex items-center gap-3">
+        <lord-icon
+            src="https://cdn.lordicon.com/yejbwtri.json"
+            trigger="hover"
+            class="w-20 h-20 md:w-28 md:h-28">
+        </lord-icon>
+        <div class="flex-1">
+          <h3 class="h3">বিশ্রামের সময় হয়েছে..</h3>
+          <p>AI কে আপনার কাজ বুঝিয়ে দিন। আপনি প্রস্তুত তো ?</p>
+        </div>
+      </div>
+      <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+    </div>
+</section>
+
+<footer class="bg-neutral-100 p-8 md:p-12 pt-24">
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8 mb-8 max-w-6xl mx-auto">
         <div class="col-span-2 flex flex-col gap-4">
@@ -139,7 +344,7 @@
         </div>
 
         <div class="mt-4">
-            <h3 class="h3 mb-8">Chat Autopilot</h3>
+            <h3 class="h3 mb-4">Chat Autopilot</h3>
             <ul class="flex flex-col gap-4 text-neutral-700">
                 <li><a href="#" class="link">Home</a></li>
                 <li><a href="#" class="link">About</a></li>
@@ -148,7 +353,7 @@
         </div>
 
         <div class="mt-4">
-            <h3 class="h3 mb-8">Products</h3>
+            <h3 class="h3 mb-4">Products</h3>
             <ul class="flex flex-col gap-4 text-neutral-700">
                 <li><a href="#" class="link">Messenger Bot</a></li>
                 <li><a href="#" class="link">Whatsapp Bot</a></li>
@@ -156,7 +361,7 @@
         </div>
 
         <div class="mt-4">
-            <h3 class="h3 mb-8">Resources</h3>
+            <h3 class="h3 mb-4">Resources</h3>
             <ul class="flex flex-col gap-4 text-neutral-700">
                 <li><a href="#" class="link">Tutorials</a></li>
                 <li><a href="#" class="link">FAQs</a></li>
@@ -165,7 +370,7 @@
         </div>
 
         <div class="mt-4">
-            <h3 class="h3 mb-8">Legal</h3>
+            <h3 class="h3 mb-4">Legal</h3>
             <ul class="flex flex-col gap-4 text-neutral-700">
                 <li><a href="#" class="link">Privacy Policy</a></li>
                 <li><a href="#" class="link">Terms of Service</a></li>
@@ -175,7 +380,7 @@
 
   </div>
 
-    <div class="flex flex-wrap items-center justify-between max-w-6xl py-12 mx-auto text-center text-neutral-600">
+    <div class="flex flex-wrap gap-4 items-center justify-between max-w-6xl py-12 mx-auto text-center text-neutral-600">
         &copy; 2025 Chat Autopilot. All rights reserved.
         <div class="flex items-center gap-4">
             <a href="#" class="text-neutral-600 hover:text-black">
@@ -212,6 +417,7 @@
     </div>
 
 </footer>
+
 {% endblock body %}
 
 <h2 class="h">Chat Autopilot</h2>

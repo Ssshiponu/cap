@@ -23,7 +23,11 @@ from messenger.models import (
 )
 
 def index(request):
-    return render(request, 'core/index.html')
+    
+    context = {
+        'plans': settings.PLANS
+    }
+    return render(request, 'core/index.html', context)
 
 @login_required
 def dashboard(request):

@@ -7,48 +7,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>{% block title %}Chat Autopilot{% endblock title %}</title>
+    <title>{% block title %}{{ metadata.title|default:"Chat Autopilot" }}{% endblock title %}</title>
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="{{ meta_description }}">
-    <meta name="keywords" content="{{ meta_keywords }}">
-    <meta name="author" content="{{ meta_author }}">
+    <meta name="description" content="{{ metadata.description }}">
+    <meta name="keywords" content="{{ metadata.keywords }}">
+    <meta name="author" content="{{ metadata.author }}">
     <meta name="robots" content="index, follow">
     <meta name="googlebot" content="index, follow">
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
     
     <!-- Open Graph Meta Tags (Facebook, LinkedIn) -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="{{ meta_title }}">
-    <meta property="og:description" content="{{ meta_description }}">
-    <meta property="og:image" content="{{ meta_image }}">
+    <meta property="og:title" content="{{ metadata.title }}">
+    <meta property="og:description" content="{{ metadata.description }}">
+    <meta property="og:image" content="{{ metadata.image }}">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:locale" content="{{ meta_locale }}">
+    <meta property="og:locale" content="{{ metadata.locale }}">
 
     <!-- Favicon and Touch Icons -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static "img/logo_16.png" %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static "img/logo_32.png" %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static "img/logo_180.png" %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static "static" "img/logo_192.png" %}">
     <link rel="icon" type="image/png" sizes="512x512" href="{% static 'img/logo.png' %}">
     
     <!-- Performance and Preloading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Sansation:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+
+    <!-- Other head -->
+    {{  metadata.head }}
+
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        "name": "{{ meta_title }}",
-        "description": "{{ meta_description }}",
+        "name": "{{ metadata.title }}",
+        "description": "{{ metadata.description }}",
         "url": "{{ request.build_absolute_uri }}",
         "author": {
             "@type": "Person",
-            "name": "{{ meta_author }}"
+            "name": "{{ metadata.author }}"
         },
         "publisher": {
             "@type": "Organization",
@@ -59,47 +62,15 @@
             }
         }
     }
+    // JSON-LD
+    {{ metadata.schema_markup }}
     </script>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body x-data="{
-    api: {
-        baseUrl: 'https://{{ request.get_host }}/',
-        csrfToken: '{{ csrf_token }}',
-
-        async HTTPget(endpoint) {
-            try {
-                const res = await fetch(this.baseUrl + endpoint);
-                if (!res.ok) throw new Error(`GET ${endpoint} failed`);
-                return await res.json();
-            } catch (err) {
-                console.error(err);
-                return {};
-            }
-        },
-
-        async HTTPpost(endpoint, data) {
-            try {
-                const res = await fetch(this.baseUrl + endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': this.csrfToken
-                    },
-                    body: JSON.stringify(data)
-                });
-                if (!res.ok) throw new Error(`POST ${endpoint} failed`);
-                return await res.json();
-            } catch (err) {
-                console.error(err);
-                return {};
-            }
-        }
-    }
-}"
+<body x-data="{ sidebar: false, modal: false, mobileMenu: false }"
 
 
 class="overflow-x-hidden">
@@ -108,10 +79,9 @@ class="overflow-x-hidden">
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
     <script defer src="{% static "js/alpine.js" %}"></script>
-    {% block scripts %}
     <script src="{% static 'js/main.js' %}"></script>
+    {% block scripts %}
     <script src="{% static 'js/header.js' %}"></script>
-    
     {% endblock scripts %}
 
 </body>

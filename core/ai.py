@@ -46,11 +46,11 @@ client = genai.Client()
 def ai_reply(history: list, page_id: int, api_key: str):
     """Generate AI response using Gemini API"""
 
-    
+
     for model in MODELS:
         response = client.models.generate_content(
             model=model,
-            contents=history,
+            contents=str(history),
             config=types.GenerateContentConfig(
                 temperature=float(1.0),
                 system_instruction=system_prompt(page_id),

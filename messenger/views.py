@@ -26,26 +26,32 @@ logger = logging.getLogger(__name__)
 
         
 def get_conversation_json(conv):
-    """
-    Return a json conversation list:
-    [{"role": "user" or "assistant", "parts": [{"text": "..."}]}, ...]
-    Messages are returned in chronological order (oldest first).
-    """
-
     qs = (
         conv.messages.all()
         .order_by("created_at")
-        .values("role", "content", "created_at")  # fetch only needed fields
+        .values("role", "content", "created_at")
     )
 
     conversation = []
     for row in qs:
+        role = row.get("role", "user")
+        content = row.get("content", "")
+
+        # Map OpenAI-style roles to GenAI authors
+        if role == "user":
+            author = "user"
+        else:  # system, assistant, anything else → model
+            author = "model"
+
         conversation.append({
-            "role": row.get("role", ""),
-            "parts": [{"text": row.get("content", "")}],
+            "author": author,
+            "content": [
+                {"type": "text", "text": content}
+            ]
         })
 
     return conversation
+
 
 def process_event(event: dict):
     sender_id = event.get("sender", {}).get("id")
@@ -93,7 +99,8 @@ def process_event(event: dict):
 
     # --- Generate and Send AI Reply ---
     history = get_conversation_json(conversation)
-    h = str(history[-20:])
+    h = history[-20:]
+    print(len(h))
 
     messenger.send_action("typing_on")
     reply = ai_reply(h, page_id=recipient_id, api_key = api_key)

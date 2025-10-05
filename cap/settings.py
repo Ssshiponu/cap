@@ -157,20 +157,34 @@ PLANS = {
     'free': {
         'price': 0,
         'max_page': 1,
+        'max_user': 50,
         'max_message': 1000,
         'max_system_prompt_length': 1000,
-        'max_business_context_length': 2600
+        'max_business_context_length': 2600,
+        'database': 'no',
+        'support': 'no',
     },
     'business': {
-        'price': 1200,
+        'price': 1500,
         'max_page': 3,
+        'max_user': 'Unlimited',
         'max_message': 10000,
+        'max_system_prompt_length': 2500,
+        'max_business_context_length': 5000,
+        'database': 'yes',
+        'support': 'yes',
+        
     },
-    'enterprise': {
-        'price': 2500,
+    'custom': {
+        'price': '2000+',
         'max_page': 10,
-        'max_message': 30000,
-    }
+        'max_user': 'Unlimited',
+        'max_message': 'Unlimited',
+        'message_cost': 0.15,
+        'max_system_prompt_length': 2500,
+        'max_business_context_length': 5000,
+        'database': 'yes',
+        'support': 'yes',}
 }
 
 COLORS = {
