@@ -15,7 +15,6 @@
 
     <form x-data="{
         system_prompt: '{{ page.system_prompt|escapejs }}',
-        business_context: '{{ page.business_context|escapejs }}'
     }"
      action="" method="post" class="flex flex-col gap-6">
         {% csrf_token %}
@@ -26,19 +25,6 @@
             <div class="flex justify-between gap-2">
                 <a @click="alert('Are you sure you want to reset your system prompt?'); window.location.href='{% url 'system_prompt_reset' page.id %}'" class="btn">Reset</a>
                 <p class="text-neutral-600"><span x-text="system_prompt.length"></span>/ {{ max_system_prompt_length }}</p>
-            </div>
-        </div>
-
-        <hr class="my-8">
-
-        <div class="flex flex-col gap-3">
-            <h2 class="h2">Business Context</h2>
-            <p class="info">Data and information about your business</p>
-            <textarea x-model="business_context" name="business_context" id="business_context" rows="10" class="input w-full"></textarea>
-            <div class="flex justify-between gap-2">
-                <a @click="alert('Are you sure you want to reset your business context?'); window.location.href='{% url 'business_context_reset' page.id %}'" class="btn">Reset</a>
-                <p class="text-neutral-600"><span x-text="business_context.length"></span>/ {{ max_business_context_length }}</p>
-
             </div>
         </div>
 

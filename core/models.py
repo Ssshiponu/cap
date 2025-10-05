@@ -90,10 +90,6 @@ class FacebookPage(models.Model):
         help_text="Base instructions for AI behavior",
         default="You are a helpful customer service assistant."
     )
-    business_context = models.TextField(
-        blank=True,
-        help_text="Information about the business, products, services"
-    )
     
     connected_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

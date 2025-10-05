@@ -8,7 +8,6 @@ urlpatterns = [
     path("page/<int:page_id>", page, name="page"),
     path("page-toggle/<int:page_id>", page_toggle, name="page_toggle"),
     path('system-prompt-reset/<int:page_id>', system_prompt_reset, name="system_prompt_reset"),
-    path('business_context-reset/<int:page_id>', business_context_reset, name="business_context_reset"),
     
     # Webhooks
     path('webhook/messenger/', webhook_view),

@@ -159,8 +159,7 @@ PLANS = {
         'max_page': 1,
         'max_user': 50,
         'max_message': 1000,
-        'max_system_prompt_length': 1000,
-        'max_business_context_length': 2600,
+        'max_system_prompt_length': 2200,
         'database': 'no',
         'support': 'no',
     },
@@ -169,8 +168,7 @@ PLANS = {
         'max_page': 3,
         'max_user': 'Unlimited',
         'max_message': 10000,
-        'max_system_prompt_length': 2500,
-        'max_business_context_length': 5000,
+        'max_system_prompt_length': 4000,
         'database': 'yes',
         'support': 'yes',
         
@@ -181,8 +179,7 @@ PLANS = {
         'max_user': 'Unlimited',
         'max_message': 'Unlimited',
         'message_cost': 0.15,
-        'max_system_prompt_length': 2500,
-        'max_business_context_length': 5000,
+        'max_system_prompt_length': 7000,
         'database': 'yes',
         'support': 'yes',}
 }

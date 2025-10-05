@@ -101,14 +101,10 @@ def page(request, page_id):
     
     if request.method == 'POST':
         system_prompt = request.POST.get('system_prompt') 
-        business_context = request.POST.get('business_context')
         if system_prompt is not None:
             page.system_prompt = system_prompt.strip()
         
-        if business_context is not None:
-            page.business_context = business_context.strip()
-        
-        page.save()    
+        page.save()
         return redirect(request.GET.get('next', f'/page/{page_id}'))
     
     # Get page stats
@@ -123,7 +119,6 @@ def page(request, page_id):
         'page': page,
         'stats': stats,
         'max_system_prompt_length': settings.PLANS[plan]['max_system_prompt_length'],
-        'max_business_context_length': settings.PLANS[plan]['max_business_context_length'],
     }
     
     return render(request, 'core/page.html', context)
@@ -144,17 +139,6 @@ def system_prompt_reset(request, page_id):
     page.system_prompt = 'You are an helpful ai bot in messenger'
     page.save()
     return redirect(request.GET.get('next', f'/page/{page_id}'))
-
-@login_required
-def business_context_reset(request, page_id):
-    page = get_object_or_404(FacebookPage, id=page_id, user=request.user)
-    page.business_context = 'No business context'
-    page.save()    
-    return redirect(request.GET.get('next', f'/page/{page_id}'))
-
-
-
-
 
 
 @login_required
