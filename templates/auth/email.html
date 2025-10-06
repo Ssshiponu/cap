@@ -21,7 +21,7 @@
 
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="mb-3 p-2 rounded-lg text-sm {% if message.tags == 'error' %}bg-red-50 text-red-800 border-2 border-red-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+                        <div class="mb-3 p-2 rounded-lg text-sm {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
                             {{ message }}
                         </div>
                     {% endfor %}

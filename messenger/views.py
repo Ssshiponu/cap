@@ -57,7 +57,9 @@ def process_event(event: dict):
     sender_id = event.get("sender", {}).get("id")
     recipient_id = event.get("recipient", {}).get("id")
     
-    access_token = get_object_or_404(FacebookPage, id=recipient_id).access_token
+    page = get_object_or_404(FacebookPage, id=recipient_id)
+    
+    access_token = page.access_token
     api_key = os.environ.get("GENAI_API_KEY")
     
     if not sender_id or not recipient_id:
@@ -71,7 +73,7 @@ def process_event(event: dict):
     
     # get or create conversation
     conversation, _ = Conversation.objects.get_or_create(
-        page_id=recipient_id, user_id=sender_id
+        facebook_page=page, user_id=sender_id, active=True
     )
     # Case 1: User sent a standard message (text, attachment)
     if "message" in event:
@@ -95,19 +97,20 @@ def process_event(event: dict):
             role="user",
             content=user_text,
         )
-    messenger.send_action("mark_seen")
+    print(messenger.send_action("typing_on"))
 
     # --- Generate and Send AI Reply ---
     history = get_conversation_json(conversation)
     h = history[-20:]
-    print(len(h))
 
     messenger.send_action("typing_on")
     reply = ai_reply(h, page_id=recipient_id, api_key = api_key)
     messenger.send_action("typing_off")
-    
-    conversation.input_tokens = conversation.input_tokens + reply.usage_metadata.prompt_token_count
-    conversation.output_tokens = conversation.output_tokens + (reply.usage_metadata.candidates_token_count + reply.usage_metadata.thoughts_token_count)
+    try:
+        conversation.input_tokens = conversation.input_tokens + reply.usage_metadata.prompt_token_count
+        conversation.output_tokens = conversation.output_tokens + (reply.usage_metadata.candidates_token_count + reply.usage_metadata.thoughts_token_count)
+    except Exception as e:
+        print(e)
     conversation.save()
     print('IN:',reply.usage_metadata.prompt_token_count, 'OUT:', reply.usage_metadata.candidates_token_count + reply.usage_metadata.thoughts_token_count)
         

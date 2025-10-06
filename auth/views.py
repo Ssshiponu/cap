@@ -147,6 +147,7 @@ def logout_view(request):
     return redirect('login')
 
 def register_lander(request):
+    
     return render(request, 'auth/register_lander.html')
 
 def register(request):
@@ -166,7 +167,7 @@ def register(request):
         user = User.objects.create_user(id=uuid.uuid4(), first_name=full_name, password=password, email=email, username=generate_random_token(26))
         user.save()
         
-        Subscription.objects.create(user=user)
+        Subscription.objects.create(user=user, )
         
         # Auto-login after registration
         user = authenticate(request, email=email, password=password)
@@ -177,6 +178,8 @@ def register(request):
     if request.method == 'GET':
         email = request.GET.get('email', '')
         if email:
+            if User.objects.filter(email__iexact=email).exists():
+                messages.error(request, 'Email already in use.')
             return render(request, 'auth/register.html', {'email': email})
         return redirect('register_lander')
 

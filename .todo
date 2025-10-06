@@ -1,0 +1,14 @@
+fb,google oauth
+password-reset
+
+
+
+
+help-page
+privacy-policy
+terms-of-service
+refund-policy
+
+
+retry ai response if failed
+kill current response if anather request comes

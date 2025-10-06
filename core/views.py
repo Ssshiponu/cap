@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
+from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods, require_POST
 from django.views.decorators.csrf import csrf_exempt
@@ -22,6 +23,8 @@ from messenger.models import (
     Message, Conversation
 )
 
+from .utils import *
+
 def index(request):
     
     context = {
@@ -33,28 +36,20 @@ def index(request):
 def dashboard(request):
     """Main dashboard"""
     user = request.user
-
     subscription = user.subscription
     
     if request.GET.get('using', '') == 'last-month':
         if subscription.plan == 'free':
             return redirect('/dashboard/?using=last-week')
     
-    # Get connected pages
     pages = FacebookPage.objects.filter(user=user)
     
-    # Get page stats
-    days_ago = lambda days: timezone.now() - timedelta(days=days)
     using_days = request.GET.get('using')
     
-    if using_days == 'today':
-        day = 1
-    elif using_days == 'last-week':
-        day = 7
-    elif using_days == 'last-month':
-        day = 30
-    else:
-        day = 30
+    if using_days == 'today': day = 1
+    elif using_days == 'last-week': day = 7
+    elif using_days == 'last-month': day = 30
+    else: day = 30
         
         
     colors = list(settings.COLORS.keys())
@@ -62,9 +57,9 @@ def dashboard(request):
     for index, page in enumerate(pages):
         using.append({
             'name': page.page_name,
-            'conversations': Conversation.objects.filter(page_id=page.id, updated_at__gte=days_ago(day)).count(),
-            'ai_replies': Message.objects.filter(conversation__page_id=page.id, role='assistant', created_at__gte=days_ago(day)).count(),
-            'messages': Message.objects.filter(conversation__page_id=page.id, created_at__gte=days_ago(day)).count(),
+            'conversations': Conversation.objects.filter(facebook_page=page, updated_at__gte=days_ago(day)).count(),
+            'ai_replies': Message.objects.filter(conversation__facebook_page=page, role='assistant', created_at__gte=days_ago(day)).count(),
+            'messages': Message.objects.filter(conversation__facebook_page=page, created_at__gte=days_ago(day)).count(),
             'color': colors[index],
         })
     ai_replies_limit = settings.PLANS[subscription.plan]['max_message']
@@ -79,7 +74,7 @@ def dashboard(request):
     context = {
         'pages': pages,
         'subscription': subscription,
-        'using': using,
+        'using': sorted(using, key=lambda k: k['percentage'], reverse=True),
         'remaining_using': remaining_using,
         
         'total_ai_replies': total_ai_replies,
@@ -89,15 +84,22 @@ def dashboard(request):
     return render(request, 'core/dashboard.html', context)
 
 
-# ============================================
-# Facebook Page Management Views
-# ============================================
-
 @login_required
 def page(request, page_id):
     """View single page details"""
     page = get_object_or_404(FacebookPage, id=page_id, user=request.user)
     plan = request.user.subscription.plan
+    conversations = Conversation.objects.filter(facebook_page=page, updated_at__gte=days_ago(30)).order_by('-updated_at')
+    
+    user_messages = 0
+    ai_replies = 0
+    
+    paginator = Paginator(conversations.filter(active=True), 10)
+    page_number = request.GET.get('page', 1)
+    
+    for c in conversations:
+        user_messages += c.messages.filter(role='user', created_at__gte=days_ago(30)).count()
+        ai_replies += c.messages.filter(role='assistant', created_at__gte=days_ago(30)).count()
     
     if request.method == 'POST':
         system_prompt = request.POST.get('system_prompt') 
@@ -108,21 +110,28 @@ def page(request, page_id):
         return redirect(request.GET.get('next', f'/page/{page_id}'))
     
     # Get page stats
-    thirty_days_ago = timezone.now() - timedelta(days=30)
-    stats = {
-        'total_messages': 0,
-        'ai_responses': 0,
-        'tottal_conversations': 0,
+    using = {
+        'user_messages': user_messages,
+        'ai_replies': ai_replies,
+        'conversations': conversations.count(),
+        'unique_users': conversations.values('user_id').distinct().count(),
     }
     
     context = {
         'page': page,
-        'stats': stats,
+        'using': using,
         'max_system_prompt_length': settings.PLANS[plan]['max_system_prompt_length'],
+        'conversations':  paginator.get_page(page_number),
     }
     
     return render(request, 'core/page.html', context)
 
+@login_required
+def delete_conversation(request, page_id, conversation_id):
+    conversation = get_object_or_404(Conversation, id=conversation_id, facebook_page__id=page_id, facebook_page__user=request.user)
+    conversation.active = False
+    conversation.save()
+    return redirect(request.GET.get('next', f'/page/{page_id}'))
 
 @login_required
 @require_POST
@@ -130,7 +139,9 @@ def page_toggle(request, page_id):
     """Toggle page enabled status"""
     page = get_object_or_404(FacebookPage, id=page_id, user=request.user)
     page.enabled = not page.enabled
-    page.save()    
+    page.save()
+    status = 'enabled' if page.enabled else 'disabled'
+    messages.success(request, f'Page {page.page_name} {status}')
     return redirect(request.GET.get('next', 'dashboard'))
 
 @login_required
@@ -143,41 +154,7 @@ def system_prompt_reset(request, page_id):
 
 @login_required
 @require_POST
-def page_disconnect(request, page_id):
-    """Disconnect a Facebook page"""
+def delete_page(request, page_id):
     page = get_object_or_404(FacebookPage, id=page_id, user=request.user)
-    
-    page_name = page.page_name
-    page.delete()
-    
-    messages.success(request, f'{page_name} has been disconnected')
-    return redirect('pages_list')
-
-
-@login_required
-def subscription(request):
-    """View subscription details"""
-    subscription = request.user.subscription
-    
-    context = {
-        'subscription': subscription,
-    }
-    
-    return render(request, 'subscription/detail.html', context)
-
-
-@login_required
-def upgrade_plan(request):
-    """Upgrade subscription plan"""
-    if request.method == 'POST':
-        plan = request.POST.get('plan')
-        
-        # Update subscription
-        subscription = request.user.subscription
-        subscription.plan = plan
-        subscription.save()
-        
-        messages.success(request, f'Successfully upgraded to {plan} plan')
-        return redirect('subscription')
-    
-    return render(request, 'subscription/upgrade.html')
+    page.active = False
+    return redirect('dashboard')

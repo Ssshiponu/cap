@@ -3,7 +3,7 @@
 {% block title %}{{ page.page_name }} - Page | Chat Autopilot{% endblock title %}
 
 {% block content %}
-<div class="p-6">
+<div class="p-6  max-w-4xl">
     <div class="flex items-center gap-3">
         <img class="w-11 h-11 rounded-full" src="{{ page.picture }}" alt="">
         <div class="flex flex-col">
@@ -11,7 +11,98 @@
             <p class="text-sm text-neutral-600 font-medium">{{ page.page_category|default:"" }}</p>
         </div>
     </div>
-    <hr class="mb-8">
+    <hr class="mb-6">
+
+    <div class="mb-12">
+
+        <div class="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-2xl text-neutral-700 text-sm">
+            <div class="p-4">
+                <p class="text-4xl font-semibold">{{ using.user_messages }}</p>
+                <p>User Messages</p>
+            </div>
+            <div class="p-4 not-sm:border-none">
+                <p class="text-4xl font-semibold">{{ using.ai_replies }}</p>
+                <p>AI Replies</p>
+            </div>
+            <div class="p-4">
+                <p class="text-4xl font-semibold">{{ using.conversations }}</p>
+                <p>Conversations</p>
+            </div>
+            <div class="p-4">
+                <p class="text-4xl font-semibold">{{ using.unique_users }}</p>
+                <p>Unique Users</p>
+            </div>
+            
+        </div>
+
+
+    <div class="mb-12">
+        <h2 class="h2">Conversations</h2>
+        <p class="info mb-3">All conversations</p>
+        <div class=" max-w-4xl border border-neutral-200 overflow-y-auto rounded-lg">
+            <table class="w-full table-auto border-collapse">
+                <thead class="bg-neutral-100 text-left text-sm font-medium text-neutral-700">
+                    <tr>
+                        <th class="px-4 py-3">#</th>
+                        <th class="px-4 py-3">Last Message</th>
+                        <th class="px-4 py-3">User ID</th>
+                        <th class="px-4 py-3">Messages</th>
+                        <th class="px-4 py-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-neutral-200">
+                    {% for c in conversations %}
+                    <tr class="hover:bg-neutral-50">
+                        <td class="px-4 py-2.5 text-sm text-neutral-700" x-text="{{ forloop.counter }} + {{ conversations.paginator.per_page }} * ({{ conversations.number }} - 1)"></td>
+                        <td class="px-4 py-2.5">
+                            <p class="line-clamp-1 text-sm text-neutral-600">{{ c.messages.first.content }}</p>
+                        </td>
+                        <td class="px-4 py-2.5">
+                            <a target="_blank" href="https://facebook.com/profile.php?id={{ c.user_id }}" class="link">
+                                {{ c.user_id }}
+                            </a>
+                        </td>
+                        <td class="px-4 py-2.5 text-sm text-neutral-700">{{ c.messages.count|default:0 }}</td>
+                        <td class="px-4 py-2.5"><a href="{% url "delete_conversation" page_id=page.id conversation_id=c.id %}" class="link text-red-600">Delete</a></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td class="px-4 text-center col-span-4 py-4 text-sm text-neutral-700" colspan="5">No conversations</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="flex items-center justify-between w-full h-24 max-w-4xl">
+            <p class="pl-2 text-sm text-neutral-700">Showing {% if conversations.next_page_number > 1 %}<span class="font-medium">{{ conversations.number }} </span> to <span class="font-medium">{{ conversations.paginator.per_page }}</span> of <span class="font-medium">{{ conversations.paginator.count }}</span>{% else %}<span class="font-medium">{{ conversations.paginator.count }}</span>{% endif %} Conversations</p>
+            <nav>
+                <ul class="flex items-center text-sm leading-tight bg-white border divide-x rounded-lg h-9 text-neutral-500 divide-neutral-200 border-neutral-200">
+                    
+                    <li class="h-full">
+                        <a href="{% if conversations.has_previous %}?page={{ conversations.previous_page_number }}{% else %}#{% endif %}" class="relative inline-flex items-center h-full px-3 ml-0 rounded-l group hover:text-neutral-900">
+                            <span>Previous</span>
+                        </a>
+                    </li>
+
+                        
+                        <li class="hidden h-full md:block">
+                            <a href="#" class="relative inline-flex items-center h-full px-3 text-neutral-900 group bg-neutral-50">
+                                <span>{{ conversations.number }}</span>
+                                <span class="box-content absolute bottom-0 left-0 w-full h-px -mx-px translate-y-px border-l border-r bg-neutral-900 border-neutral-900"></span>
+                            </a>
+                        </li>
+                        
+                        
+                    <li class="h-full">
+                        <a href="{% if conversations.has_next %}?page={{ conversations.next_page_number }}{% else %}#{% endif %}" class="relative inline-flex items-center h-full px-3 rounded-r group hover:text-neutral-900">
+                            <span>Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+    </div>
 
     <form x-data="{
         system_prompt: '{{ page.system_prompt|escapejs }}',
@@ -19,8 +110,9 @@
      action="" method="post" class="flex flex-col gap-6">
         {% csrf_token %}
         <div class="flex flex-col gap-3">
-            <h2 class="h2">System Instructions</h2>
-            <p class="info">Base instructions for AI behavior</p>
+            <h2 class="h2">System Prompt</h2>
+            <p class="info">Base instructions for AI behavior.</p>
+            <p class="info"> Edit this text elsewhere, then paste it here.</p>
             <textarea x-model="system_prompt" name="system_prompt" id="system_prompt" rows="10" class="input w-full"></textarea>
             <div class="flex justify-between gap-2">
                 <a @click="alert('Are you sure you want to reset your system prompt?'); window.location.href='{% url 'system_prompt_reset' page.id %}'" class="btn">Reset</a>

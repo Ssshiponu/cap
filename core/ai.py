@@ -36,8 +36,7 @@ RESPONSE FORMAT EXAMPLES:
 def system_prompt(page_id: int) -> str:
     page=FacebookPage.objects.filter(id=page_id).first()
     extended_prompt = page.system_prompt
-    business_context = page.business_context
-    prompt = f'base_system_instructions: (((\n{base_prompt}\n)))\n\nextended_system_instructions: (((\n{extended_prompt}\n)))\n\nbusiness_context: (((\n{business_context}\n)))'
+    prompt = f'base_system_instructions: (((\n{base_prompt}\n)))\n\nextended_system_instructions: (((\n{extended_prompt}\n)))'
     return prompt
 
 client = genai.Client()

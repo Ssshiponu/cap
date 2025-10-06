@@ -25,7 +25,7 @@ class Subscription(models.Model):
     PLAN_CHOICES = [
         ('free', 'Free'),
         ('business', 'Business'),
-        ('enterprise', 'Enterprise'),
+        ('custom', 'Custom'),
     ]
     
     STATUS_CHOICES = [
@@ -43,7 +43,7 @@ class Subscription(models.Model):
     # Billing
       
     start_date = models.DateTimeField(default=timezone.now)
-    end_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateTimeField(blank=True, null=True, default=timezone.now() + timezone.timedelta(days=7))
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -53,6 +53,9 @@ class Subscription(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.plan}"
+    
+    def days_left(self):
+        return (self.end_date - timezone.now()).days
 
 
 class FacebookPage(models.Model):
@@ -66,6 +69,7 @@ class FacebookPage(models.Model):
 
     id = models.IntegerField(primary_key=True, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='facebook_pages')
+    active = models.BooleanField(default=True)
     
     # Facebook data
     page_name = models.CharField(max_length=255)
@@ -100,6 +104,28 @@ class FacebookPage(models.Model):
 
     def __str__(self):
         return f"{self.page_name} ({self.id})"
+    
+    
+class Notification(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    message = models.TextField()
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'notifications'
+        
+    def __str__(self):
+        return self.message[:50]
+    
+    def mark_as_read(self):
+        self.read = True
+        self.save()
+        
+    def has_notifications(self):
+        return Notification.objects.filter(user=self.user, read=False).exists()
 
 
 

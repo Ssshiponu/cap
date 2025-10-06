@@ -3,12 +3,12 @@ from django.utils.html import format_html
 from .models import Message, Conversation
 
 class ConversationAdmin(admin.ModelAdmin):
-    list_display = ('user_id', 'page_id', 'active', 'updated_at')
-    search_fields = ('user_id', 'page_id')
+    list_display = ('user_id', 'id', 'active', 'updated_at')
+    search_fields = ('user_id', 'id')
     list_editable = ('active',)
     
-    fields = ('user_id', 'page_id', 'render_conversation', 'updated_at', 'created_at')
-    readonly_fields = ('user_id', 'page_id', 'render_conversation', 'updated_at', 'created_at')
+    fields = ('user_id', 'id', 'render_conversation', 'updated_at', 'created_at')
+    readonly_fields = fields
 
     def render_conversation(self, obj):
         conv = obj.messages.all()  # limit for performance

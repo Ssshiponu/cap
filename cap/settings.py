@@ -157,7 +157,7 @@ PLANS = {
     'free': {
         'price': 0,
         'max_page': 1,
-        'max_user': 50,
+        'max_user': '50',
         'max_message': 1000,
         'max_system_prompt_length': 2200,
         'database': 'no',
@@ -177,7 +177,7 @@ PLANS = {
         'price': '2000+',
         'max_page': 10,
         'max_user': 'Unlimited',
-        'max_message': 'Unlimited',
+        'max_message': 220,
         'message_cost': 0.15,
         'max_system_prompt_length': 7000,
         'database': 'yes',
@@ -185,9 +185,9 @@ PLANS = {
 }
 
 COLORS = {
-    "red": "#FF0000",
-    "green": "#00FF00",
     "blue": "#0000FF",
+    "green": "#00FF00",
+    "red": "#FF0000",
     "yellow": "#FFFF00",
     "cyan": "#00FFFF",
     "magenta": "#FF00FF",

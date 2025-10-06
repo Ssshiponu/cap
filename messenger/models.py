@@ -3,8 +3,9 @@ from django.db.models import Q
 from django.contrib.auth.models import User
         
 class Conversation(models.Model):
-    page_id = models.CharField(max_length=100)
+    facebook_page = models.ForeignKey('core.FacebookPage', on_delete=models.SET_NULL, related_name='conversations', null=True)
     user_id = models.CharField(max_length=100)
+    page_id=models.CharField(max_length=100, null=True, blank=True)
     input_tokens = models.IntegerField(default=0)
     output_tokens = models.IntegerField(default=0)
     active = models.BooleanField(default=True)
@@ -12,14 +13,13 @@ class Conversation(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        unique_together = ('page_id', 'user_id')
         verbose_name = "Conversation"
         verbose_name_plural = "Conversations"
         
         ordering = ['-updated_at']
     
     def __str__(self):
-        return f'C: {self.messages.all().first().content[:50]}... {self.page_id} - {self.user_id}'
+        return f'C: {self.messages.all().first().content[:50]}... {self.facebook_page.id} - {self.user_id}'
 
 class Message(models.Model):
     mid = models.CharField(primary_key=True, max_length=100)

@@ -43,7 +43,7 @@
   x-transition:leave-start="opacity-100"
   x-transition:leave-end="opacity-0"
   @click.outside="mobileMenu = false"
-  class="fixed top-22 inset-0 z-50 origin-top lg:hidden w-[calc(100dvw-64px)] max-w-72 p-6 rounded-xl shadow-2xl ml-auto mr-4 h-[calc(100dvh-112px)] border-2 border-neutral-200 bg-white/80 backdrop-blur-sm " x-cloak>
+  class="fixed top-22 inset-0 z-50 origin-top lg:hidden w-[calc(100dvw-64px)] max-w-72 p-6 rounded-xl shadow-2xl ml-auto mr-4 h-[calc(100dvh-112px)] border border-neutral-200 bg-white/80 backdrop-blur-sm " x-cloak>
     <div class="flex flex-col justify-between h-full">
         <div class="flex flex-col gap-3">
             <a href="#hero" class="btn-link">Home</a>
@@ -72,7 +72,7 @@
                 class="not-sm:hidden sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 mx-auto absolute sm:static inset-x-0 top-56 opacity-15 sm:opacity-100 -z-10">
             </lord-icon>
         <div class="flex-1 flex flex-col justify-center gap-6">
-            <p class="text-neutral-700 sm:text-lg md:text-xl font-medium"><span class="text-black font-bold">
+            <p class="text-neutral-900 sm:text-lg md:text-xl font-medium"><span class="text-black font-bold">
                 হ্যাঁ</span> আমাদের তৈরি AI টি আপনার Facebook পেজের সাথে সংযুক্ত করলে আপনার দেওয়া নির্দেশনা এবং তথ্যের ভিত্তিতে মুহূর্তেই Messenger বা Whatsapp এ রিপ্লাই দিতে পারে</p>
             <div class="flex items-center flex-wrap gap-3">
                 <a href="{% url "register" %}" class="btn btn-primary">Try 7 day Free</a>
@@ -139,9 +139,9 @@
 <section class="py-16 sm:py-24 p-6 max-w-4xl mx-auto bg-white">
   <h2 class="h mb-16 text-center">এটা কিভাবে কাজ করে ?</h2>
 
-  <div class="grid grid-cols-5 gap-2 sm:gap-6 gap-y-4 sm:gap-y-8 max-w-2xl mx-auto">
+  <div class="text-neutral-900 grid grid-cols-5 gap-2 sm:gap-6 gap-y-4 sm:gap-y-8 max-w-2xl mx-auto">
       <div class="box center col-span-2">
-        <p class=" text-neutral-800 text-lg font-medium">ইউসার Facebook পেজে মেসেজ পাঠায়</p>
+        <p class="text-lg font-medium">ইউসার Facebook পেজে মেসেজ পাঠায়</p>
       </div>
 
       <div class="center">
@@ -153,7 +153,7 @@
       </div>
 
       <div class="center box col-span-2">
-        <p class="text-neutral-800 text-lg font-medium">Facebook সেই মেসেজ আমাদের AI এর কাছে ফরওয়ার্ড করে দেয়</p>
+        <p class="text-lg font-medium">Facebook সেই মেসেজ আমাদের AI এর কাছে ফরওয়ার্ড করে দেয়</p>
       </div>
 
       <div class="center col-span-2">
@@ -175,7 +175,7 @@
       </div>
 
       <div class="box center col-span-2">
-        <p class=" text-neutral-800 text-lg font-medium">সেই রিপ্লাই facebook কে পাঠায় এবং ফেসবুক ইউজারকে পাঠায়</p>
+        <p class="text-lg font-medium">সেই রিপ্লাই facebook কে পাঠায় এবং ফেসবুক ইউজারকে পাঠায়</p>
       </div>
 
       <div class="center">
@@ -187,7 +187,7 @@
       </div>
 
       <div class="center box col-span-2">
-        <p class="text-neutral-800 text-lg font-medium">আমাদের AI মেসেজটিকে প্রসেস করে এবং একটা রিপ্লাই জেনারেট করে</p>
+        <p class="text-lg font-medium">আমাদের AI মেসেজটিকে প্রসেস করে এবং একটা রিপ্লাই জেনারেট করে</p>
       </div>
   </div>
   <p class="text-neutral-700 text-center mt-16">এই সমস্ত কিছু মাত্র কয়েক সেকেন্ডের মধ্যে হয়</p>
