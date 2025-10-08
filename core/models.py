@@ -2,7 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.conf import settings
 import uuid
+
+from .utils import *
 
 
 class User(AbstractUser):
@@ -12,50 +15,58 @@ class User(AbstractUser):
     username = models.CharField(max_length=100, blank=True, null=True)
     picture_url = models.URLField(blank=True, null=True)
     is_email_verified = models.BooleanField(default=False)
+    
+    credits_available = models.IntegerField(default=0)
+    credits_used = models.IntegerField(default=0)
+    
+    
 
     class Meta:
         db_table = 'users'
 
     def __str__(self):
         return self.email
-
-
-class Subscription(models.Model):
-    """User subscription plans"""
-    PLAN_CHOICES = [
-        ('free', 'Free'),
-        ('business', 'Business'),
-        ('custom', 'Custom'),
-    ]
     
-    STATUS_CHOICES = [
-        ('active', 'Active'),
-        ('cancelled', 'Cancelled'),
-        ('expired', 'Expired'),
-        ('paused', 'Paused'),
-    ]
+    def credits_left(self):
+        return self.credits_available - self.credits_used
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='subscription')
-    plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default='free')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+
+# class Subscription(models.Model):
+#     """User subscription plans"""
+#     PLAN_CHOICES = [
+#         ('free', 'Free'),
+#         ('business', 'Business'),
+#         ('custom', 'Custom'),
+#     ]
     
-    # Billing
+#     STATUS_CHOICES = [
+#         ('active', 'Active'),
+#         ('cancelled', 'Cancelled'),
+#         ('expired', 'Expired'),
+#         ('paused', 'Paused'),
+#     ]
+
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='subscription')
+#     plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default='free')
+#     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+    
+#     # Billing
       
-    start_date = models.DateTimeField(default=timezone.now)
-    end_date = models.DateTimeField(blank=True, null=True, default=timezone.now() + timezone.timedelta(days=7))
+#     start_date = models.DateTimeField(default=timezone.now)
+#     end_date = models.DateTimeField(blank=True, null=True, default=timezone.now() + timezone.timedelta(days=7))
     
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        db_table = 'subscriptions'
+#     class Meta:
+#         db_table = 'subscriptions'
 
-    def __str__(self):
-        return f"{self.user.email} - {self.plan}"
+#     def __str__(self):
+#         return f"{self.user.email} - {self.plan}"
     
-    def days_left(self):
-        return (self.end_date - timezone.now()).days
+#     def days_left(self):
+#         return (self.end_date - timezone.now()).days
 
 
 class FacebookPage(models.Model):
@@ -104,6 +115,9 @@ class FacebookPage(models.Model):
 
     def __str__(self):
         return f"{self.page_name} ({self.id})"
+    
+    def credits_per_reply(self):
+        return settings.CREDITS_PER_REPLY + round(count_tokens(self.system_prompt) * settings.CREDITS_PER_TOKEN)
     
     
 class Notification(models.Model):

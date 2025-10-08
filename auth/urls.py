@@ -12,8 +12,8 @@ urlpatterns = [
    path('reset/done/', views.password_reset_complete, name='password_reset_complete'),
    
    #facebook oauth
-   path('fb-callback/', views.fb_callback, name='fb_callback'),
-   path('fb-login/', views.fb_login, name='fb_login'),
+   path('add-page-callback/', views.add_page_callback, name='add_page_callback'),
+   path('add-page/', views.add_page, name='add_page'),
    
    path('connect-page/', views.connect_page, name="connect_page"),
 ]

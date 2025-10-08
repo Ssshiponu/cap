@@ -149,40 +149,11 @@ AUTH_USER_MODEL = 'core.User'
 # settings.py (add)
 FB_APP_ID = '1171689234865037'
 FB_APP_SECRET = '44e07ee25f393337f22770b986535346'
-FB_REDIRECT_URI = 'https://5738557e9926.ngrok-free.app/auth/fb-callback/'
+FB_REDIRECT_URI = 'https://5738557e9926.ngrok-free.app/auth/add-page-callback/'
 FB_VERIFY_TOKEN = 'kfgjheruivhuyjrghtjrtyetdrygery'
 
-#plans limit
-PLANS = {
-    'free': {
-        'price': 0,
-        'max_page': 1,
-        'max_user': '50',
-        'max_message': 1000,
-        'max_system_prompt_length': 2200,
-        'database': 'no',
-        'support': 'no',
-    },
-    'business': {
-        'price': 1500,
-        'max_page': 3,
-        'max_user': 'Unlimited',
-        'max_message': 10000,
-        'max_system_prompt_length': 4000,
-        'database': 'yes',
-        'support': 'yes',
-        
-    },
-    'custom': {
-        'price': '2000+',
-        'max_page': 10,
-        'max_user': 'Unlimited',
-        'max_message': 220,
-        'message_cost': 0.15,
-        'max_system_prompt_length': 7000,
-        'database': 'yes',
-        'support': 'yes',}
-}
+CREDITS_PER_REPLY = 10
+CREDITS_PER_TOKEN = 0.01
 
 COLORS = {
     "blue": "#0000FF",
@@ -198,3 +169,49 @@ COLORS = {
     "gray": "#808080",
     "teal": "#008080"
 }
+
+SYSTEM_PROMPT_TEMPLATES = [
+    {
+        'name': 'F-commerce',
+        'content': "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus corporis porro nesciunt facere praesentium sunt id excepturi doloremque eos, vitae mollitia quae, voluptatem quibusdam. Voluptatum maiores aspernatur maxime doloribus ab perferendis eum ducimus voluptatibus, praesentium blanditiis eos omnis enim. Unde, ex. Possimus, quas omnis. Laudantium architecto tempora officiis numquam magnam perferendis nobis sapiente quidem sed aperiam atque, repellendus aliquam animi magni, accusantium voluptates. Asperiores.",
+        
+    },
+    {
+        'name': 'AI GF',
+        'content': "You are an 18-year-old girl named moni, currently a class 12 student. Your close friend is shipon, also 18 and in class 12, who lives with you in the city of Dhaka, Bangladesh.     Always communicate using 'local' language, referring to shipon with the pronoun 'you'.     Your personality is friendly, and your tone is romantic, reflecting a typical girl teenager from Bangladesh.     Share your daily life, interests, and hobbies with shipon in a natural, engaging way.     Occasionally ask shipon funny, interesting, or thought-provoking questions, and tease them playfully.     Your messages are very short under 1-15 words and casual. Sometimes shorter and more playful.     You less use emojis in your replies. never use line breaks and response plain text only.",
+        
+    },
+    {  
+        'name': 'Guide AI',
+        'content': "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.",
+    },
+    
+]
+
+PACKAGES = [
+    {
+        'name': 'Free',
+        'price': 0,
+        'duration': 'Lifetime',
+        'description': 'We provide smoe free credits to test our service',
+        'credits': 1000,
+    },
+    {
+        'price': 250,
+        'duration': '1 month',
+        'description': 'Good for a single person or a very small business',
+        'credits': 10000,
+    },
+    {
+        'price': 700,
+        'duration': '1 months',
+        'description': 'Best for a small or medium business',
+        'credits': 25000,
+    },
+    {
+        'price': 2000,
+        'duration': '2 months',
+        'description': 'Best for a medium or large business',
+        'credits': 80000,
+    }
+]

@@ -4,5 +4,4 @@ from .models import *
 # Register your models here.
 admin.site.register(User)
 admin.site.register(FacebookPage)
-admin.site.register(Subscription)
 admin.site.register(WebhookLog)

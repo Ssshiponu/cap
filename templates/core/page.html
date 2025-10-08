@@ -3,126 +3,168 @@
 {% block title %}{{ page.page_name }} - Page | Chat Autopilot{% endblock title %}
 
 {% block content %}
-<div class="p-6  max-w-4xl">
-    <div class="flex items-center gap-3">
-        <img class="w-11 h-11 rounded-full" src="{{ page.picture }}" alt="">
-        <div class="flex flex-col">
-            <h1 class="text xl text-neutral-900 font-semibold">{{ page.page_name }}</h1>
-            <p class="text-sm text-neutral-600 font-medium">{{ page.page_category|default:"" }}</p>
+<div class="p-6  max-w-4xl" x-data="{ modal: false }">
+    <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-3">
+            <img class="w-11 h-11 rounded-full" src="{{ page.picture }}" alt="">
+            <div class="flex flex-col">
+                <h1 class="text xl text-neutral-900 font-semibold line-clamp-1">{{ page.page_name }}</h1>
+                <p class="text-sm text-neutral-600 font-medium line-clamp-1">{{ page.credits_per_reply }} Credits/reply</p>
+            </div>
         </div>
+        <div class="flex items-center gap-3">
+            <form action="{% url "page_toggle" page.id %}" method="POST"  x-tooltip="Turn on/off">
+                {% csrf_token %}
+                <div x-data="{ switchOn: {% if page.enabled %} true {% else %} false {% endif %} }" class="flex items-center justify-center space-x-3">
+                    <input id="thisId" type="checkbox" name="switch" class="hidden" :checked="switchOn">
+
+                    <button
+                        x-ref="switchButton"
+                        type="submit" 
+                        @click="switchOn = ! switchOn"
+                        :class="switchOn ? 'bg-neutral-900' : 'bg-neutral-200'" 
+                        class="relative inline-flex h-4 py-[3px] ml-4 rounded-full focus:outline-none w-7"
+                        x-cloak>
+                        <span :class="switchOn ? 'translate-x-[15px]' : 'translate-x-[3px]'" class="w-[10px] h-[10px] duration-200 ease-in-out bg-white rounded-full"></span>
+                    </button>
+
+                </div>
+            </form>
+            <div x-tooltip.bottom="Conversations" @click="modal = ! modal" class="btn-link p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-messages-square-icon lucide-messages-square"><path d="M16 10a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 14.286V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/><path d="M20 9a2 2 0 0 1 2 2v10.286a.71.71 0 0 1-1.212.502l-2.202-2.202A2 2 0 0 0 17.172 19H10a2 2 0 0 1-2-2v-1"/></svg>
+            </div>
+        </div>
+
     </div>
+    
     <hr class="mb-6">
 
     <div class="mb-12">
 
-        <div class="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-2xl text-neutral-700 text-sm">
-            <div class="p-4">
-                <p class="text-4xl font-semibold">{{ using.user_messages }}</p>
-                <p>User Messages</p>
+        <div class="max-w-xl">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 p-4">
+                <div class="flex flex-col items-center">
+                    <p class="text-3xl font-bold">{{ using.user_messages }}</p>
+                    <p class="mt-1 text-xs text-neutral-600">User Messages</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <p class="text-3xl font-bold">{{ using.ai_replies }}</p>
+                    <p class="mt-1 text-xs text-neutral-600">AI Replies</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <p class="text-3xl font-bold">{{ using.conversations }}</p>
+                    <p class="mt-1 text-xs text-neutral-600">Conversations</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <p class="text-3xl font-bold">{{ using.unique_users }}</p>
+                    <p class="mt-1 text-xs text-neutral-600">Unique Users</p>
+                </div>
             </div>
-            <div class="p-4 not-sm:border-none">
-                <p class="text-4xl font-semibold">{{ using.ai_replies }}</p>
-                <p>AI Replies</p>
-            </div>
-            <div class="p-4">
-                <p class="text-4xl font-semibold">{{ using.conversations }}</p>
-                <p>Conversations</p>
-            </div>
-            <div class="p-4">
-                <p class="text-4xl font-semibold">{{ using.unique_users }}</p>
-                <p>Unique Users</p>
-            </div>
-            
         </div>
 
-
-    <div class="mb-12">
-        <h2 class="h2">Conversations</h2>
-        <p class="info mb-3">All conversations</p>
-        <div class=" max-w-4xl border border-neutral-200 overflow-y-auto rounded-lg">
-            <table class="w-full table-auto border-collapse">
-                <thead class="bg-neutral-100 text-left text-sm font-medium text-neutral-700">
-                    <tr>
-                        <th class="px-4 py-3">#</th>
-                        <th class="px-4 py-3">Last Message</th>
-                        <th class="px-4 py-3">User ID</th>
-                        <th class="px-4 py-3">Messages</th>
-                        <th class="px-4 py-3">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-neutral-200">
-                    {% for c in conversations %}
-                    <tr class="hover:bg-neutral-50">
-                        <td class="px-4 py-2.5 text-sm text-neutral-700" x-text="{{ forloop.counter }} + {{ conversations.paginator.per_page }} * ({{ conversations.number }} - 1)"></td>
-                        <td class="px-4 py-2.5">
-                            <p class="line-clamp-1 text-sm text-neutral-600">{{ c.messages.first.content }}</p>
-                        </td>
-                        <td class="px-4 py-2.5">
-                            <a target="_blank" href="https://facebook.com/profile.php?id={{ c.user_id }}" class="link">
-                                {{ c.user_id }}
-                            </a>
-                        </td>
-                        <td class="px-4 py-2.5 text-sm text-neutral-700">{{ c.messages.count|default:0 }}</td>
-                        <td class="px-4 py-2.5"><a href="{% url "delete_conversation" page_id=page.id conversation_id=c.id %}" class="link text-red-600">Delete</a></td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td class="px-4 text-center col-span-4 py-4 text-sm text-neutral-700" colspan="5">No conversations</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="flex items-center justify-between w-full h-24 max-w-4xl">
-            <p class="pl-2 text-sm text-neutral-700">Showing {% if conversations.next_page_number > 1 %}<span class="font-medium">{{ conversations.number }} </span> to <span class="font-medium">{{ conversations.paginator.per_page }}</span> of <span class="font-medium">{{ conversations.paginator.count }}</span>{% else %}<span class="font-medium">{{ conversations.paginator.count }}</span>{% endif %} Conversations</p>
-            <nav>
-                <ul class="flex items-center text-sm leading-tight bg-white border divide-x rounded-lg h-9 text-neutral-500 divide-neutral-200 border-neutral-200">
-                    
-                    <li class="h-full">
-                        <a href="{% if conversations.has_previous %}?page={{ conversations.previous_page_number }}{% else %}#{% endif %}" class="relative inline-flex items-center h-full px-3 ml-0 rounded-l group hover:text-neutral-900">
-                            <span>Previous</span>
-                        </a>
-                    </li>
-
+        <div x-show="modal" class="overlay" x-cloak></div>
+        <div x-show="modal" @click.outside="modal = false" class="modal" x-transition x-cloak>
+            <h2 class="h2 p-2">Conversations</h2>
+            <div class="info text-xs ml-2 mb-4">Delete conversation if you want ai to forget about the chat history</div>
+            <div class=" max-w-4xl border border-neutral-200 overflow-y-auto rounded-lg">
+                <table class="w-full table-auto border-collapse">
+                    <thead class="bg-white text-left text-sm font-medium text-neutral-700">
+                        <tr>
+                            <th class="px-4 py-3">#</th>
+                            <th class="px-4 py-3">Last Message</th>
+                            <th class="px-4 py-3">User ID</th>
+                            <th class="px-4 py-3">Messages</th>
+                            <th class="px-4 py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-neutral-200">
+                        {% for c in conversations %}
+                        <tr class="hover:bg-neutral-50">
+                            <td class="px-4 py-2.5 text-sm text-neutral-700" x-text="{{ forloop.counter }} + {{ conversations.paginator.per_page }} * ({{ conversations.number }} - 1)"></td>
+                            <td class="px-4 py-2.5">
+                                <p class="line-clamp-1 text-sm text-neutral-600">{{ c.messages.first.content|truncatechars:30 }}</p>
+                            </td>
+                            <td class="px-4 py-2.5">
+                                <a target="_blank" href="https://facebook.com/profile.php?id={{ c.user_id }}" class="link">
+                                    {{ c.user_id }}
+                                </a>
+                            </td>
+                            <td class="px-4 py-2.5 text-sm text-neutral-700">{{ c.messages.count|default:0 }}</td>
+                            <td class="px-4 py-2.5"><a href="{% url "delete_conversation" page_id=page.id conversation_id=c.id %}" class="link text-red-600">Delete</a></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td class="px-4 text-center col-span-4 py-4 text-sm text-neutral-700" colspan="5">No conversations</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex items-center justify-between w-full mt-4 max-w-4xl">
+                <p class="pl-2 text-sm text-neutral-700">{% if conversations.next_page_number > 1 %}<span class="font-medium">{{ conversations.number }} </span> to <span class="font-medium">{{ conversations.paginator.per_page }}</span> of <span class="font-medium">{{ conversations.paginator.count }}</span>{% else %}<span class="font-medium">{{ conversations.paginator.count }}</span>{% endif %} Conversations</p>
+                <nav>
+                    <ul class="flex items-center text-sm leading-tight bg-white border divide-x rounded-lg h-9 text-neutral-500 divide-neutral-200 border-neutral-200">
                         
-                        <li class="hidden h-full md:block">
-                            <a href="#" class="relative inline-flex items-center h-full px-3 text-neutral-900 group bg-neutral-50">
-                                <span>{{ conversations.number }}</span>
-                                <span class="box-content absolute bottom-0 left-0 w-full h-px -mx-px translate-y-px border-l border-r bg-neutral-900 border-neutral-900"></span>
+                        <li class="h-full">
+                            <a href="{% if conversations.has_previous %}?page={{ conversations.previous_page_number }}{% else %}#{% endif %}" class="relative inline-flex items-center h-full px-3 ml-0 rounded-l group hover:text-neutral-900">
+                                <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left-icon lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg></span>
                             </a>
                         </li>
-                        
-                        
-                    <li class="h-full">
-                        <a href="{% if conversations.has_next %}?page={{ conversations.next_page_number }}{% else %}#{% endif %}" class="relative inline-flex items-center h-full px-3 rounded-r group hover:text-neutral-900">
-                            <span>Next</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+
+                            
+                            <li class="hidden h-full md:block">
+                                <a href="#" class="relative inline-flex items-center h-full px-3 text-neutral-900 group bg-neutral-50">
+                                    <span>{{ conversations.number }}</span>
+                                    <span class="box-content absolute bottom-0 left-0 w-full h-px -mx-px translate-y-px border-l border-r bg-neutral-900 border-neutral-900"></span>
+                                </a>
+                            </li>
+                            
+                            
+                        <li class="h-full">
+                            <a href="{% if conversations.has_next %}?page={{ conversations.next_page_number }}{% else %}#{% endif %}" class="relative inline-flex items-center h-full px-3 rounded-r group hover:text-neutral-900">
+                                <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg></span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
         </div>
+
+        <hr class="my-6">
+
+
+        <form id="settings" x-data="{
+            system_prompt: '{{ page.system_prompt|escapejs }}',
+        }"
+        action="" method="post" class="flex flex-col gap-6">
+            {% csrf_token %}
+            <div class="flex flex-col gap-3">
+                <h2 class="h2">System Prompt</h2>
+                <div>
+                    <p class="text-neutral-800">Customize AI behavior or chose a <a href="{% url 'templates' %}" class="link">Templates</a></p>
+                    <p class="info text-xs py-0"> Edit this text elsewhere, then paste it here.</p>
+                </div>
+                <textarea x-model="system_prompt" name="system_prompt" id="system_prompt" rows="10" class="input w-full p-3"></textarea>
+                <div class="flex justify-between gap-2">
+                <p class="text-neutral-600"><span x-text="{{ settings.CREDITS_PER_REPLY }} + Math.round(countTokens(system_prompt) * {{ settings.CREDITS_PER_TOKEN }})"></span>  Credits/reply</p>
+
+                    <button type="submit" class="btn btn-primary">Save</button>
+
+                </div>
+            </div>
+        </form>
+
+        <hr class="my-6">
+        <h2 class="h2 mb-2">Dnager Zone</h2>
+        <div class="info mb-4">Deleting this page all of its data will be lost.</div>
+        <form action="{% url "delete_page" page.id %}" method="POST" onsubmit="return confirm('Are you sure you want to delete this page? This action cannot be undone.');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger flex items-center gap-2">
+                Delete Page</button>
+        </form>
 
     </div>
-
-    <form x-data="{
-        system_prompt: '{{ page.system_prompt|escapejs }}',
-    }"
-     action="" method="post" class="flex flex-col gap-6">
-        {% csrf_token %}
-        <div class="flex flex-col gap-3">
-            <h2 class="h2">System Prompt</h2>
-            <p class="info">Base instructions for AI behavior.</p>
-            <p class="info"> Edit this text elsewhere, then paste it here.</p>
-            <textarea x-model="system_prompt" name="system_prompt" id="system_prompt" rows="10" class="input w-full"></textarea>
-            <div class="flex justify-between gap-2">
-                <a @click="alert('Are you sure you want to reset your system prompt?'); window.location.href='{% url 'system_prompt_reset' page.id %}'" class="btn">Reset</a>
-                <p class="text-neutral-600"><span x-text="system_prompt.length"></span>/ {{ max_system_prompt_length }}</p>
-            </div>
-        </div>
-
-        <div class="flex items-center justify-end gap-2 mt-4">
-            <button type="submit" class="btn btn-primary">Save</button>
-        </div>
-    </form>
 </div>
+
 {% endblock content %}

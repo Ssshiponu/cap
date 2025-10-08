@@ -16,7 +16,7 @@ import hashlib
 import json
 
 from .models import (
-    User, FacebookPage, Subscription, WebhookLog
+    User, FacebookPage
 )
 
 from messenger.models import (
@@ -26,59 +26,31 @@ from messenger.models import (
 from .utils import *
 
 def index(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
     
     context = {
-        'plans': settings.PLANS
+        'packages': settings.PACKAGES
     }
     return render(request, 'core/index.html', context)
+
+def templates(request):
+    
+    context = {
+        'templates': settings.SYSTEM_PROMPT_TEMPLATES
+    }
+    return render(request, 'core/templates.html', context)
 
 @login_required
 def dashboard(request):
     """Main dashboard"""
     user = request.user
-    subscription = user.subscription
+    pages = FacebookPage.objects.filter(user=user, active=True)
     
-    if request.GET.get('using', '') == 'last-month':
-        if subscription.plan == 'free':
-            return redirect('/dashboard/?using=last-week')
-    
-    pages = FacebookPage.objects.filter(user=user)
-    
-    using_days = request.GET.get('using')
-    
-    if using_days == 'today': day = 1
-    elif using_days == 'last-week': day = 7
-    elif using_days == 'last-month': day = 30
-    else: day = 30
-        
-        
-    colors = list(settings.COLORS.keys())
-    using = []
-    for index, page in enumerate(pages):
-        using.append({
-            'name': page.page_name,
-            'conversations': Conversation.objects.filter(facebook_page=page, updated_at__gte=days_ago(day)).count(),
-            'ai_replies': Message.objects.filter(conversation__facebook_page=page, role='assistant', created_at__gte=days_ago(day)).count(),
-            'messages': Message.objects.filter(conversation__facebook_page=page, created_at__gte=days_ago(day)).count(),
-            'color': colors[index],
-        })
-    ai_replies_limit = settings.PLANS[subscription.plan]['max_message']
-    
-    total_ai_replies = sum([i['ai_replies'] for i in using])
-    for i, page in enumerate(using):
-        using[i]['percentage'] = round((using[i]['ai_replies'] / ai_replies_limit) * 100, 1)
-        
-    remaining_using = 100 - sum([i['percentage'] for i in using])
 
     
     context = {
         'pages': pages,
-        'subscription': subscription,
-        'using': sorted(using, key=lambda k: k['percentage'], reverse=True),
-        'remaining_using': remaining_using,
-        
-        'total_ai_replies': total_ai_replies,
-        'ai_replies_limit': ai_replies_limit,
         }
     
     return render(request, 'core/dashboard.html', context)
@@ -88,7 +60,6 @@ def dashboard(request):
 def page(request, page_id):
     """View single page details"""
     page = get_object_or_404(FacebookPage, id=page_id, user=request.user)
-    plan = request.user.subscription.plan
     conversations = Conversation.objects.filter(facebook_page=page, updated_at__gte=days_ago(30)).order_by('-updated_at')
     
     user_messages = 0
@@ -120,8 +91,8 @@ def page(request, page_id):
     context = {
         'page': page,
         'using': using,
-        'max_system_prompt_length': settings.PLANS[plan]['max_system_prompt_length'],
         'conversations':  paginator.get_page(page_number),
+        'settings': settings,
     }
     
     return render(request, 'core/page.html', context)
@@ -145,16 +116,14 @@ def page_toggle(request, page_id):
     return redirect(request.GET.get('next', 'dashboard'))
 
 @login_required
-def system_prompt_reset(request, page_id):
-    page = get_object_or_404(FacebookPage, id=page_id, user=request.user)
-    page.system_prompt = 'You are an helpful ai bot in messenger'
-    page.save()
-    return redirect(request.GET.get('next', f'/page/{page_id}'))
-
-
-@login_required
 @require_POST
 def delete_page(request, page_id):
     page = get_object_or_404(FacebookPage, id=page_id, user=request.user)
+    conversations = Conversation.objects.filter(facebook_page=page)
     page.active = False
+    page.save()
+    
+    for c in conversations:
+        c.active = False
+        c.save()
     return redirect('dashboard')

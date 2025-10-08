@@ -195,71 +195,32 @@
 
 
 <section id="pricing" class="py-16 sm:py-22 bg-neutral-50 flex flex-col items-center" arial-label="Pricing">
-    <h2 class="h mb-16">দাম কত ?</h2>
-    <div class="grid grid-cols-1 lg:grid-cols-3 max-w-6xl mx-auto">
-       <div class="transition-border p-6 min-w-60 rounded-xl">
-          <div class="flex flex-col items-center gap-4">
-            <h3 class="h">Free</h3>
-            <div class="flex items-center gap-2">
-              <span class="text-2xl font-bold">৳{{ plans.free.price }}</span>
-              <span class="text-sm text-neutral-600 font-medium"> 7 days trial</span>
+    <h2 class="h mb-12">দাম কত ?</h2>
+    <div class="flex items-center gap-2 mb-4 text-neutral-800">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap-icon lucide-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+        <p class="text-lg font-medium">10 Credits = 1 Reply</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mx-6">
+        {% for p in packages %}
+            <div class="border border-neutral-200 w-full max-w-96 bg-white hover:border-neutral-400 transition-colors p-4 rounded-xl">
+              <div class="flex items-center justify-between gap-2">
+                  <h3 class="text-2xl font-bold">{% if p.price == 0 %} Free {% else %} ৳{{ p.price }}{% endif %} </h3>
+                  <span class="text-neutral-700 text-sm py-1 px-2.5 bg-neutral-200 rounded-full font-medium text-nowrap">{{ p.duration }}</span>
+              </div>
+              <div class="py-2">
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap-icon lucide-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+                    <p class="text-lg font-medium">{{ p.credits }} Credits</p>
+                </div>
+                
+                <p class="text-xs">{{ p.description }}</p>
+              </div>
+              <div class="flex justify-end">
+                <button class="btn hover:bg-green-50 py-1 px-2.5">{% if p.price == 0 %} Claim {% else %} Buy {% endif %} </button>
+
+              </div>
             </div>
-          </div>
-          <div class="mt-6">
-            <ul class="features flex flex-col gap-2 text-neutral-700 font-medium">
-              <li><span class="font-semibold text-black">{{ plans.free.max_message }}</span> replies 7 days</li>
-              <li><span class="font-semibold text-black">{{ plans.free.max_user }}</span> maximum users</li>
-              <li><span class="font-semibold text-black">{{ plans.free.max_system_prompt_length }}</span> charecter of system prompt</li>
-              <li {{ plans.free.database }}>Connect website/database</li>
-              <li {{ plans.free.support }}>Free support</li>
-            </ul>
-          </div>
-          <div class="mt-8 flex justify-center">
-            <a href="{% url "register" %}" class="btn">Start Free Trial</a>
-          </div>
-       </div>
-        <div class="bg-white z-10 border-neutral-400 hover:border-black transition-border p-6 -mx-2 -my-2 -sm:my-3  min-w-60 rounded-xl">
-          <div class="flex flex-col items-center gap-4">
-            <h3 class="h">Business</h3>
-            <div class="flex items-center gap-2">
-              <span class="text-2xl font-bold">৳{{ plans.business.price }}</span>
-              <span class="text-sm text-neutral-600 font-medium"> / month</span>
-            </div>
-          </div>
-          <div class="mt-6">
-            <ul class="features flex flex-col gap-2 text-neutral-700 font-medium">
-              <li><span class="font-semibold text-black">{{ plans.business.max_message }}</span> replies per month</li>
-              <li><span class="font-semibold text-black">{{ plans.business.max_user }}</span> users</li>
-              <li><span class="font-semibold text-black">{{ plans.business.max_system_prompt_length }}</span> charecter of system prompt</li>
-              <li {{ plans.business.database }}>Connect website/database</li>
-              <li {{ plans.business.support }}>Free support</li>
-            </ul>
-          </div>
-          <div class="mt-10 flex justify-center">
-            <a href="{% url "register" %}" class="btn btn-primary">Chose Plan</a>
-          </div>
-       </div>
-        <div class="transition-border p-6 min-w-60 rounded-xl">
-          <div class="flex flex-col items-center gap-4">
-            <h3 class="h">Custom</h3>
-            <div class="flex items-center gap-2">
-              <span class="text-2xl font-bold">৳{{ plans.custom.price }}</span>
-              <span class="text-sm text-neutral-600 font-medium"> / month</span>
-            </div>
-          </div>
-          <div class="mt-6">
-            <ul class="features flex flex-col gap-2 text-neutral-700 font-medium">
-              <li><span class="font-semibold text-black">{{ plans.custom.max_message }}, ৳{{ plans.custom.message_cost }}</span> per replies</li>
-              <li><span class="font-semibold text-black">{{ plans.custom.max_user }}</span> users</li>
-              <li><span class="font-semibold text-black">{{ plans.custom.max_system_prompt_length }}</span> Charecter of system prompt</li>
-              <li {{ plans.custom.database }}>Connect website/database</li>
-              <li {{ plans.custom.support }}>Free support</li>
-            </ul>
-          </div>
-          <div class="mt-8 flex justify-center">
-            <a href="{% url "register" %}" class="btn">Lets Talk</a>
-          </div>
-       </div>
+        {% endfor %}
     </div>
     <p class="text-neutral-700 text-center mt-16">কোনটি পছন্দ হয়েছে ? কোনটি না হলে আমাদের সাথে <a class="link" href="#">যোগাযোগ করুন</a></p>
 </section>

@@ -22,7 +22,7 @@ window.addEventListener('online', () => {
 
 <div x-data="main()" class="h-dvh flex flex-col">
     <header class="bg-white border-b border-neutral-200 z-20">
-        <div class="flex items-center justify-between h-full py-2 px-4 mx-auto">
+        <div class="flex items-center justify-between h-full py-3 px-4 mx-auto">
 
 
             <div class="flex gap-2 md:gap-3">
@@ -33,10 +33,10 @@ window.addEventListener('online', () => {
             </div>
 
             <div class="flex gap-3 items-center">
-                <nav class="hidden md:block">
+                <nav>
                     <ul class="flex items-center gap-1">
 
-                        <li><a href="#" class="btn-link">
+                        <li><a href="#"  class="hidden sm:flex btn-link">
                             <lord-icon
                                 src="https://cdn.lordicon.com/biqqsrac.json"
                                 trigger="hover"
@@ -91,16 +91,11 @@ window.addEventListener('online', () => {
                             <p class="font-semibold">{{ user.first_name }} </p>
                             <p class="text-sm text-neutral-600">{{ user.email }}</p>
                             <div class="mt-2 flex items-center gap-2">
-                                {% if user.subscription.plan == 'free' %}
-                                    <p class="text text-yellow-600">Free plan</p> <span class="text-sm text-neutral-600">{{ user.subscription.days_left }} days left</span>
-                                {% elif user.subscription.plan == 'business' %}
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="stroke-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check-icon lucide-circle-check"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-                                    <p class="text text-blue-600">Business plan</p> <span class="text-sm text-neutral-600">{{ user.subscription.days_left }} days left</span>
-                                    
-                                {% elif user.subscription.plan == 'custom' %}
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="stroke-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tool-case-icon lucide-tool-case"><path d="M10 15h4"/><path d="m14.817 10.995-.971-1.45 1.034-1.232a2 2 0 0 0-2.025-3.238l-1.82.364L9.91 3.885a2 2 0 0 0-3.625.748L6.141 6.55l-1.725.426a2 2 0 0 0-.19 3.756l.657.27"/><path d="m18.822 10.995 2.26-5.38a1 1 0 0 0-.557-1.318L16.954 2.9a1 1 0 0 0-1.281.533l-.924 2.122"/><path d="M4 12.006A1 1 0 0 1 4.994 11H19a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/></svg>
-                                    <p class="text text-blue-600">Custom plan</p> <span class="text-sm text-neutral-600">{{ user.subscription.days_left }} days left</span>
-
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="stroke-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-star-icon lucide-circle-star"><path d="M11.051 7.616a1 1 0 0 1 1.909.024l.737 1.452a1 1 0 0 0 .737.535l1.634.256a1 1 0 0 1 .588 1.806l-1.172 1.168a1 1 0 0 0-.282.866l.259 1.613a1 1 0 0 1-1.541 1.134l-1.465-.75a1 1 0 0 0-.912 0l-1.465.75a1 1 0 0 1-1.539-1.133l.258-1.613a1 1 0 0 0-.282-.867l-1.156-1.152a1 1 0 0 1 .572-1.822l1.633-.256a1 1 0 0 0 .737-.535z"/><circle cx="12" cy="12" r="10"/></svg>
+                                {% if user.credits_left == 0 %}
+                                <p class="text-red-600 text-sm">No Credits</p>
+                                {% else %}
+                                <p class="text-blue-600 text-sm">{{ user.credits_left }} Cradits</p>
                                 {% endif %}
                             </div>
                         </div>
@@ -134,55 +129,62 @@ window.addEventListener('online', () => {
     <div class="flex-1 flex transition-all">
         <div x-show="sidebar" @click="sidebar = false" class="lg:hidden absolute z-1 inset-0 bg-white/50 backdrop-blur-xs" x-transition style="display: none;"></div>
         <aside x-show="sidebar"
-        class="origin-left absolute pt-14 lg:pt-4 lg:static inset-y-0 left-0 overflow-hidden bg-white border-r border-neutral-200 w-60 h-full z-2 transition-transform duration-300 ease-in-out"
-        x-transition:enter="ease-out duration-200"
-        x-transition:enter-start="scale-x-0"
-        x-transition:enter-end="scale-x-100"
-        x-transition:leave="ease-in duration-200"
-        x-transition:leave-start="scale-x-100"
-        x-transition:leave-end="scale-x-0"
-        x-cloak>
-        <div class="p-4">
-            <div class="flex flex-col gap-4">
-                <a href="/dashboard/" class="btn-link  {% if request.path == '/dashboard/' %} bg-neutral-100 {% endif %}">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/oeotfwsx.json"
-                        trigger="hover"
-                        style="width:20px;height:20px">
-                    </lord-icon>
-                    Home
-                </a>
-                <a href="/settings/" class="btn-link {% if request.path == '/settings/' %} bg-neutral-100 {% endif %}">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/asyunleq.json"
-                        trigger="hover"
-                        style="width:20px;height:20px">
-                    </lord-icon>
-                    Settings
-                </a>
-                <a href="/help/" class="btn-link {% if request.path == '/help/' %} bg-neutral-100 {% endif %}">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/biqqsrac.json"
-                        trigger="hover"
-                        style="width:20px;height:20px">
-                    </lord-icon>
-                    Get Help
-                </a>
+            class="origin-left absolute pt-14 lg:pt-4 lg:static inset-y-0 left-0 overflow-hidden bg-white border-r border-neutral-200 w-60 h-full z-2 transition-transform duration-300 ease-in-out"
+            x-transition:enter="ease-out duration-200"
+            x-transition:enter-start="scale-x-0"
+            x-transition:enter-end="scale-x-100"
+            x-transition:leave="ease-in duration-200"
+            x-transition:leave-start="scale-x-100"
+            x-transition:leave-end="scale-x-0"
+            x-cloak>
+            <div class="p-4">
+                <div class="flex flex-col gap-4">
+                    <a href="/dashboard/" class="btn-link  {% if request.path == '/dashboard/' %} bg-neutral-100 {% endif %}">
+                        <lord-icon
+                            src="https://cdn.lordicon.com/oeotfwsx.json"
+                            trigger="hover"
+                            style="width:20px;height:20px">
+                        </lord-icon>
+                        Home
+                    </a>
+                    <a href="/templates/" class="btn-link  {% if request.path == '/templates/' %} bg-neutral-100 {% endif %}">
+                        <lord-icon
+                            src="https://cdn.lordicon.com/dutqakce.json"
+                            trigger="hover"
+                            style="width:20px;height:20px">
+                        </lord-icon>
+                        Templates
+                    </a>
+                    <a href="/settings/" class="btn-link {% if request.path == '/settings/' %} bg-neutral-100 {% endif %}">
+                        <lord-icon
+                            src="https://cdn.lordicon.com/asyunleq.json"
+                            trigger="hover"
+                            style="width:20px;height:20px">
+                        </lord-icon>
+                        Settings
+                    </a>
+                    <a href="/help/" class="btn-link {% if request.path == '/help/' %} bg-neutral-100 {% endif %}">
+                        <lord-icon
+                            src="https://cdn.lordicon.com/biqqsrac.json"
+                            trigger="hover"
+                            style="width:20px;height:20px">
+                        </lord-icon>
+                        Get Help
+                    </a>
+                </div>
             </div>
-        </div>
             
         </aside>
+        
 
-        <section class="flex-1 overflow-y-auto h-[calc(100vh-64px)] bg-neutral-50">
+        <section class="flex-1 overflow-y-auto ml-60 h-[calc(100vh-64px)] bg-neutral-50" x-init="$el.classList.remove('ml-60')">
             {% block content %}
                 <div class="p-6 md:p-10 max-w-4xl">
-                    <h1 class="h">Dashboard</h1>
-                    <hr class="mb-8">
 
                     <div class="flex flex-col gap-6 mb-8">
                         <div class="flex items-center justify-between">
                             <h2 class="h2">Pages</h2>
-                            <a href="{% url "fb_login" %}" class="btn text-sm py-1.5 px-3 flex items-center gap-2">
+                            <a href="{% url "add_page" %}" class="btn text-sm py-1.5 px-3 flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                                 Add Page
                             </a>
@@ -190,6 +192,7 @@ window.addEventListener('online', () => {
                         
                         <ul class="flex flex-col gap-2">
                             {% for page in pages %}
+                                <hr class="my-1">
                                 <li class="flex items-center justify-between gap-4">
                                     <a href="{% url "page" page.id %}" class="btn-link p-3">
                                         <img class="w-7 h-7 rounded-full" src="{{ page.picture }}" alt="">
@@ -216,9 +219,9 @@ window.addEventListener('online', () => {
                                                     class="hidden sm:block text-xs font-medium select-none"
                                                     x-cloak>
                                                     {% if page.enabled %}
-                                                        Enabled
+                                                        Active
                                                     {% else %}
-                                                        Disabled
+                                                        Paused
                                                     {% endif %}
                                                 </label>
                                             </div>
@@ -240,56 +243,7 @@ window.addEventListener('online', () => {
                             {% endfor %}
                         </ul>
                     </div>
-                    <hr>
 
-                    <div class="flex flex-col gap-4 mt-12">
-                        <div  class="flex items-center justify-between">
-                            <h2 class="h2">Using</h2>
-
-                            <div x-data="{ open: false, options: {'today': 'Today', 'last-week': 'Last Week', 'last-month': 'Last Month'}, selected: '{{ request.GET.using }}' || 'last-month' }" class="relative">
-                                <div @click="open = ! open" class="btn text-sm py-1.5 px-3 w-32 flex items-center justify-between gap-2">
-                                    <span x-text="options[selected]"></span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
-                                </div>
-                                <div x-show="open" @click.outside="open = false" x-transition class="absolute w-32 p-1 top-10 right-0 flex flex-col bg-white border border-neutral-200 rounded-lg shadow-md">
-                                    <template x-for="(value, key) in options" :key="key">
-                                        <a :href="'{% url "dashboard" %}?using='+key" class="btn-link text-sm" x-text="value"></a>
-                                    </template>
-                                </div>
-
-
-                            </div>
-                        </div>
-                        <p class="info">You are using <span class="font-semibold text-neutral-800">{% if user.subscription.plan == 'free' %}7 days FREE trial {% elif user.subscription.plan == 'business' %}Business plan {% elif user.subscription.plan == 'enterprise' %}Enterprise plan{% endif %}</span></p>
-
-                        
-                        <div class="flex flex-col gap-2">
-                            <div class="flex flex-col gap-4">
-                                <div class="flex items-center gap-2">
-                                    <div class="overflow-hidden gap-0.5 flex h-2 w-full max-w-lg rounded-full bg-neutral-300">
-                                        {% for item in using %}
-                                            <div class="h-full" style="width: {{ item.percentage }}%; background-color: {{ item.color }};"></div>
-                                        {% endfor %}
-
-                                        
-                                    </div>
-                                    <p class="text-sm text-neutral-700">{{ total_ai_replies|default:"0" }}/{{ ai_replies_limit|default:"0" }} </p>
-                                </div>
-                                <div class="flex items-center flex-wrap gap-4 text-sm">
-                                    {% for item in using %}
-                                    <div class="flex items-center gap-2">
-                                        <div class="h-2 w-2 rounded-full" style="background-color: {{ item.color }};"></div>
-                                        <span class="font-medium">{{ item.name }}</span><span class="font-thin text-neutral-600 text-sm">{{ item.percentage }}%</span>
-                                    </div>
-                                    {% endfor %}
-                                    <div class="flex items-center gap-2">
-                                        <div class="h-2 w-2 rounded-full bg-neutral-300"></div>
-                                        <span class="font-medium">Remaining</span><span class="font-thin text-neutral-600 text-sm">{{ remaining_using }}%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             {% endblock content %}
         </section>

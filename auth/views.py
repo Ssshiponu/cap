@@ -10,7 +10,7 @@ import requests
 import json
 import uuid
 
-from core.models import User, Subscription, FacebookPage
+from core.models import User, FacebookPage
 
 from .utils import generate_random_token
 
@@ -21,7 +21,7 @@ FB_APP_SECRET = settings.FB_APP_SECRET
 
 
 
-def fb_login(request):
+def add_page(request):
     scope = ",".join([
         "public_profile",
         "pages_show_list",
@@ -38,7 +38,7 @@ def fb_login(request):
     )
     return redirect(auth_url)
 
-def fb_callback(request):
+def add_page_callback(request):
     code = request.GET.get("code")
     if not code:
         return HttpResponse("No code provided", status=400)
@@ -96,6 +96,7 @@ def connect_page(request):
             
             
             if page is not None:
+                page.active = True
                 page.page_name = page_name
                 page.page_category = page_category
                 page.access_token = page_access_token
@@ -118,7 +119,6 @@ def connect_page(request):
                 params={"access_token": page_access_token},
                 json={"subscribed_fields": ["messages", "messaging_postbacks"]}
             )
-            print(r)
             
         return redirect('dashboard')
     return HttpResponse("Method not allowed")
@@ -147,7 +147,6 @@ def logout_view(request):
     return redirect('login')
 
 def register_lander(request):
-    
     return render(request, 'auth/register_lander.html')
 
 def register(request):
@@ -166,8 +165,6 @@ def register(request):
         
         user = User.objects.create_user(id=uuid.uuid4(), first_name=full_name, password=password, email=email, username=generate_random_token(26))
         user.save()
-        
-        Subscription.objects.create(user=user, )
         
         # Auto-login after registration
         user = authenticate(request, email=email, password=password)

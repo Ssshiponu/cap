@@ -1,0 +1,49 @@
+
+                    <div class="flex flex-col gap-4 mt-12">
+                        <div  class="flex items-center justify-between">
+                            <h2 class="h2">Using</h2>
+
+                            <div x-data="{ open: false, options: {'today': 'Today', 'last-week': 'Last Week', 'last-month': 'Last Month'}, selected: '{{ request.GET.using }}' || 'last-month' }" class="relative">
+                                <div @click="open = ! open" class="btn text-sm py-1.5 px-3 w-32 flex items-center justify-between gap-2">
+                                    <span x-text="options[selected]"></span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+                                </div>
+                                <div x-show="open" @click.outside="open = false" x-transition class="absolute w-32 p-1 top-10 right-0 flex flex-col bg-white border border-neutral-200 rounded-lg shadow-md">
+                                    <template x-for="(value, key) in options" :key="key">
+                                        <a :href="'{% url "dashboard" %}?using='+key" class="btn-link text-sm" x-text="value"></a>
+                                    </template>
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <p class="info">You are using <span class="font-semibold text-neutral-800">{% if user.subscription.plan == 'free' %}7 days FREE trial {% elif user.subscription.plan == 'business' %}Business plan {% elif user.subscription.plan == 'enterprise' %}Enterprise plan{% endif %}</span></p>
+
+                        
+                        <div class="flex flex-col gap-2">
+                            <div class="flex flex-col gap-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="overflow-hidden gap-0.5 flex h-2 w-full max-w-lg rounded-full bg-neutral-300">
+                                        {% for item in using %}
+                                            <div class="h-full" style="width: {{ item.percentage }}%; background-color: {{ item.color }};"></div>
+                                        {% endfor %}
+
+                                        
+                                    </div>
+                                    <p class="text-sm text-neutral-700">{{ total_ai_replies|default:"0" }}/{{ ai_replies_limit|default:"0" }} </p>
+                                </div>
+                                <div class="flex items-center flex-wrap gap-4 text-sm">
+                                    {% for item in using %}
+                                    <div class="flex items-center gap-2">
+                                        <div class="h-2 w-2 rounded-full" style="background-color: {{ item.color }};"></div>
+                                        <span class="font-medium">{{ item.name }}</span><span class="font-thin text-neutral-600 text-sm">{{ item.percentage }}%</span>
+                                    </div>
+                                    {% endfor %}
+                                    <div class="flex items-center gap-2">
+                                        <div class="h-2 w-2 rounded-full bg-neutral-300"></div>
+                                        <span class="font-medium">Remaining</span><span class="font-thin text-neutral-600 text-sm">{{ remaining_using }}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>

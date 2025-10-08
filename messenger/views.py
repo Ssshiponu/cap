@@ -97,11 +97,11 @@ def process_event(event: dict):
             role="user",
             content=user_text,
         )
-    print(messenger.send_action("typing_on"))
+    print(messenger.send_action("mark_seen"))
 
     # --- Generate and Send AI Reply ---
     history = get_conversation_json(conversation)
-    h = history[-20:]
+    h = history[-30:]
 
     messenger.send_action("typing_on")
     reply = ai_reply(h, page_id=recipient_id, api_key = api_key)

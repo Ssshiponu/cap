@@ -41,6 +41,22 @@ function smoothScrollTo(id) {
     }
 }
 
+function countTokens(text) {
+  const tokens = text.match(/\w+|[^\w\s]/gu) || [];
+  let count = 0;
+
+  for (const token of tokens) {
+    if (token.length > 6) {
+      // Long words often split into smaller tokens in LLMs
+      count += Math.floor(token.length / 6) + 1;
+    } else {
+      count += 1;
+    }
+  }
+
+  return count;
+}
+
 document.addEventListener('click', function (event) {
     if (event.target.tagName === 'A' && event.target.hash) {
         event.preventDefault();
