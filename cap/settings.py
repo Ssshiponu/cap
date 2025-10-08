@@ -155,6 +155,8 @@ FB_VERIFY_TOKEN = 'kfgjheruivhuyjrghtjrtyetdrygery'
 CREDITS_PER_REPLY = 10
 CREDITS_PER_TOKEN = 0.01
 
+LOW_CREDIT_THRESHOLD = 100
+
 COLORS = {
     "blue": "#0000FF",
     "green": "#00FF00",

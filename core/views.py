@@ -30,9 +30,15 @@ def index(request):
         return redirect('dashboard')
     
     context = {
-        'packages': settings.PACKAGES
+        'packages': settings.PACKAGES[4]
     }
     return render(request, 'core/index.html', context)
+
+def buy_credits(request):
+    context = {
+        'packages': settings.PACKAGES
+    }
+    return render(request, 'core/buy_cradits.html', context=context)
 
 def templates(request):
     

@@ -29,44 +29,28 @@ class User(AbstractUser):
     
     def credits_left(self):
         return self.credits_available - self.credits_used
-
-
-# class Subscription(models.Model):
-#     """User subscription plans"""
-#     PLAN_CHOICES = [
-#         ('free', 'Free'),
-#         ('business', 'Business'),
-#         ('custom', 'Custom'),
-#     ]
     
-#     STATUS_CHOICES = [
-#         ('active', 'Active'),
-#         ('cancelled', 'Cancelled'),
-#         ('expired', 'Expired'),
-#         ('paused', 'Paused'),
-#     ]
-
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='subscription')
-#     plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default='free')
-#     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+    def use_credits(self, amount):
+        self.credits_available -= amount
+        self.credits_used += amount
+        self.save()
+        
+    def add_credits(self, amount):
+        self.credits_available += amount
+        self.save()
+        
+    def has_credits(self, amount):
+        return self.credits_left() >= amount
     
-#     # Billing
-      
-#     start_date = models.DateTimeField(default=timezone.now)
-#     end_date = models.DateTimeField(blank=True, null=True, default=timezone.now() + timezone.timedelta(days=7))
+    def is_low_credits(self):
+        return self.credits_left() < settings.LOW_CREDITS_THRESHOLD
     
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-
-#     class Meta:
-#         db_table = 'subscriptions'
-
-#     def __str__(self):
-#         return f"{self.user.email} - {self.plan}"
+    def notification_list(self):
+        return self.notifications.all().order_by('-created_at')[:5]
     
-#     def days_left(self):
-#         return (self.end_date - timezone.now()).days
+            
+    def has_notifications(self):
+        return self.notifications.filter(read=False).exists()
 
 
 class FacebookPage(models.Model):
@@ -121,25 +105,30 @@ class FacebookPage(models.Model):
     
     
 class Notification(models.Model):
+    TYPES = [
+        ('info', 'Info'),
+        ('warning', 'Warning'),
+        ('error', 'Error'),
+    ]
+    
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
     message = models.TextField()
+    description = models.TextField(blank=True, null=True)
+    type = models.CharField(max_length=20, choices=TYPES, default='info')
     read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    read = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'notifications'
         
     def __str__(self):
-        return self.message[:50]
+        return str({'type': self.type, 'message': self.message, 'description': self.description if self.description else ''})
     
     def mark_as_read(self):
         self.read = True
         self.save()
-        
-    def has_notifications(self):
-        return Notification.objects.filter(user=self.user, read=False).exists()
+
 
 
 

@@ -13,47 +13,24 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 
 from core.ai import ai_reply
-from core.models import FacebookPage, User
+from core.models import FacebookPage, User, WebhookLog, Notification
 
 from .models import Message, Conversation
 from .messenger import Messenger
 from .reader import make_readable
-
+from .utils import get_conversation_json
+from core.utils import days_ago
 
 
 logging.basicConfig(level=logging.DEBUG, filename='.log',)
 logger = logging.getLogger(__name__)
 
-        
-def get_conversation_json(conv):
-    qs = (
-        conv.messages.all()
-        .order_by("created_at")
-        .values("role", "content", "created_at")
-    )
 
-    conversation = []
-    for row in qs:
-        role = row.get("role", "user")
-        content = row.get("content", "")
-
-        # Map OpenAI-style roles to GenAI authors
-        if role == "user":
-            author = "user"
-        else:  # system, assistant, anything else → model
-            author = "model"
-
-        conversation.append({
-            "author": author,
-            "content": [
-                {"type": "text", "text": content}
-            ]
-        })
-
-    return conversation
-
-
-def process_event(event: dict):
+def process_event(event: dict):  
+    message = event.get("message", {})
+    if message.get("is_echo"):
+        return False
+    
     sender_id = event.get("sender", {}).get("id")
     recipient_id = event.get("recipient", {}).get("id")
     
@@ -64,19 +41,15 @@ def process_event(event: dict):
     
     if not sender_id or not recipient_id:
         return False
-    
     messenger = Messenger(access_token, sender_id, recipient_id)
-   
-    message = event.get("message", {})
-    if message.get("is_echo"):
-        return False
-    
+
     # get or create conversation
     conversation, _ = Conversation.objects.get_or_create(
         facebook_page=page, user_id=sender_id, active=True
     )
     # Case 1: User sent a standard message (text, attachment)
     if "message" in event:
+        # make any action in readable text
         user_text = make_readable(event["message"], role="user", api_key=api_key)
         Message.objects.create(
             mid=event["message"]["mid"],
@@ -97,14 +70,26 @@ def process_event(event: dict):
             role="user",
             content=user_text,
         )
-    print(messenger.send_action("mark_seen"))
+    
+    if not page.user.has_credits(page.credits_per_reply()):
+        if not Notification.objects.filter(user=page.user, type='error', message='No credits left').exists():
+            Notification.objects.create(
+                user=page.user,
+                message='No credits left',
+                description=f'You have no credits left. Replies will not be sent until you <a class="link" href="/buy-credits">buy more credits</a>.',
+                type='error'
+            )
+        logger.info(f"User {page.user} has not enough credits to reply. Skipping...")
+        return True
+        
 
-    # --- Generate and Send AI Reply ---
-    history = get_conversation_json(conversation)
-    h = history[-30:]
+    # Generate and Send AI Reply 
+    messenger.send_action("mark_seen")
+    
+    history = get_conversation_json(conversation, last_n=30)
 
     messenger.send_action("typing_on")
-    reply = ai_reply(h, page_id=recipient_id, api_key = api_key)
+    reply = ai_reply(history, page_id=recipient_id, api_key = api_key)
     messenger.send_action("typing_off")
     try:
         conversation.input_tokens = conversation.input_tokens + reply.usage_metadata.prompt_token_count
@@ -124,10 +109,19 @@ def process_event(event: dict):
                 conversation = conversation,
                 role = "assistant",
                 content = make_readable(reply_part, role="assistant"),
+                credits_used = page.credits_per_reply()
             )
         else:
             logger.error(f"Failed to send message: {reply_part}. Response: {sent}")
+            
+    page.user.use_credits(page.credits_per_reply())
+    
+    if page.user.is_low_credits():
+        if not Notification.objects.filter(user=page.user, type='warning', message='Low credits').exists():
+            Notification.objects.create(user=page.user, message='Low credits', description=f'You have {page.user.credits_left()} credits left', type='warning')
         
+
+    print(days_ago(1))
     avrage_input_tokens = conversation.input_tokens / conversation.messages.filter(role="assistant").count()
     avrage_output_tokens = conversation.output_tokens / conversation.messages.filter(role="assistant").count() 
     print('AV_IN:',avrage_input_tokens, 'AV_OUT:', avrage_output_tokens)

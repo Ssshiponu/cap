@@ -16,16 +16,21 @@ class Conversation(models.Model):
         verbose_name = "Conversation"
         verbose_name_plural = "Conversations"
         
-        ordering = ['-updated_at']
+        ordering = ['updated_at']
     
     def __str__(self):
         return f'C: {self.messages.all().first().content[:50]}... {self.facebook_page.id} - {self.user_id}'
+    
+    def total_credits_used(self):
+        return sum(message.credits_used for message in self.messages.all())
 
 class Message(models.Model):
     mid = models.CharField(primary_key=True, max_length=100)
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages', null=True)
     role = models.CharField(max_length=100)
     content = models.JSONField(null=True, blank=True)
+    
+    credits_used = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     
     
