@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>bKash Checkout</title>
+</head>
+<body>
+  <h1>Pay with bKash</h1>
+  <button id="payBtn">Pay Now</button>
+
+  <script>
+    document.getElementById("payBtn").addEventListener("click", async function() {
+      const resp = await fetch("{% url 'bkash_checkout' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({})
+      });
+      const data = await resp.json();
+      if (data.error) {
+        alert("Error: " + JSON.stringify(data));
+        return;
+      }
+      const paymentID = data.paymentID;
+      const bkashUrl = data.bkashUrl;  // optional
+
+      // Now call execute (or prompt user to confirm via bKash UI)
+      const execResp = await fetch("{% url 'bkash_execute' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ paymentID })
+      });
+      const execData = await execResp.json();
+      if (execData.status === "executed") {
+        window.location.href = "/payment-success/";
+      } else {
+        window.location.href = "/payment-failed/";
+      }
+    });
+  </script>
+</body>
+</html>

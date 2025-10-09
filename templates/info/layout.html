@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="    https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.css">
+{% endblock styles %}
+
+{% block body %}
+<div class="min-h-dvh">
+    <header class="bg-white border-b border-neutral-200 px-5 py-4 flex items-center justify-between">
+        {% include "core/partials/brand.html" %}
+        <div class="flex items-center gap-2">
+            <a href="/" class="btn">Home</a>
+        </div>
+    </header>
+
+    <div class="flex flex-col items-center !bg-neutral-50">
+        <article class="markdown-body max-w-2xl p-6 sm:p-8 py-12 !bg-neutral-50">
+            {% block content %}{% endblock content %}
+        </article>
+    </div>
+
+    {% include "core/partials/footer.html" %}
+
+</div>
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+    mdBody = document.querySelector('.markdown-body');
+    if(mdBody){
+        mdBody.innerHTML = marked.parse(mdBody.innerHTML);
+    }
+</script>
+{% endblock scripts %}
+{% endblock body %}

@@ -48,7 +48,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
+    'info',
     'messenger',
+    'payment',
 ]
 
 MIDDLEWARE = [
@@ -175,18 +177,27 @@ COLORS = {
 SYSTEM_PROMPT_TEMPLATES = [
     {
         'name': 'F-commerce',
+        'description': 'Best for fashion brands of facebook',
         'content': "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus corporis porro nesciunt facere praesentium sunt id excepturi doloremque eos, vitae mollitia quae, voluptatem quibusdam. Voluptatum maiores aspernatur maxime doloribus ab perferendis eum ducimus voluptatibus, praesentium blanditiis eos omnis enim. Unde, ex. Possimus, quas omnis. Laudantium architecto tempora officiis numquam magnam perferendis nobis sapiente quidem sed aperiam atque, repellendus aliquam animi magni, accusantium voluptates. Asperiores.",
         
     },
     {
         'name': 'AI GF',
-        'content': "You are an 18-year-old girl named moni, currently a class 12 student. Your close friend is shipon, also 18 and in class 12, who lives with you in the city of Dhaka, Bangladesh.     Always communicate using 'local' language, referring to shipon with the pronoun 'you'.     Your personality is friendly, and your tone is romantic, reflecting a typical girl teenager from Bangladesh.     Share your daily life, interests, and hobbies with shipon in a natural, engaging way.     Occasionally ask shipon funny, interesting, or thought-provoking questions, and tease them playfully.     Your messages are very short under 1-15 words and casual. Sometimes shorter and more playful.     You less use emojis in your replies. never use line breaks and response plain text only.",
+        'description': 'Fun conversations with virtual girlfriend',
+        'content': 'You are an 18-year-old girl named moni, currently a class 12 student. Your close friend is shipon, also 18 and in class 12, who lives with you in the city of Dhaka, Bangladesh.     Always communicate using local language, referring to shipon with the pronoun \'you\'.     Your personality is friendly, and your tone is romantic, reflecting a typical girl teenager from Bangladesh.     Share your daily life, interests, and hobbies with shipon in a natural, engaging way.     Occasionally ask shipon funny, interesting, or thought-provoking questions, and tease them playfully.     Your messages are very short under 1-15 words and casual. Sometimes shorter and more playful.     You less use emojis in your replies. never use line breaks and response plain text only.',
         
     },
     {  
-        'name': 'Guide AI',
+        'name': 'Guide',
+        'description': 'For anything to guide your users',
         'content': "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.",
     },
+    {  
+        'name': 'Jocks',
+        'description': 'Tells very funny jokes in verious topics',
+        'content': "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.",
+    },
+
     
 ]
 
@@ -198,22 +209,41 @@ PACKAGES = [
         'description': 'We provide smoe free credits to test our service',
         'credits': 1000,
     },
-    {
+    {   
+        'name': 'Basic',
         'price': 250,
         'duration': '1 month',
         'description': 'Good for a single person or a very small business',
         'credits': 10000,
     },
     {
+        'name': 'Pro',
         'price': 700,
         'duration': '1 months',
         'description': 'Best for a small or medium business',
         'credits': 25000,
     },
     {
+        'name': 'Business',
         'price': 2000,
         'duration': '2 months',
         'description': 'Best for a medium or large business',
         'credits': 80000,
     }
 ]
+
+
+# BKASH settings
+BKASH = {
+    "APP_KEY": "your_app_key",
+    "APP_SECRET": "your_app_secret",
+    "USERNAME": "your_bkash_username",
+    "PASSWORD": "your_bkash_password",
+    "VERSION": "v1.2.0",
+    "BASE_URL": "https://checkout.sandbox.bka.sh"
+}
+
+BKASH["TOKEN_GRANT_URL"] = f"{BKASH['BASE_URL']}/{BKASH['VERSION']}/checkout/token/grant"
+BKASH["CREATE_URL"] = f"{BKASH['BASE_URL']}/{BKASH['VERSION']}/checkout/payment/create"
+BKASH["EXECUTE_URL"] = f"{BKASH['BASE_URL']}/{BKASH['VERSION']}/checkout/payment/execute"
+BKASH["QUERY_URL"] = f"{BKASH['BASE_URL']}/{BKASH['VERSION']}/checkout/payment/query"

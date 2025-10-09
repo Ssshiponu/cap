@@ -51,14 +51,15 @@ ul.features li[no]::before {
     @apply mr-2 text-black font-bold;
 }
 
-.markdown-body {
-    @apply w-[100%] max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-5;
-}
 
 @layer base {
     body {
         font-family: 'Saira', 'Hind Siliguri', sans-serif;
     }
+    .markdown-body {
+        @apply w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-5;
+    }
+
     td, th {
         @apply text-nowrap;
     }
@@ -67,7 +68,7 @@ ul.features li[no]::before {
         @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-[600];
     }
     .h2 {
-        @apply text-xl md:text-2xl text-neutral-700 font-[600];
+        @apply text-xl md:text-2xl text-neutral-900 font-[600];
     }
 
     .h {

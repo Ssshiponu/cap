@@ -66,6 +66,7 @@
     {{ metadata.schema_markup }}
     </script>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block styles %}{% endblock styles %}
     <style>
         [x-cloak] { display: none !important; }
     </style>
@@ -78,7 +79,9 @@ class="overflow-x-hidden">
     {% endblock body %}
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
-    <script defer src="{% static "js/alpine.js" %}"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/tooltip.js' %}"></script>
     {% block scripts %}

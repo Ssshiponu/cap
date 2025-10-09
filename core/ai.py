@@ -6,7 +6,7 @@ from google.genai import types
 
 from core.models import FacebookPage
 
-MODELS = [ "gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash"]
+MODELS = [ "gemini-2.5-flash", "gemini-2.0-flash"]
 
 gf_gpt ="""
     
@@ -56,10 +56,9 @@ def ai_reply(history: list, page_id: int, api_key: str):
                 response_mime_type="application/json",
             ),
         )
-    
-        # Parse the JSON response
-        return response
-    
+        if response.text:
+            return response
+        
 def read_media(path: str, api_key: str) -> str:
     
     image_bytes = requests.get(path).content

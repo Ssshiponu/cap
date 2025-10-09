@@ -94,13 +94,20 @@ def process_event(event: dict):
     try:
         conversation.input_tokens = conversation.input_tokens + reply.usage_metadata.prompt_token_count
         conversation.output_tokens = conversation.output_tokens + (reply.usage_metadata.candidates_token_count + reply.usage_metadata.thoughts_token_count)
+        print('IN:',reply.usage_metadata.prompt_token_count, 'OUT:', reply.usage_metadata.candidates_token_count + reply.usage_metadata.thoughts_token_count)
+        
     except Exception as e:
         print(e)
     conversation.save()
-    print('IN:',reply.usage_metadata.prompt_token_count, 'OUT:', reply.usage_metadata.candidates_token_count + reply.usage_metadata.thoughts_token_count)
+    
+    try:
+        reply_json = json.loads(reply.text)
+    except Exception as e:
+        logger.error(f"Failed to parse reply JSON: {reply.text}")
+        print(e)
+        return False
         
-        
-    for reply_part in json.loads(reply.text):
+    for reply_part in reply_json:
         sent = messenger.send_reply(reply_part)
         
         if sent and "message_id" in sent:
@@ -111,17 +118,17 @@ def process_event(event: dict):
                 content = make_readable(reply_part, role="assistant"),
                 credits_used = page.credits_per_reply()
             )
+            page.user.use_credits(page.credits_per_reply())
+            
         else:
             logger.error(f"Failed to send message: {reply_part}. Response: {sent}")
             
-    page.user.use_credits(page.credits_per_reply())
     
     if page.user.is_low_credits():
         if not Notification.objects.filter(user=page.user, type='warning', message='Low credits').exists():
             Notification.objects.create(user=page.user, message='Low credits', description=f'You have {page.user.credits_left()} credits left', type='warning')
         
 
-    print(days_ago(1))
     avrage_input_tokens = conversation.input_tokens / conversation.messages.filter(role="assistant").count()
     avrage_output_tokens = conversation.output_tokens / conversation.messages.filter(role="assistant").count() 
     print('AV_IN:',avrage_input_tokens, 'AV_OUT:', avrage_output_tokens)

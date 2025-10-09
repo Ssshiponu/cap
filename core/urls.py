@@ -4,6 +4,7 @@ from .views import *
 
 urlpatterns = [
     path("", index, name="index"),
+    path("", include('info.urls')),
     path("dashboard/", dashboard, name="dashboard"),
     path("templates/", templates, name="templates"),
     path("buy-credits/", buy_credits, name="buy_credits"),
@@ -17,6 +18,7 @@ urlpatterns = [
     
     # Auth
     path('auth/', include('auth.urls')),
+    path('payment/', include('payment.urls')),
     
     
 ]
