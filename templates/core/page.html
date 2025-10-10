@@ -3,7 +3,7 @@
 {% block title %}{{ page.page_name }} - Page | Chat Autopilot{% endblock title %}
 
 {% block content %}
-<div class="p-6 w-full mx-auto" x-data="{ modal: false, tab: window.location.hash ? window.location.hash.replace('#', '') : 'charts' }">
+<div class="p-6 w-full mx-auto" x-data="{ tab: window.location.hash ? window.location.hash.replace('#', '') : 'charts' }">
     <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-3">
             <img class="w-11 h-11 rounded-full" src="{{ page.picture }}" alt="">
@@ -30,9 +30,6 @@
 
                 </div>
             </form>
-            <div x-tooltip.bottom="Conversations" @click="modal = ! modal" class="btn-link p-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-messages-square-icon lucide-messages-square"><path d="M16 10a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 14.286V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/><path d="M20 9a2 2 0 0 1 2 2v10.286a.71.71 0 0 1-1.212.502l-2.202-2.202A2 2 0 0 0 17.172 19H10a2 2 0 0 1-2-2v-1"/></svg>
-            </div>
         </div>
 
     </div>
@@ -41,9 +38,12 @@
 
     <div class="mb-12">
         <div class="w-full border-b border-neutral-200">
-            <div class="flex gap-2">
+            <div class="flex gap-1">
                 <button x-on:click="tab = 'charts'; window.location.hash = '#charts'" class="p-3" :class="{ 'border-b-2 border-neutral-900': tab == 'charts' }">
                     Charts
+                </button>
+                <button x-on:click="tab = 'conversations'; window.location.hash = '#conversations'" class="p-3" :class="{ 'border-b-2 border-neutral-900': tab == 'conversations' }">
+                    Conversations
                 </button>
                 <button x-on:click="tab = 'settings'; window.location.hash = '#settings'" class="p-3 " :class="{ 'border-b-2 border-neutral-900': tab == 'settings' }">
                     Settings
@@ -51,8 +51,7 @@
             </div>
         </div>
 
-        <div x-show="modal" class="overlay" x-cloak></div>
-        <div x-show="modal" @click.outside="modal = false" class="modal" x-transition x-cloak>
+        <div x-show="tab == 'conversations'" class="py-8" x-cloak>
             <h2 class="h2 p-2">Conversations</h2>
             <div class="info text-xs ml-2 mb-4">Delete conversation if you want ai to forget about the chat history</div>
             <div class=" max-w-4xl border border-neutral-200 overflow-y-auto rounded-lg">
@@ -119,18 +118,18 @@
             </div>
         </div>
 
-        <div x-show="tab == 'charts'" class="py-8">
+        <div x-show="tab == 'charts'" class="py-8" x-cloak>
             <div class="flex flex-col lg:flex-row gap-6">
                 <div class="w-full">
-                    <canvas class="creditsChart w-full h-auto"></canvas>
+                    <canvas class="credits-chart w-full h-auto"></canvas>
                 </div>
                 <div class="w-full">
-                    <canvas class="messagesChart w-full h-auto"></canvas>
+                    <canvas class="messages-chart w-full h-auto"></canvas>
                 </div>
             </div>
         </div>
 
-        <div x-show="tab == 'settings'" class="py-8">
+        <div x-show="tab == 'settings'" class="py-8" x-cloak>
             <form x-data="{
                 system_prompt: '{{ page.system_prompt|escapejs }}',
             }"
@@ -167,8 +166,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    const creditsChart = document.querySelector('.creditsChart');
-    const messagesChart = document.querySelector('.messagesChart');
+    const creditsChart = document.querySelector('.credits-chart');
+    const messagesChart = document.querySelector('.messages-chart');
     const messagesData = {{ charts.messages|safe }};
 
     const creditsData = {{ charts.credits|safe }};
@@ -176,6 +175,6 @@
 
     new Chart(creditsChart,  creditsData);
     new Chart(messagesChart, messagesData);
-  </script>
+</script>
 
 {% endblock content %}

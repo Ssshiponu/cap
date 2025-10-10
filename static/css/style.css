@@ -47,7 +47,6 @@
     --container-xs: 20rem;
     --container-sm: 24rem;
     --container-lg: 32rem;
-    --container-xl: 36rem;
     --container-2xl: 42rem;
     --container-3xl: 48rem;
     --container-4xl: 56rem;
@@ -1660,6 +1659,9 @@
   }
   .bg-blue-50 {
     background-color: var(--color-blue-50);
+  }
+  .bg-green-200 {
+    background-color: var(--color-green-200);
   }
   .bg-neutral-50 {
     background-color: var(--color-neutral-50);

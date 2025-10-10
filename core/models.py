@@ -87,7 +87,7 @@ class FacebookPage(models.Model):
     
     system_prompt = models.TextField(
         help_text="Base instructions for AI behavior",
-        default="You are a helpful customer service assistant."
+        null=True, blank=True
     )
     
     connected_at = models.DateTimeField(auto_now_add=True)
@@ -102,7 +102,7 @@ class FacebookPage(models.Model):
     
     def credits_per_reply(self):
         return settings.CREDITS_PER_REPLY + round(count_tokens(self.system_prompt) * settings.CREDITS_PER_TOKEN)
-    
+
     
 class Notification(models.Model):
     TYPES = [
