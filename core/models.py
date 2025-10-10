@@ -46,7 +46,7 @@ class User(AbstractUser):
         return self.credits_left() < settings.LOW_CREDITS_THRESHOLD
     
     def notification_list(self):
-        return self.notifications.all().order_by('-created_at')[:5]
+        return self.notifications.filter(read=False).order_by('-created_at')[:5]
     
             
     def has_notifications(self):

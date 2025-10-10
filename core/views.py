@@ -17,7 +17,7 @@ import hashlib
 import json
 
 from .models import (
-    User, FacebookPage
+    User, FacebookPage, Notification
 )
 
 from messenger.models import (
@@ -41,6 +41,8 @@ def buy_credits(request):
         request.user.add_credits(free_credits)
         
         messages.success(request, f'You have been granted {free_credits} free credits')
+        Notification.objects.create(user=request.user, message='Free Credits', description=f'You have been granted {free_credits} free credits', type='info')
+        
         return redirect(request.GET.get('next', 'dashboard'))
     
     
@@ -347,3 +349,9 @@ def delete_page(request, page_id):
         c.active = False
         c.save()
     return redirect('dashboard')
+
+@login_required
+def notifications_read(request):
+    for n in request.user.notifications.filter(read=False):
+        n.mark_as_read()
+    return JsonResponse({'success': True})

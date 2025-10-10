@@ -26,6 +26,35 @@ function main() {
         sidebar: window.innerWidth > 1023,
         modal: false,
 
+        //API handler
+        api: {
+            baseUrl: window.location.origin+ '/',
+            async HTTPget(endpoint) {
+                console.log(this.baseUrl + endpoint);
+            try {
+                const res = await fetch(this.baseUrl + endpoint);
+                if (!res.ok) throw new Error(`GET ${endpoint} failed`);
+                return await res.json();
+            } catch (err) {
+                console.error(err);
+                return {};
+            }
+            },
+            async post(endpoint, data) {
+            try {
+                const res = await fetch(this.baseUrl + endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+                });
+                if (!res.ok) throw new Error(`POST ${endpoint} failed`);
+                return await res.json();
+            } catch (err) {
+                console.error(err);
+                return {};
+            }
+            }
+        },
 
     }
 }
