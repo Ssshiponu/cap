@@ -182,7 +182,7 @@ window.addEventListener('online', () => {
                         </button>
                         <div x-show="open" x-collapse>
                             <div class="ml-4 flex flex-col gap-2 mt-2">
-                                {% for page in user.facebook_pages.all %}
+                                {% for page in user.get_pages %}
                                 <a href="{% url 'page' page.id %}" class="btn-link {% if request.path == '/page/' %} bg-neutral-100 {% endif %}">
                                     <div class="flex gap-2 items-center">
                                         <img src="{{ page.picture }}" alt="" class="w-5 h-5 rounded-full">
@@ -329,12 +329,17 @@ window.addEventListener('online', () => {
                                                 </label>
                                             </div>
                                         </form>
-                                        <a href="{% url "page" page.id %}#settings" class="btn-link p-2">
+                                        <a href="{% url "page" page.id %}#settings" class="btn-link p-2 relative">
                                             <lord-icon
                                                 src="https://cdn.lordicon.com/asyunleq.json"
                                                 trigger="hover"
                                                 style="width:20px;height:20px">
                                             </lord-icon>
+
+                                            {% if not page.system_prompt %}
+                                                <div class="absolute top-0.5 right-0.5 w-2 h-2 bg-red-500 rounded-full"></div>
+                                            {% endif %}
+
                                         </a>
                                     </div>
                                 </li>

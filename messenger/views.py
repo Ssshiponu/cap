@@ -12,13 +12,13 @@ from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 
-from core.ai import ai_reply
+from core.ai import AI
 from core.models import FacebookPage, User, WebhookLog, Notification
 
 from .models import Message, Conversation
 from .messenger import Messenger
-from .reader import make_readable
-from .utils import get_conversation_json
+from .reader import Reader
+from .utils import generate_conversation
 from core.utils import days_ago
 
 
@@ -28,6 +28,8 @@ logger = logging.getLogger(__name__)
 
 def process_event(event: dict):  
     message = event.get("message", {})
+    
+    # ignore echo messages
     if message.get("is_echo"):
         return False
     
@@ -35,22 +37,24 @@ def process_event(event: dict):
     recipient_id = event.get("recipient", {}).get("id")
     
     page = get_object_or_404(FacebookPage, id=recipient_id)
-    
     access_token = page.access_token
-    api_key = os.environ.get("GENAI_API_KEY")
     
     if not sender_id or not recipient_id:
         return False
+    
     messenger = Messenger(access_token, sender_id, recipient_id)
-
+    ai = AI(page.id, settings.GEMINI_API_KEY)
+    reader = Reader(ai)
+    
     # get or create conversation
     conversation, _ = Conversation.objects.get_or_create(
         facebook_page=page, user_id=sender_id, active=True
     )
+    
     # Case 1: User sent a standard message (text, attachment)
     if "message" in event:
         # make any action in readable text
-        user_text = make_readable(event["message"], role="user", api_key=api_key)
+        user_text = reader.make_readable(event["message"], role="user")
         Message.objects.create(
             mid=event["message"]["mid"],
             conversation=conversation,
@@ -72,39 +76,30 @@ def process_event(event: dict):
         )
     
     if not page.user.has_credits(page.credits_per_reply()):
-        if not Notification.objects.filter(user=page.user, type='error', message='No credits left').exists():
-            Notification.objects.create(
-                user=page.user,
-                message='No credits left',
-                description=f'You have no credits left. Replies will not be sent until you <a class="link" href="/buy-credits">buy more credits</a>.',
-                type='error'
-            )
+        page.user.notify(
+            message='No credits left',
+            description=f'You have no credits left. Replies will not be sent until you <a class="link" href="/buy-credits">buy more credits</a>.',
+            type='error'
+        )
         logger.info(f"User {page.user} has not enough credits to reply. Skipping...")
         return True
-        
-
-    # Generate and Send AI Reply 
-    messenger.send_action("mark_seen")
     
-    history = get_conversation_json(conversation, last_n=30)
+    history = generate_conversation(conversation, ai)
+    reply = ai.reply(history)
 
-    messenger.send_action("typing_on")
-    reply = ai_reply(history, page_id=recipient_id, api_key = api_key)
-    messenger.send_action("typing_off")
-    try:
-        conversation.input_tokens = conversation.input_tokens + reply.usage_metadata.prompt_token_count
-        conversation.output_tokens = conversation.output_tokens + (reply.usage_metadata.candidates_token_count + reply.usage_metadata.thoughts_token_count)
-        print('IN:',reply.usage_metadata.prompt_token_count, 'OUT:', reply.usage_metadata.candidates_token_count + reply.usage_metadata.thoughts_token_count)
-        
-    except Exception as e:
-        print(e)
+    if reply is None:
+        return False
+
+
+    conversation.input_tokens = conversation.input_tokens + reply.usage_metadata.prompt_token_count
+    conversation.output_tokens = conversation.output_tokens + (reply.usage_metadata.candidates_token_count + reply.usage_metadata.thoughts_token_count)
+    print('IN:',reply.usage_metadata.prompt_token_count, 'OUT:', reply.usage_metadata.candidates_token_count + reply.usage_metadata.thoughts_token_count)
     conversation.save()
     
     try:
         reply_json = json.loads(reply.text)
     except Exception as e:
-        logger.error(f"Failed to parse reply JSON: {reply.text}")
-        print(e)
+        logger.error(f"Invalid AI response: {reply.text}")
         return False
         
     for reply_part in reply_json:
@@ -115,7 +110,7 @@ def process_event(event: dict):
                 mid = sent['message_id'],
                 conversation = conversation,
                 role = "assistant",
-                content = make_readable(reply_part, role="assistant"),
+                content = reader.make_readable(reply_part, role="assistant"),
                 credits_used = page.credits_per_reply()
             )
             page.user.use_credits(page.credits_per_reply())
@@ -125,9 +120,11 @@ def process_event(event: dict):
             
     
     if page.user.is_low_credits():
-        if not Notification.objects.filter(user=page.user, type='warning', message='Low credits').exists():
-            Notification.objects.create(user=page.user, message='Low credits', description=f'You have {page.user.credits_left()} credits left', type='warning')
-        
+        page.user.notify(
+            message='Low credits',
+            description=f'You have low credits left. <a class="link" href="/buy-credits">Buy credits</a> to continue using the service.',
+            type='warning'
+        )
 
     avrage_input_tokens = conversation.input_tokens / conversation.messages.filter(role="assistant").count()
     avrage_output_tokens = conversation.output_tokens / conversation.messages.filter(role="assistant").count() 

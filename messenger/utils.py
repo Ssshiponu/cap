@@ -1,5 +1,7 @@
 from datetime import datetime, timezone
-        
+from .models import Message
+from core.ai import AI
+from core.utils import generate_random_token
 
 def time_ago(dt):
     if not dt:
@@ -36,21 +38,47 @@ def time_ago(dt):
     else:
         return f"{int(seconds // year)}y ago"
 
-        
-def get_conversation_json(conv, last_n=20):
-    qs = list(conv.messages.order_by("-created_at").values("role", "content", "created_at")[:last_n])[::-1]
+def generate_conversation(conv, ai: "AI"):
+    """
+    Generate conversation. 
+    first find history index and then take all messages after history index with itself
+    if history index is not found, take all messages and generate a history
+    """
+
+    messages = conv.messages.order_by("created_at")
+
+    history_index = None
+    for i, msg in enumerate(messages):
+        if msg.role == "history":
+            history_index = i
+            
+    print(history_index)
+
+    if history_index is not None:
+        qs = messages[history_index:]
+    else:
+        qs = messages[:]
 
     conversation = []
     for row in qs:
-        role = row.get("role")
-        content = row.get("content", "")
-
         conversation.append({
-            'role': role,
-            'content': content,
-        })
-        
-    if len(conversation) > 2: conversation[-1]['last_message'] = time_ago(conv.updated_at) 
-    print(conversation)
-    return conversation
+            row.role: row.content
+            })
 
+    if history_index is None or len(conversation) > 12:
+        history = ai.generate_history(conversation)
+        print(history)
+
+        Message.objects.create(
+            mid="rid_" + generate_random_token(),
+            conversation=conv,
+            role="history",
+            content=history,
+        )
+
+    print(conversation)
+
+    if len(conversation) > 2:
+        conversation[-1]["last_message"] = time_ago(conv.updated_at)
+
+    return conversation

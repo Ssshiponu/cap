@@ -43,15 +43,26 @@ class User(AbstractUser):
         return self.credits_left() >= amount
     
     def is_low_credits(self):
-        return self.credits_left() < settings.LOW_CREDITS_THRESHOLD
+        return self.credits_left() < settings.LOW_CREDIT_THRESHOLD
     
     def notification_list(self):
-        return self.notifications.filter(read=False).order_by('-created_at')[:5]
+        return self.notifications.filter(read=False).order_by('-created_at')[:4]
     
             
     def has_notifications(self):
         return self.notifications.filter(read=False).exists()
-
+    
+    def get_pages(self):
+        return self.facebook_pages.filter(active=True)
+    
+    def notify(self, message, description=None, type='info'):
+        # check same notification already exists in last 24 hours
+        if not self.notifications.filter(
+            message=message,
+            created_at__gte=timezone.now() - timezone.timedelta(days=1)
+        ).exists():
+            Notification.objects.create(user=self, message=message, description=description, type=type)
+    
 
 class FacebookPage(models.Model):
     """Connected Facebook pages"""
@@ -102,6 +113,7 @@ class FacebookPage(models.Model):
     
     def credits_per_reply(self):
         return settings.CREDITS_PER_REPLY + round(count_tokens(self.system_prompt) * settings.CREDITS_PER_TOKEN)
+    
 
     
 class Notification(models.Model):
