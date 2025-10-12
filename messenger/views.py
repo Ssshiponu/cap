@@ -36,12 +36,14 @@ def process_event(event: dict):
     sender_id = event.get("sender", {}).get("id")
     recipient_id = event.get("recipient", {}).get("id")
     
-    page = get_object_or_404(FacebookPage, id=recipient_id)
-    access_token = page.access_token
-    
     if not sender_id or not recipient_id:
         return False
     
+    # get page
+    page = get_object_or_404(FacebookPage, id=recipient_id)
+    access_token = page.access_token
+    
+    # initialize tools
     messenger = Messenger(access_token, sender_id, recipient_id)
     ai = AI(page.id, settings.GEMINI_API_KEY)
     reader = Reader(ai)
@@ -84,7 +86,15 @@ def process_event(event: dict):
         logger.info(f"User {page.user} has not enough credits to reply. Skipping...")
         return True
     
-    history = generate_conversation(conversation, ai)
+    can_reply, reason = conversation.can_reply()
+    if not can_reply:
+        logger.info(reason)
+        return True
+    
+    history = generate_conversation(conversation)
+    
+    messenger.send_action("mark_seen")
+    print("started...")
     reply = ai.reply(history)
 
     if reply is None:
@@ -103,6 +113,12 @@ def process_event(event: dict):
         return False
         
     for reply_part in reply_json:
+        if reply_part.get('action') == 'block':
+            conversation.blocked = True
+            conversation.save()
+            logger.info("Blocking conversation...")
+            break
+        
         sent = messenger.send_reply(reply_part)
         
         if sent and "message_id" in sent:
@@ -125,9 +141,13 @@ def process_event(event: dict):
             description=f'You have low credits left. <a class="link" href="/buy-credits">Buy credits</a> to continue using the service.',
             type='warning'
         )
-
-    avrage_input_tokens = conversation.input_tokens / conversation.messages.filter(role="assistant").count()
-    avrage_output_tokens = conversation.output_tokens / conversation.messages.filter(role="assistant").count() 
+    try:
+        avrage_input_tokens = conversation.input_tokens / conversation.messages.filter(role="assistant").count()
+        avrage_output_tokens = conversation.output_tokens / conversation.messages.filter(role="assistant").count() 
+    except ZeroDivisionError:
+        avrage_input_tokens = 0
+        avrage_output_tokens = 0
+        
     print('AV_IN:',avrage_input_tokens, 'AV_OUT:', avrage_output_tokens)
     
     return True
@@ -170,6 +190,7 @@ def webhook_view(request):
     elif request.method == "POST":
         try:
             data = json.loads(request.body.decode("utf-8"))
+            print(data)
         except json.JSONDecodeError:
             logger.error("Invalid JSON received in webhook request body.")
             return HttpResponse("Invalid JSON", status=400)

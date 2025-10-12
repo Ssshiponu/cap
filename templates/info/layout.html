@@ -32,6 +32,10 @@
     if(mdBody){
         mdBody.innerHTML = marked.parse(mdBody.innerHTML);
     }
+    // add terget blank to all link inside markdown
+    document.querySelectorAll('.markdown-body a').forEach(link => {
+        link.setAttribute('target', '_blank');
+    })
 </script>
 {% endblock scripts %}
 {% endblock body %}

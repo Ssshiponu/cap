@@ -12,6 +12,8 @@ days_ago = lambda days: timezone.now() - timedelta(days=days)
 
 
 def count_tokens(text: str) -> int:
+    if not text:
+        return 0
     tokens = re.findall(r"\w+|[^\w\s]", text, re.UNICODE)
     count = 0
     for token in tokens:
@@ -21,3 +23,11 @@ def count_tokens(text: str) -> int:
         else:
             count += 1
     return count
+
+def get_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip

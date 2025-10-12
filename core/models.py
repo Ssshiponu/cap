@@ -11,12 +11,13 @@ from .utils import *
 class User(AbstractUser):
     """Extended user model for SaaS platform"""
     id = models.CharField(primary_key=True, editable=False)
+    ip = models.CharField(max_length=255, blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
     username = models.CharField(max_length=100, blank=True, null=True)
     picture_url = models.URLField(blank=True, null=True)
     is_email_verified = models.BooleanField(default=False)
     
-    credits_available = models.IntegerField(default=0)
+    credits = models.IntegerField(default=0)
     credits_used = models.IntegerField(default=0)
     
     
@@ -28,22 +29,33 @@ class User(AbstractUser):
         return self.email
     
     def credits_left(self):
-        return self.credits_available - self.credits_used
+        return self.credits - self.credits_used
     
     def use_credits(self, amount):
-        self.credits_available -= amount
+        self.credits -= amount
         self.credits_used += amount
         self.save()
         
-    def add_credits(self, amount):
-        self.credits_available += amount
-        self.save()
+    def add_credits(self, amount, name=None):
+        if name != 'Free':
+            return (False, "Payment system is not configured")
+        if CreditTransaction.objects.filter(name="Free", ip=self.ip).exists():
+            return (False, "Free credits already used")
+        
+        else:
+            CreditTransaction.objects.create(user=self, amount=amount, name=name, ip=self.ip)
+            self.credits += amount
+            self.save()
+            return (True, "Credits added")
         
     def has_credits(self, amount):
         return self.credits_left() >= amount
     
     def is_low_credits(self):
         return self.credits_left() < settings.LOW_CREDIT_THRESHOLD
+    
+    def has_free_credits(self):
+        return not CreditTransaction.objects.filter(name="Free", ip=self.ip).exists()
     
     def notification_list(self):
         return self.notifications.filter(read=False).order_by('-created_at')[:4]
@@ -63,6 +75,16 @@ class User(AbstractUser):
         ).exists():
             Notification.objects.create(user=self, message=message, description=description, type=type)
     
+
+class CreditTransaction(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='credit_transactions')
+    ip = models.CharField(max_length=255, blank=True, null=True)
+    pages = models.TextField(blank=True, null=True)
+    name = models.CharField(max_length=255, blank=True, null=True)
+    amount = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
 class FacebookPage(models.Model):
     """Connected Facebook pages"""
@@ -98,7 +120,7 @@ class FacebookPage(models.Model):
     
     system_prompt = models.TextField(
         help_text="Base instructions for AI behavior",
-        null=True, blank=True
+        default=""
     )
     
     connected_at = models.DateTimeField(auto_now_add=True)

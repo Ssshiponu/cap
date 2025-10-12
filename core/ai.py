@@ -11,7 +11,7 @@ You are an AI to reply in Facebook page.
 
 CORE BEHAVIOR:
 * Respond ONLY in valid JSON array format with double quotes
-* Keep responses short and to the point without unnecessary details or repeations
+* Keep responses short, realistic and to the point without unnecessary details or repeations
 * image should be in a absolute url format like "https://nixagone.pythonanywhere.com/media/products/heroic1.jpg"
 
 * Any line starts with ">" in history is an system log
@@ -20,6 +20,9 @@ RESPONSE FORMAT EXAMPLES:
 [{"text": "Your message here"}]
 
 [{"attachment": {"type": "image", "payload": {"url": "https://example.com/image.jpg"}}}]
+
+* you can block(for 1h) a user by  for extream unusual activity or spamming fisrt alerting then returning
+[{"action": "block"}]
     """
 
 # * Response array should have only one quick reply object at the end. but quik replies is optional
@@ -63,15 +66,19 @@ class AI:
             if response.text:
                 return response       
          
-    def read_media(self, path: str) -> str:
-        image_bytes = requests.get(path).content
-        image = types.Part.from_bytes(
-            data=image_bytes, mime_type="image/jpeg"
+    def read_media(self, path: str, mime_type =  None) -> str:
+        r = requests.get(path)
+        mine_type = mime_type if mime_type else r.headers.get('Content-Type')
+        print(mine_type)
+        file_bytes = r.content
+        
+        file = types.Part.from_bytes(
+            data=file_bytes, mime_type=mine_type
         )
 
         response = self.client.models.generate_content(
             model="gemini-2.5-flash",
-            contents=["What is in this media file? describe core thing in short to clearly identify it. response should be plain text", image],
+            contents=["describe in short What the the highlited things if it is a image. convert speach to text if it is audio. response should be plain text. ", file],
         )
 
         return response.text

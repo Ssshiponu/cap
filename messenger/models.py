@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
+from django.utils import timezone
         
 class Conversation(models.Model):
     facebook_page = models.ForeignKey('core.FacebookPage', on_delete=models.SET_NULL, related_name='conversations', null=True)
@@ -9,6 +10,7 @@ class Conversation(models.Model):
     input_tokens = models.IntegerField(default=0)
     output_tokens = models.IntegerField(default=0)
     active = models.BooleanField(default=True)
+    blocked = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -23,6 +25,26 @@ class Conversation(models.Model):
     
     def total_credits_used(self):
         return sum(message.credits_used for message in self.messages.all())
+    
+    def last_messaged_at(self):
+        last_message = self.messages.all().order_by('-created_at').first()
+        if last_message:
+            return last_message.created_at
+        return timezone.now() + timezone.timedelta(seconds=1)
+
+    
+    def can_reply(self):
+        if self.blocked:
+            return (False, "Conversation is blocked")
+        
+        if self.messages.count() == 1:
+            return (True, "First message")
+        
+        last_message = self.messages.filter(role="user").order_by('-created_at').first()
+        if last_message.created_at + timezone.timedelta(seconds=5) < timezone.now():
+            return (False, "Too Fast")
+        
+        return (True, "OK")
 
 class Message(models.Model):
     mid = models.CharField(primary_key=True, max_length=100)
@@ -42,7 +64,5 @@ class Message(models.Model):
         ordering = ['-created_at']
         
         verbose_name = "Message"
-        verbose_name_plural = "Messages"
-
-        
+        verbose_name_plural = "Messages"        
         

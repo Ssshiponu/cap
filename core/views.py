@@ -17,7 +17,7 @@ import hashlib
 import json
 
 from .models import (
-    User, FacebookPage, Notification
+    User, FacebookPage, Notification, CreditTransaction
 )
 
 from messenger.models import (
@@ -38,14 +38,22 @@ def index(request):
 
 @login_required
 def buy_credits(request):
-    if request.GET.get('buy') ==  settings.PACKAGES[0]['name']:
-        free_credits = settings.PACKAGES[0]['credits']
-        request.user.add_credits(free_credits)
+    buy = request.GET.get('buy')
+    if buy:
+        package = filter(lambda p: p['name'] == buy, settings.PACKAGES)
+        package = list(package)
+        credits, name = package[0]['credits'], package[0]['name']
         
-        messages.success(request, f'You have been granted {free_credits} free credits')
-        Notification.objects.create(user=request.user, message='Free Credits', description=f'You have been granted {free_credits} free credits', type='info')
+        added, msg = request.user.add_credits(credits, name=name)
+        if not added:
+            messages.error(request, msg)
+            return redirect(request.GET.get('next', 'buy_credits'))
+            
+        msg = f'You have {"claimed your free credits" if name == "Free" else f"purchased {credits} credits"}.'
+        messages.success(request, msg)
+        Notification.objects.create(user=request.user, message=f'{"Free credits" if name == "Free" else "Credits added"} ', description=msg, type='info')
         
-        return redirect(request.GET.get('next', 'dashboard'))
+        return redirect(request.GET.get('next', 'buy_credits'))
     
     
     context = {
@@ -141,8 +149,7 @@ def page_toggle(request, page_id):
 def delete_page(request, page_id):
     page = get_object_or_404(FacebookPage, id=page_id, user=request.user)
     conversations = Conversation.objects.filter(facebook_page=page)
-    page.active = False
-    page.save()
+    page.delete()
     
     for c in conversations:
         c.active = False

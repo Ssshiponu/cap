@@ -1,4 +1,5 @@
-from datetime import datetime, timezone
+import datetime
+from django.utils import timezone
 from .models import Message
 from core.ai import AI
 from core.utils import generate_random_token
@@ -8,9 +9,9 @@ def time_ago(dt):
         return ""
     
     # Ensure timezone-aware comparison
-    now = datetime.now(timezone.utc)
+    now = datetime.datetime.now(datetime.timezone.utc)
     if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
+        dt = dt.replace(tzinfo=datetime.timezone.utc)
         
     diff = now - dt
     seconds = diff.total_seconds()
@@ -38,37 +39,35 @@ def time_ago(dt):
     else:
         return f"{int(seconds // year)}y ago"
 
-def generate_conversation(conv, ai: "AI"):
+def generate_str_conversation(conv, ai: "AI"):
     """
-    Generate conversation. 
-    first find history index and then take all messages after history index with itself
-    if history index is not found, take all messages and generate a history
+    Generate conversation from messages
     """
 
     messages = conv.messages.order_by("created_at")
 
+    # Find the index of the last item with role history
     history_index = None
     for i, msg in enumerate(messages):
         if msg.role == "history":
             history_index = i
             
-    print(history_index)
-
+    # Take all messages after history index with itself else take last 12
     if history_index is not None:
         qs = messages[history_index:]
     else:
-        qs = messages[:]
+        qs = list(messages)[-12:]
+        
+    print(len(qs))
 
-    conversation = []
+    # Generate conversation
+    conversation = ""
     for row in qs:
-        conversation.append({
-            row.role: row.content
-            })
+        conversation += (f'[{row.role}: {row.content}]\n')
 
-    if history_index is None or len(conversation) > 12:
+    # Generate and add history if not found or if conversation has more than 12 messages
+    if history_index is None or len(qs) > 12:
         history = ai.generate_history(conversation)
-        print(history)
-
         Message.objects.create(
             mid="rid_" + generate_random_token(),
             conversation=conv,
@@ -76,9 +75,26 @@ def generate_conversation(conv, ai: "AI"):
             content=history,
         )
 
+    # Add last message time to last message of conversation   
+    if len(conversation) > 2:
+        conversation += f'[LAST MESSAGEED: {time_ago(conv.updated_at)}]'
+        
     print(conversation)
 
-    if len(conversation) > 2:
-        conversation[-1]["last_message"] = time_ago(conv.updated_at)
+    return conversation
 
+def generate_conversation(conv, last_n=30):
+    qs = list(conv.messages.order_by("-created_at").values("role", "content", "created_at")[:last_n])[::-1]
+
+    conversation = []
+    for row in qs:
+        role = row.get("role")
+        content = row.get("content", "")
+
+        conversation.append({
+            'role': role,
+            'content': content,
+        })
+        
+    if len(conversation) > 2: conversation[-1]['last_message'] = time_ago(conv.updated_at) 
     return conversation

@@ -5,7 +5,7 @@ STICKERS = {
     "369239263222822": "👍"
 }
 
-SUPPORTED_MEDIA_TYPES = ["image", "audio"]
+SUPPORTED_MEDIA_TYPES = {"image":"image/jpeg", "audio":"audio/mpeg"}
 
 
 class Reader:
@@ -14,9 +14,10 @@ class Reader:
         
     def _process_attachment(self, attachment, role: str):
         attachment_type = attachment["type"]
-        if attachment_type in SUPPORTED_MEDIA_TYPES:
+        
+        if attachment_type in SUPPORTED_MEDIA_TYPES.keys():
             url = attachment["payload"]["url"]
-            message = self.ai.read_media(url) if role == 'user' else url
+            message = self.ai.read_media(url, SUPPORTED_MEDIA_TYPES[attachment_type]) if role == 'user' else url
             return f"> {role} sent an {attachment_type}: {message}"
         else:
             return f"> {role} sent an {attachment_type} - can't read"

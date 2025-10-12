@@ -97,6 +97,7 @@ def connect_page(request):
             
             if page is not None:
                 page.active = True
+                page.user = request.user
                 page.page_name = page_name
                 page.page_category = page_category
                 page.access_token = page_access_token
@@ -162,8 +163,9 @@ def register(request):
             return render(request, 'auth/register.html', {'email': email, 'full_name': full_name})
 
         password = request.POST['password']
-        
-        user = User.objects.create_user(id=uuid.uuid4(), first_name=full_name, password=password, email=email, username=generate_random_token(26))
+        ip = request.META.get('REMOTE_ADDR')
+        print(ip)
+        user = User.objects.create_user(id=uuid.uuid4(), ip=ip, first_name=full_name, password=password, email=email, username=generate_random_token(26))
         user.save()
         
         # Auto-login after registration
