@@ -11,9 +11,9 @@ import base64
 import requests
 import json
 import uuid
+import random
 
-from core.models import User, FacebookPage
-
+from core.models import User, FacebookPage, Attempt, Otp
 from .utils import generate_random_token
 
 
@@ -77,9 +77,6 @@ def add_page_callback(request):
         page["picture"] = f'data:image/png;base64,{picture_data}'
     
     return render(request, 'auth/connect_page.html', {"pages": pages})
-    
-
-    
             
 def connect_page(request):
     if request.method == 'POST':
@@ -161,38 +158,67 @@ def register(request):
         
         email = request.POST['email']
         full_name = request.POST['full_name']
-        if User.objects.filter(email__iexact=email).exists():
+        if User.objects.filter(email__iexact=email, is_active=True).exists():
             messages.error(request, 'Email already in use.')
             return render(request, 'auth/register.html', {'email': email, 'full_name': full_name})
 
+        inactive_users = User.objects.filter(email__iexact=email, is_active=False)
+        if inactive_users.exists():
+            inactive_users.delete()
+            
         password = request.POST['password']
         ip = get_ip(request)
-        user = User.objects.create_user(id=uuid.uuid4(), ip=ip, first_name=full_name, password=password, email=email, username=generate_random_token(26))
-        user.save()
+        user = User.objects.create_user(id=uuid.uuid4(), ip=ip, first_name=full_name, password=password, email=email, username=generate_random_token(26), is_active=False)
+        
+        # Send Otp
+        otp = random.randint(100000, 999999)
+        Otp.objects.create(user=user, otp=otp)
         
         send_mail(
-            'Welcome to ChatBot',
-            f'Hi {full_name},\n\nWelcome to ChatBot! We are excited to have you on board.\n\nBest regards,\nChatBot Team',
+            'Verification code',
+            f'Verification code: {otp}\n\nIf you did not request this, please ignore this email.',
             settings.EMAIL_HOST_USER,
             [email],
-            
         )
-        # Auto-login after registration
-        user = authenticate(request, email=email, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('dashboard')
+        
+        return render(request, 'auth/verify_otp.html', {'user_id': user.id})
         
     if request.method == 'GET':
         email = request.GET.get('email', '')
         if email:
-            if User.objects.filter(email__iexact=email).exists():
+            if User.objects.filter(email__iexact=email, is_active=True).exists():
                 messages.error(request, 'Email already in use.')
             return render(request, 'auth/register.html', {'email': email})
         return redirect('register_lander')
 
     return render(request, 'auth/register.html')
 
+
+def verify_otp(request):
+    if request.method == 'POST':
+        user_id = request.POST['user_id']
+        user = User.objects.filter(id=user_id).first()
+        if user is None:
+            messages.error(request, 'Invalid user')
+            return render(request, 'auth/verify_otp.html')
+        
+        otp = request.POST['otp']
+        otp_obj = Otp.objects.filter(user=user, otp=otp).first()
+        if otp_obj is None:
+            messages.error(request, 'Invalid OTP')
+            return render(request, 'auth/verify_otp.html', {'user_id': user_id})
+        
+        if otp_obj.is_expired():
+            messages.error(request, 'OTP has expired')
+            return render(request, 'auth/verify_otp.html', {'user_id': user_id})
+        
+        user.is_active = True
+        user.save()
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
+        login(request, user)
+        return redirect('dashboard')
+    
+    return redirect('register_lander')
 
 def password_reset(request):
     if request.method == 'POST':

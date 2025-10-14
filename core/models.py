@@ -183,3 +183,21 @@ class WebhookLog(models.Model):
 
     def __str__(self):
         return f"{self.event_type} - {self.created_at}"
+
+
+class Attempt(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='attempts')
+    attmpt = models.CharField()
+    ip = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Otp(models.Model):
+    user = models.ForeignKey('core.User', on_delete=models.CASCADE)
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    def is_expired(self):
+        return self.created_at < timezone.now() - timezone.timedelta(minutes=5)
+    
+    

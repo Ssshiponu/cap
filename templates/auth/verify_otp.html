@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Verify OTP | Chat Autopilot{% endblock %}
+
+{% block body %}
+
+    <div class="relative flex flex-col gap-6 items-center justify-center min-h-screen p-8">
+
+        <header>
+            {% include "core/partials/brand.html" %}
+        </header>
+                        
+        <div
+        class="relative w-full max-w-sm mx-auto lg:mb-0">
+            <div class="relative text-center">
+                
+                <div class="flex flex-col mb-6 space-y-2">
+                    <h1 class="text-xl font-semibold tracking-tight">Verify OTP</h1>
+                    <p class="text-neutral-800">We sent an OTP to your email. </p>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mb-3 p-2 rounded-lg text-sm {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form action="{% url "verify_otp" %}" method="post" class="space-y-3 text-left">
+                
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ user_id }}">
+                    <input type="text" name="otp" class="input w-full" placeholder="Enter OTP">
+                    
+                    <div class="flex justify-end">
+                        <button type="submit" class="btn">Verify</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
