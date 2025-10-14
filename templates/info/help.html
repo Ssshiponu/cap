@@ -1,0 +1,10 @@
+{% extends "info/layout.html" %}
+
+{% block title %}Help | Chat Autopilot{% endblock %}
+
+{% block content %}
+
+<div class="min-h-[calc(100dvh-260px)]">
+{% include "info/help/"|add:article|add:".md" %}
+</div>
+{% endblock content %}

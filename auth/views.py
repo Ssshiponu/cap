@@ -126,8 +126,9 @@ def connect_page(request):
 
 
 def login_view(request):
+    next = request.GET.get('next') or 'dashboard'
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect(next)
     
     if request.method == 'POST':
         email = request.POST['email']
@@ -136,7 +137,7 @@ def login_view(request):
         if user is not None:
             
             login(request, user)
-            return redirect('dashboard')
+            return redirect(next)
         else:
             messages.error(request, "Invalid email or pasword")
             return render(request, 'auth/login.html', {"email": email})

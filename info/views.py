@@ -20,6 +20,12 @@ def contact(request):
 def faq(request):
     return render(request, 'info/faq.html')
 
+def help(request):
+    return render(request, 'info/help.html', {'article': 'index'})
+
+def help_articles(request, article):
+    return render(request, f'info/help.html', {'article': article})
+
 
 
 # SEO

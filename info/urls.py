@@ -10,6 +10,9 @@ urlpatterns = [
     path("about/", views.about, name="about"),
     path("contact/", views.contact, name="contact"),
     
+    path("help/", views.help, name="help"),
+    path("help/<str:article>", views.help_articles, name="help_articles"),
+    
     path("faq/", views.faq, name="faq"),    
     
     

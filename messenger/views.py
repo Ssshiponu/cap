@@ -190,7 +190,6 @@ def webhook_view(request):
     elif request.method == "POST":
         try:
             data = json.loads(request.body.decode("utf-8"))
-            print(data)
         except json.JSONDecodeError:
             logger.error("Invalid JSON received in webhook request body.")
             return HttpResponse("Invalid JSON", status=400)

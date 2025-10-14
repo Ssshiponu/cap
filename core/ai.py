@@ -35,7 +35,7 @@ class AI:
         self.page_id = page_id
         self.page = FacebookPage.objects.filter(id=self.page_id).first()
         self.api_key = api_key
-        self.default_models =['gemini-2.5-flash', 'gemini-2.0-flash']
+        self.default_models =['gemini-flash-latest', 'gemini-2.5-flash']
         self.models = [model] if model else self.default_models
         self.client = genai.Client(api_key=self.api_key)
         

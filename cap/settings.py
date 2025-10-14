@@ -6,6 +6,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv( os.path.join(BASE_DIR, ".env") )
 
+METADATA_FILE = os.path.join(BASE_DIR, "metadata.json")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
@@ -62,6 +63,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.cp.metadata',
             ],
         },
     },

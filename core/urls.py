@@ -4,6 +4,9 @@ from .views import *
 
 urlpatterns = [
     path("", index, name="index"),
+    path("bn/", index, name="index_bn"),
+    path("en/", index, name="index_en"),
+    
     path("", include('info.urls')),
     path("dashboard/", dashboard, name="dashboard"),
     path("templates/", templates, name="templates"),

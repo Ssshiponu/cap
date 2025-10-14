@@ -13,8 +13,8 @@
                 <a href="#hero" class="btn-link">Home</a>
                 <a href="#features" class="btn-link">Features</a>
                 <a href="#pricing" class="btn-link">Pricing</a>
-                <a href="#" class="btn-link">About</a>
-                <a href="#" class="btn-link">Contact</a>
+                <a href="/about/" class="btn-link">About</a>
+                <a href="/contact/" class="btn-link">Contact</a>
             </div>
         </nav>
 
@@ -49,8 +49,8 @@
             <a href="#hero" class="btn-link">Home</a>
             <a href="#features" class="btn-link">Features</a>
             <a href="#pricing" class="btn-link">Pricing</a>
-            <a href="#" class="btn-link">About</a>
-            <a href="#" class="btn-link">Contact</a>
+            <a href="/about/" class="btn-link">About</a>
+            <a href="/contact/" class="btn-link">Contact</a>
         </div>
         <div class="flex gap-3">
             <a href="{% url "login" %}" class="btn flex-1">Login</a>
@@ -61,10 +61,7 @@
   </nav>
 
 <section id="hero" class="bg-whuite flex flex-col items-center justify-center min-h-[calc(100dvh-96px)] md:min-h-[550px] px-6 gap-8 max-w-6xl mx-auto">
-    <h1 class="h1">AI কি
-      <div class="relative inline-block"> Messenger
-        <span class="bold-underline"></span>
-      </div> এ রিপ্লাই দিতে পারে ?</h1>
+    <h1 class="h1">{{ metadata.hero.title|safe }}</h1>
     <div class="flex sm:flex-row flex-col-reverse gap-8 md:gap-12 lg:gap-16  max-w-4xl mx-auto">
             <lord-icon
                 src="https://cdn.lordicon.com/ndwqegog.json"
@@ -72,8 +69,7 @@
                 class="not-sm:hidden sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 mx-auto absolute sm:static inset-x-0 top-56 opacity-15 sm:opacity-100 -z-10">
             </lord-icon>
         <div class="flex-1 flex flex-col justify-center gap-6">
-            <p class="text-neutral-900 sm:text-lg md:text-xl font-medium"><span class="text-black font-bold">
-                হ্যাঁ</span> আমাদের তৈরি AI টি আপনার Facebook পেজের সাথে সংযুক্ত করলে আপনার দেওয়া নির্দেশনা এবং তথ্যের ভিত্তিতে মুহূর্তেই Messenger বা Whatsapp এ রিপ্লাই দিতে পারে</p>
+            <p class="text-neutral-900 sm:text-lg md:text-xl font-medium">{{ metadata.hero.description|safe }} </p>
             <div class="flex items-center flex-wrap gap-3">
                 <a href="{% url "register" %}" class="btn btn-primary">Try for Free</a>
                 <a href="#" class="btn">See Demo</a>
@@ -92,7 +88,7 @@
 
 <section id="features" class="py-16 sm:py-28 px-6 bg-neutral-50 flex justify-center">
   <div class="flex flex-col gap-12 max-w-4xl mx-auto">
-    <h2 class="h text-center">এটা কেন দরকার?</h2>
+    <h2 class="h text-center">{{ metadata.features.title|safe }} </h2>
 
     <div class="flex flex-col md:flex-row gap-12 mx-auto">
         <div class="flex gap-3">
@@ -103,7 +99,7 @@
           </lord-icon>
           <div class="flex-1 flex flex-col gap-2">
             <h3 class="h3">Fast</h3>
-            <p>ইউজার-কে মেসেজ করে রিপ্লাই এর জন্য অপেক্ষা করতে হয় না</p>
+            <p>{{ metadata.features.1st }}</p>
           </div>
           
         </div>
@@ -115,7 +111,7 @@
           </lord-icon>
           <div class="flex-1 flex flex-col gap-2">
             <h3 class="h3">Realistic</h3>
-            <p>রিপ্লাই যদি দ্রুত না হতো, ইউজার বুজতেই পারতো না যে সে AI এর সাথে কথা বলছে</p>
+            <p>{{ metadata.features.2nd }}</p>
           </div>
           
         </div>
@@ -127,21 +123,21 @@
           </lord-icon>
           <div class="flex-1 flex flex-col gap-2">
             <h3 class="h3">Multichating</h3>
-            <p>একই সময়ে অনেকজন ইউজারের সাথে চ্যাট করতে পারে</p>
+            <p>{{ metadata.features.3rd }}</p>
           </div>
           
         </div>
     </div>
-    <p class="text-neutral-700 text-center">যুগের সাথে তাল মেলাতে সবাইকে সেই নতুন প্রযুক্তি গ্রহণ করতে হয়</p>
+    <p class="text-neutral-700 text-center">{{ metadata.features.subtitle|safe }}</p>
   </div>
 </section>
 
 <section class="py-16 sm:py-24 p-6 max-w-4xl mx-auto bg-white">
-  <h2 class="h mb-16 text-center">এটা কিভাবে কাজ করে ?</h2>
+  <h2 class="h mb-16 text-center">{{ metadata.work.title }}</h2>
 
   <div class="text-neutral-900 grid grid-cols-5 gap-2 sm:gap-6 gap-y-4 sm:gap-y-8 max-w-2xl mx-auto">
       <div class="box center col-span-2">
-        <p class="text-lg font-medium">ইউসার Facebook পেজে মেসেজ পাঠায়</p>
+        <p class="text-lg font-medium">{{ metadata.work.1st }} </p>
       </div>
 
       <div class="center">
@@ -153,7 +149,7 @@
       </div>
 
       <div class="center box col-span-2">
-        <p class="text-lg font-medium">Facebook সেই মেসেজ আমাদের AI এর কাছে ফরওয়ার্ড করে দেয়</p>
+        <p class="text-lg font-medium">{{ metadata.work.2nd }} </p>
       </div>
 
       <div class="center col-span-2">
@@ -175,7 +171,7 @@
       </div>
 
       <div class="box center col-span-2">
-        <p class="text-lg font-medium">সেই রিপ্লাই facebook কে পাঠায় এবং ফেসবুক ইউজারকে পাঠায়</p>
+        <p class="text-lg font-medium">{{ metadata.work.4th }} </p>
       </div>
 
       <div class="center">
@@ -187,15 +183,15 @@
       </div>
 
       <div class="center box col-span-2">
-        <p class="text-lg font-medium">আমাদের AI মেসেজটিকে প্রসেস করে এবং একটা রিপ্লাই জেনারেট করে</p>
+        <p class="text-lg font-medium">{{ metadata.work.3rd }} </p>
       </div>
   </div>
-  <p class="text-neutral-700 text-center mt-16">এই সমস্ত কিছু মাত্র কয়েক সেকেন্ডের মধ্যে হয়</p>
+  <p class="text-neutral-700 text-center mt-16">{{ metadata.work.subtitle }}</p>
 </section>
 
 
 <section id="pricing" class="py-16 sm:py-22 bg-neutral-50 flex flex-col items-center" arial-label="Pricing">
-    <h2 class="h mb-12">দাম কত ?</h2>
+    <h2 class="h mb-12">{{ metadata.pricing.title }}</h2>
     <div class="flex items-center gap-2 mb-4 text-neutral-800">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap-icon lucide-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
         <p class="text-lg font-medium">10 Credits = 1 Reply</p>
@@ -222,11 +218,11 @@
             </div>
         {% endfor %}
     </div>
-    <p class="text-neutral-700 text-center mt-16">কোনটি পছন্দ হয়েছে ? কোনটি না হলে আমাদের সাথে <a class="link" href="#">যোগাযোগ করুন</a></p>
+    <p class="text-neutral-700 text-center mt-16">{{ metadata.pricing.subtitle|safe }} </p>
 </section>
 
 <section class="py-16 sm:py-24 p-6 max-w-4xl mx-auto bg-white">
-  <h2 class="h mb-16 text-center">কিভাবে শুরু করবো ?</h2>
+  <h2 class="h mb-16 text-center">{{ metadata.start.title }}</h2>
       <div class="flex flex-col md:flex-row gap-12 mx-auto">
         <div class="flex gap-3">
           <lord-icon
@@ -236,7 +232,7 @@
           </lord-icon>
           <div class="flex-1 flex flex-col gap-2">
             <h3 class="h3">Account</h3>
-            <p>শুরুতে একটি একাউন্ট তৈরী করুন, আগে থেকে একাউন্ট থাকলে লগইন করুন</p>
+            <p>{{ metadata.start.1st }}</p>
           </div>
           
         </div>
@@ -248,7 +244,7 @@
           </lord-icon>
           <div class="flex-1 flex flex-col gap-2">
             <h3 class="h3">Connecting pages</h3>
-            <p>ড্যাশবোর্ড থেকে Add page বাটনে ক্লিক করে আপনার Facebook পেজ সিলেক্ট করুন এবং connect করুন। </p>
+            <p>{{ metadata.start.2nd }}</p>
           </div>
           
         </div>
@@ -260,12 +256,12 @@
           </lord-icon>
           <div class="flex-1 flex flex-col gap-2">
             <h3 class="h3">Settings</h3>
-            <p>এরপর পেজের সেটিংস থেকে system_prompt এ আপনার AI এর আচরণ ও ডাটা বর্ণনা করুন।</p>
+            <p>{{ metadata.start.3rd }}</p>
           </div>
           
         </div>
     </div>
-    <p class="text-neutral-700 text-center mt-16">আমাদেরকে আপনার ব্যবসা বুঝিয়ে বললে আমরা system prompt তৈরী করে দেবো</p>
+    <p class="text-neutral-700 text-center mt-16">{{ metadata.start.subtitle|safe }} </p>
 </section>
 
 <section id="cta" class="py-16 sm:py-24 p-6 bg-neutral-50">
@@ -277,8 +273,8 @@
             class="w-20 h-20 md:w-28 md:h-28">
         </lord-icon>
         <div class="flex-1">
-          <h3 class="h3">বিশ্রামের সময় হয়েছে..</h3>
-          <p>AI কে আপনার কাজ বুঝিয়ে দিন। আপনি প্রস্তুত তো ?</p>
+          <h3 class="h3">{{ metadata.cta.title }}</h3>
+          <p>{{ metadata.cta.subtitle }}</p>
         </div>
       </div>
       <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
@@ -287,6 +283,3 @@
 
 {% include "core/partials/footer.html" %}
 {% endblock body %}
-
-<h2 class="h">Chat Autopilot</h2>
-    
