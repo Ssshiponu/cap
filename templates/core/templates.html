@@ -33,7 +33,7 @@
                 </div>
 
                 <div class="overlay" x-show="modal" x-cloak></div>
-                <div @click.outside="modal = false" class="modal bg-neutral-50" x-show="modal" x-cloak x-transition x-cloak>
+                <div @click.outside="modal = false" class="modal bg-neutral-50" x-show="modal" x-transition x-cloak>
                     {% for template in templates %}
                     <div x-data="{ prompt: '{{ template.content|escapejs }}' }" x-show="selected == '{{ template.name }}'">
                         <h3 class="h3">{{ template.name }}</h3>
@@ -44,6 +44,8 @@
 
                         </div>
                         <div class="flex items-center justify-end gap-3 mt-4">
+                            <button @click="modal = false" class="btn">Close</button>
+
                             <div x-on:click="copy(), navigator.clipboard.writeText(prompt)" class="btn btn-primary">
                                 <div x-show="!copied" class=" flex items-center gap-2">
 

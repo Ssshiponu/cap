@@ -218,3 +218,14 @@ BKASH["TOKEN_GRANT_URL"] = f"{BKASH['BASE_URL']}/{BKASH['VERSION']}/checkout/tok
 BKASH["CREATE_URL"] = f"{BKASH['BASE_URL']}/{BKASH['VERSION']}/checkout/payment/create"
 BKASH["EXECUTE_URL"] = f"{BKASH['BASE_URL']}/{BKASH['VERSION']}/checkout/payment/execute"
 BKASH["QUERY_URL"] = f"{BKASH['BASE_URL']}/{BKASH['VERSION']}/checkout/payment/query"
+
+
+
+# Email
+
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')

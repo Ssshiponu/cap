@@ -35,7 +35,7 @@ class AI:
         self.page_id = page_id
         self.page = FacebookPage.objects.filter(id=self.page_id).first()
         self.api_key = api_key
-        self.default_models =['gemini-flash-latest', 'gemini-2.5-flash']
+        self.default_models =[ 'gemini-flash-latest', 'gemini-2.5-flash']
         self.models = [model] if model else self.default_models
         self.client = genai.Client(api_key=self.api_key)
         
@@ -54,17 +54,22 @@ class AI:
         """Generate AI response using Gemini API"""
 
         for model in self.models:
-            response = self.client.models.generate_content(
-                model=model,
-                contents=str(history),
-                config=types.GenerateContentConfig(
-                    temperature=self.temperature(),
-                    system_instruction=self.system_prompt(),
-                    response_mime_type="application/json",
-                ),
-            )
-            if response.text:
-                return response       
+            try:
+                response = self.client.models.generate_content(
+                    model=model,
+                    contents=str(history),
+                    config=types.GenerateContentConfig(
+                        temperature=self.temperature(),
+                        system_instruction=self.system_prompt(),
+                        response_mime_type="application/json",
+                    ),
+                )
+                if response.text:
+                    return response
+                
+            except Exception as e:
+                print(e)
+                continue
          
     def read_media(self, path: str, mime_type =  None) -> str:
         r = requests.get(path)

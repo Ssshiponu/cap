@@ -20,6 +20,9 @@ def contact(request):
 def faq(request):
     return render(request, 'info/faq.html')
 
+def products(request):
+    return render(request, 'info/products.html')
+
 def help(request):
     return render(request, 'info/help.html', {'article': 'index'})
 

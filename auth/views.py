@@ -3,7 +3,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
+from django.core.mail import send_mail
 from django.conf import settings
+from core.utils import get_ip
 
 import base64
 import requests
@@ -164,11 +166,17 @@ def register(request):
             return render(request, 'auth/register.html', {'email': email, 'full_name': full_name})
 
         password = request.POST['password']
-        ip = request.META.get('REMOTE_ADDR')
-        print(ip)
+        ip = get_ip(request)
         user = User.objects.create_user(id=uuid.uuid4(), ip=ip, first_name=full_name, password=password, email=email, username=generate_random_token(26))
         user.save()
         
+        send_mail(
+            'Welcome to ChatBot',
+            f'Hi {full_name},\n\nWelcome to ChatBot! We are excited to have you on board.\n\nBest regards,\nChatBot Team',
+            settings.EMAIL_HOST_USER,
+            [email],
+            
+        )
         # Auto-login after registration
         user = authenticate(request, email=email, password=password)
         if user is not None:

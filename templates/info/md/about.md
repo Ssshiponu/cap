@@ -4,7 +4,7 @@ Welcome to **Chat Autopilot** — your intelligent assistant for automated Faceb
 
 ---
 
-## 🚀 Our Mission
+## Our Mission
 
 Our mission is simple:  
 **to help businesses and page owners save time, engage faster, and grow smarter** using the power of AI.
@@ -13,7 +13,7 @@ We believe that every message matters. Whether you’re handling customer suppor
 
 ---
 
-## 💡 What We Do
+## What We Do
 
 **Chat Autopilot** is a SaaS platform that connects with your Facebook Page and automatically replies to messages using AI.  
 
@@ -27,7 +27,7 @@ Each automated reply uses a **credits-based system**, allowing you to scale acco
 
 ---
 
-## 🔧 How It Works
+## How It Works
 
 1. **Connect your Facebook Page** securely through our dashboard.  
 2. **Set up your AI prompt** or use our default templates.  
@@ -38,7 +38,7 @@ It’s that simple.
 
 ---
 
-## 🔒 Privacy & Transparency
+## Privacy & Transparency
 
 We value your trust.  
 Your Facebook data, tokens, and messages are always encrypted and stored securely.  
@@ -48,7 +48,7 @@ Learn more in our [Privacy Policy](https://chatautopilot.net/privacy-policy).
 
 ---
 
-## 🌍 Our Vision
+## Our Vision
 
 We aim to empower **digital entrepreneurs, content creators, and small businesses** around the world with AI-driven automation — without the need for coding or complex setups.
 
@@ -56,11 +56,11 @@ Chat Autopilot is built for simplicity, reliability, and growth.
 
 ---
 
-## 📬 Contact Us
+## Contact Us
 
 We’d love to hear from you!
 
 **Chat Autopilot**  
 Email: support@chatautopilot.net  
 Website: [https://chatautopilot.net](https://chatautopilot.net)  
-Facebook: [facebook.net/chatautopilot](https://facebook.net/chatautopilot)
+Facebook: [facebook.com/chatautopilot](https://facebook.com/chatautopilot)

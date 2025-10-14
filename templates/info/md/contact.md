@@ -40,9 +40,9 @@ If you have feature requests or suggestions, let us know!
 
 Stay connected and get updates about new features:
 
-- [Facebook](https://facebook.net/chatautopilot)  
-- [Twitter/X](https://twitter.net/chatautopilot)  
-- [LinkedIn](https://linkedin.net/company/chatautopilot)
+- [Facebook](https://facebook.com/chatautopilot)  
+- [Twitter/X](https://x.com/chatautopilot)  
+- [LinkedIn](https://linkedin.com/company/chatautopilot)
 
 ---
 
@@ -50,8 +50,4 @@ Stay connected and get updates about new features:
 
 Chat Autopilot  
 Dhaka, Bangladesh  
-📧 info@chatautopilot.net  
-
----
-
-© 2025 Chat Autopilot — All rights reserved.
+info@chatautopilot.net  

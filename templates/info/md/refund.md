@@ -1,4 +1,4 @@
-# Refund Policy (Credits-Based)
+# Refund Policy
 
 _Last updated: October 9, 2025_
 

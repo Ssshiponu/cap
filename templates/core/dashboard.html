@@ -256,9 +256,9 @@ window.addEventListener('online', () => {
         </aside>
         
 
-        <section class="flex-1 flex flex-col justify-between mx-auto overflow-y-auto ml-60 h-[calc(100vh-64px)] bg-neutral-100" x-init="$el.classList.remove('ml-60')">
+        <section class="flex-1 flex flex-col justify-between mx-auto overflow-y-auto lg:ml-60 h-[calc(100vh-64px)] bg-neutral-100" x-init="$el.classList.remove('lg:ml-60')">
             {% block content %}
-                <div class="p-6 md:p-10 max-w-6xl w-full mx-auto">
+                <div class="p-4 max-w-6xl w-full mx-auto">
 
                         {% if not pages %}
                         <div class="h-24 overflow-hidden rounded-xl mb-4 flex">
@@ -274,7 +274,7 @@ window.addEventListener('online', () => {
                         </div>
                         {% endif %}
                         {% if request.user.has_free_credits %}
-                            <div class="bg-white overflow-hidden rounded-xl mb-8 p-4 flex flex-col sm:flex-row gap-4 sm:justify-between">
+                            <div class="bg-white overflow-hidden rounded-xl mb-4 p-4 flex flex-col sm:flex-row gap-4 sm:justify-between">
                                 <div class="bg-white flex items-center gap-2">
                                     <lord-icon
                                         src="https://cdn.lordicon.com/apgkpdeb.json"
@@ -300,7 +300,7 @@ window.addEventListener('online', () => {
                     
 
 
-                    <div class="flex flex-col gap-4 mb-8 mt-4">
+                    <div class="flex flex-col gap-4 p-4 bg-white rounded-xl">
                         <div class="flex items-center justify-between ml-2">
                             <h2 class="h2">Pages</h2>
                             <a href="{% url "add_page" %}" class="btn bg-white hover:bg-neutral-100 active:bg-neutral-200 text-sm py-1.5 px-3 flex items-center gap-2">
@@ -360,7 +360,7 @@ window.addEventListener('online', () => {
                                     </div>
                                 </li>
                             {% empty %}
-                                <hr class="my-1">
+                                <hr class="my-0">
                                 <div class="py-16 flex flex-col items-center justify-center gap-4">
                                     <svg class="stroke-neutral-500" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package-open-icon lucide-package-open"><path d="M12 22v-9"/><path d="M15.17 2.21a1.67 1.67 0 0 1 1.63 0L21 4.57a1.93 1.93 0 0 1 0 3.36L8.82 14.79a1.655 1.655 0 0 1-1.64 0L3 12.43a1.93 1.93 0 0 1 0-3.36z"/><path d="M20 13v3.87a2.06 2.06 0 0 1-1.11 1.83l-6 3.08a1.93 1.93 0 0 1-1.78 0l-6-3.08A2.06 2.06 0 0 1 4 16.87V13"/><path d="M21 12.43a1.93 1.93 0 0 0 0-3.36L8.83 2.2a1.64 1.64 0 0 0-1.63 0L3 4.57a1.93 1.93 0 0 0 0 3.36l12.18 6.86a1.636 1.636 0 0 0 1.63 0z"/></svg>
                                     <p class="text-neutral-500">No pages connected</p>
