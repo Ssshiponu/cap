@@ -13,8 +13,10 @@ def credits(start_date=None, end_date=None, pages: list[FacebookPage] = []):
     """Return a json data for chartJS bar graph of credits usage"""
     if start_date is None:
         start_date = days_ago(7)
+        
     if end_date is None:
         end_date = timezone.now()
+        
 
     # Make sure start_date <= end_date (swap if provided in reverse)
     if start_date > end_date:
@@ -50,13 +52,12 @@ def credits(start_date=None, end_date=None, pages: list[FacebookPage] = []):
     # Iterate the full inclusive date range to produce labels and data
     labels = []
     data = []
-    cur = start_date_only
+    cur = start_date_only + timedelta(days=1)
     while cur <= end_date_only:
         labels.append(cur.strftime('%b-%d'))
         data.append(credits_by_date.get(cur, 0))
         cur += timedelta(days=1)
-
-            
+        
     return {
         'type': 'bar',
         'data': {
@@ -134,7 +135,7 @@ def messages(start_date=None, end_date=None, pages: list[FacebookPage] | None = 
     user_data = []
     assistant_data = []
 
-    cur = start_date_only
+    cur = start_date_only + timedelta(days=1)
     while cur <= end_date_only:
         labels.append(cur.strftime('%b-%d'))
         day_counts = counts_by_date.get(cur, {'user': 0, 'assistant': 0})
@@ -153,7 +154,7 @@ def messages(start_date=None, end_date=None, pages: list[FacebookPage] | None = 
                     'data': user_data,
                     'borderColor': 'rgba(75, 192, 192, 1)',
                     'backgroundColor': 'rgba(75, 192, 192, 0.2)',
-                    'tension': 0.4,
+                    'tension': 0.1,
                     'fill': True
                 },
                 {
@@ -161,7 +162,7 @@ def messages(start_date=None, end_date=None, pages: list[FacebookPage] | None = 
                     'data': assistant_data,
                     'borderColor': 'rgba(153, 102, 255, 1)',
                     'backgroundColor': 'rgba(153, 102, 255, 0.2)',
-                    'tension': 0.4,
+                    'tension': 0.1,
                     'fill': True
                 }
             ]

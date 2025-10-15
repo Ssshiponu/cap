@@ -33,7 +33,7 @@
                 </div>
 
                 <div class="overlay" x-show="modal" x-cloak></div>
-                <div @click.outside="modal = false" class="modal bg-neutral-50" x-show="modal" x-transition x-cloak>
+                <div @click.outside="modal = false" class="modal bg-neutral-50 rounded-none sm:rounded-xl" x-show="modal" x-transition x-cloak>
                     {% for template in templates %}
                     <div x-data="{ prompt: '{{ template.content|escapejs }}' }" x-show="selected == '{{ template.name }}'">
                         <h3 class="h3">{{ template.name }}</h3>

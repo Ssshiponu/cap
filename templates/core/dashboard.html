@@ -36,19 +36,21 @@ window.addEventListener('online', () => {
                 <nav>
                     <ul class="flex items-center gap-1">
 
-                        <li><a href="/help/"  class="hidden sm:flex btn-link">
+                        <li><a href="/help/" class="hidden sm:flex btn-link">
                             <lord-icon
                                 src="https://cdn.lordicon.com/biqqsrac.json"
                                 trigger="hover"
+                                target=".btn-link"
                                 style="width:20px;height:20px">
                             </lord-icon>
                             Get Help</a>
                         </li>
                         <li x-data="{ open: false, hasNotifications: {{ user.has_notifications|lower }} }" class="relative">
-                            <a @click="open = !open; hasNotifications = api.HTTPget('notifications-read/').success" href="#" class="btn-link p-1.5">
+                            <a x-tooltip.bottom="Notifications" @click="open = !open; hasNotifications = api.HTTPget('notifications-read/').success" href="#" class="btn-link p-1.5">
                                 <lord-icon
                                     src="https://cdn.lordicon.com/ahxaipjb.json"
                                     trigger="hover"
+                                    target=".btn-link"
                                     style="width:24px;height:24px">
                                 </lord-icon>
                             </a>
@@ -117,6 +119,7 @@ window.addEventListener('online', () => {
                             <lord-icon
                                 src="https://cdn.lordicon.com/apgkpdeb.json"
                                 trigger="hover"
+                                target=".btn-link"
                                 style="width:20px;height:20px">
                             </lord-icon>
                             Buy Cradits</a>
@@ -124,6 +127,7 @@ window.addEventListener('online', () => {
                             <lord-icon
                                 src="https://cdn.lordicon.com/bushiqea.json"
                                 trigger="hover"
+                                target=".btn-link"
                                 style="width:20px;height:20px">
                             </lord-icon>
                             Profile</a>
@@ -131,6 +135,7 @@ window.addEventListener('online', () => {
                             <lord-icon
                                 src="https://cdn.lordicon.com/asyunleq.json"
                                 trigger="hover"
+                                target=".btn-link"
                                 style="width:20px;height:20px">
                             </lord-icon>
                             Settings</a>
@@ -163,6 +168,7 @@ window.addEventListener('online', () => {
                         <lord-icon
                             src="https://cdn.lordicon.com/oeotfwsx.json"
                             trigger="hover"
+                            target=".btn-link"
                             style="width:20px;height:20px">
                         </lord-icon>
                         Dashboard
@@ -174,6 +180,7 @@ window.addEventListener('online', () => {
                                 <lord-icon
                                     src="https://cdn.lordicon.com/cfkiwvcc.json"
                                     trigger="hover"
+                                    target=".btn-link"
                                     style="width:20px;height:20px">
                                 </lord-icon>
                                 Pages
@@ -206,6 +213,7 @@ window.addEventListener('online', () => {
                         <lord-icon
                             src="https://cdn.lordicon.com/dutqakce.json"
                             trigger="hover"
+                            target=".btn-link"
                             style="width:20px;height:20px">
                         </lord-icon>
                         Templates
@@ -214,6 +222,7 @@ window.addEventListener('online', () => {
                             <lord-icon
                                 src="https://cdn.lordicon.com/apgkpdeb.json"
                                 trigger="hover"
+                                target=".btn-link"
                                 style="width:20px;height:20px">
                             </lord-icon>
                             Buy Cradits</a>
@@ -221,6 +230,7 @@ window.addEventListener('online', () => {
                         <lord-icon
                             src="https://cdn.lordicon.com/asyunleq.json"
                             trigger="hover"
+                            target=".btn-link"
                             style="width:20px;height:20px">
                         </lord-icon>
                         Settings
@@ -230,6 +240,7 @@ window.addEventListener('online', () => {
                         <lord-icon
                             src="https://cdn.lordicon.com/yhtmwrae.json"
                             trigger="hover"
+                            target=".btn-link"
                             style="width:20px;height:20px">
                         </lord-icon>
                         About Us
@@ -238,6 +249,7 @@ window.addEventListener('online', () => {
                         <lord-icon
                             src="https://cdn.lordicon.com/wtywrnoz.json"
                             trigger="hover"
+                            target=".btn-link"
                             style="width:20px;height:20px">
                         </lord-icon>
                         Contact
@@ -246,6 +258,7 @@ window.addEventListener('online', () => {
                         <lord-icon
                             src="https://cdn.lordicon.com/biqqsrac.json"
                             trigger="hover"
+                            target=".btn-link"
                             style="width:20px;height:20px">
                         </lord-icon>
                         Get Help
@@ -256,14 +269,14 @@ window.addEventListener('online', () => {
         </aside>
         
 
-        <section class="flex-1 flex flex-col justify-between mx-auto overflow-y-auto lg:ml-60 h-[calc(100vh-64px)] bg-neutral-100" x-init="$el.classList.remove('lg:ml-60')">
+        <section class="flex-1 flex flex-col justify-between overflow-y-auto lg:ml-60 h-[calc(100vh-64px)] bg-neutral-100" x-init="$el.classList.remove('lg:ml-60')">
             {% block content %}
-                <div class="p-4 max-w-6xl w-full mx-auto">
+                <div class="p-4 w-full">
 
                         {% if not pages %}
                         <div class="h-24 overflow-hidden rounded-xl mb-4 flex">
                             <div class="w-12 h-24 bg-white relative">
-                                <svg class="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 w-18 h-18" style="fill: #000;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M 232.63752,27.25471 50.010352,419.18733 c -15.242694,32.71205 1.435421,54.253 35.434419,42.26034 59.727899,-21.06818 140.546249,-64.75471 141.859969,-147.12592 3.96477,-40.30062 -89.95582,3.89627 -89.95582,3.89627 l 0.58194,-16.44607 98.93244,-84.48704 c 0.11938,-44.74837 7.9534,-85.87116 19.1367,-85.64076 11.18328,-0.23874 20.3695,40.89239 20.21998,85.64076 l 97.21052,83.74575 0.20891,17.1799 c 0,0 -92.87437,-44.22225 -88.90975,-3.89657 0.41901,83.15671 84.12223,126.88897 145.11491,147.72616 33.78525,11.54221 50.1803,-9.82562 34.93877,-42.1489 L 279.59113,27.147525 a 25.928113,25.928113 0 0 0 -46.95361,0.107182 z"/></svg>
+                                <svg class="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 w-14 h-14" style="fill: #000;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M 232.63752,27.25471 50.010352,419.18733 c -15.242694,32.71205 1.435421,54.253 35.434419,42.26034 59.727899,-21.06818 140.546249,-64.75471 141.859969,-147.12592 3.96477,-40.30062 -89.95582,3.89627 -89.95582,3.89627 l 0.58194,-16.44607 98.93244,-84.48704 c 0.11938,-44.74837 7.9534,-85.87116 19.1367,-85.64076 11.18328,-0.23874 20.3695,40.89239 20.21998,85.64076 l 97.21052,83.74575 0.20891,17.1799 c 0,0 -92.87437,-44.22225 -88.90975,-3.89657 0.41901,83.15671 84.12223,126.88897 145.11491,147.72616 33.78525,11.54221 50.1803,-9.82562 34.93877,-42.1489 L 279.59113,27.147525 a 25.928113,25.928113 0 0 0 -46.95361,0.107182 z"/></svg>
                             </div>
                             <div class="flex-1 bg-white flex flex-col pl-10 s:pl-12 p-4">
                                 <h2 class="h2 font-medium text-nowrap">Welcome</h2>
@@ -274,11 +287,12 @@ window.addEventListener('online', () => {
                         </div>
                         {% endif %}
                         {% if request.user.has_free_credits %}
-                            <div class="bg-white overflow-hidden rounded-xl mb-4 p-4 flex flex-col sm:flex-row gap-4 sm:justify-between">
+                            <div class="free-credits-card bg-white overflow-hidden rounded-xl mb-4 p-4 flex flex-col sm:flex-row gap-4 sm:justify-between">
                                 <div class="bg-white flex items-center gap-2">
                                     <lord-icon
                                         src="https://cdn.lordicon.com/apgkpdeb.json"
                                         trigger="hover"
+                                        target=".free-credits-card"
                                         style="width:32px;height:32px">
                                     </lord-icon>
                                     <h2 class="h2 font-medium text-nowrap">Get <span class="font-semibold text-black">1000</span> Free Credits</h2>
@@ -288,15 +302,6 @@ window.addEventListener('online', () => {
                                 </div>
                             </div>
                         {% endif %}
-                        {% comment %} <div class="h-24 border border-neutral-200 overflow-hidden rounded-xl mb-8 flex">
-                            <div class="w-12  h-24 bg-white relative">
-                                <svg class="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 w-18 h-18" style="fill: #0866ff;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M320.6 72C180.6 72 72 174.3 72 312.6C72 384.9 101.7 447.4 150.1 490.5C158.4 498 156.7 502.4 158.1 548.7C158.2 551.9 159.1 555.1 160.7 557.9C162.3 560.7 164.6 563.1 167.4 564.8C170.2 566.5 173.3 567.6 176.5 567.8C179.7 568 183 567.5 186 566.2C238.9 543 239.6 541.2 248.6 543.6C401.8 585.8 568 487.7 568 312.6C568 174.3 460.6 72 320.6 72zM469.8 257.1L396.8 372.7C394 377 390.4 380.8 386.2 383.7C382 386.6 377.1 388.5 372.1 389.5C367.1 390.5 361.8 390.3 356.8 389.1C351.8 387.9 347.1 385.7 343 382.7L284.9 339.2C282.3 337.3 279.1 336.2 275.9 336.2C272.7 336.2 269.5 337.3 266.9 339.2L188.5 398.6C178 406.5 164.3 394 171.4 382.9L244.4 267.3C247.2 263 250.8 259.2 255 256.3C259.2 253.4 264.1 251.5 269.1 250.5C274.1 249.5 279.4 249.7 284.4 250.9C289.4 252.1 294.1 254.3 298.3 257.3L356.4 300.8C359 302.7 362.2 303.8 365.4 303.8C368.6 303.8 371.8 302.7 374.4 300.8L452.8 241.4C463.2 233.4 476.9 245.9 469.9 257z"/></svg>
-                            </div>
-                            <div class="flex-1 bg-gradient-to-r from-blue-300 to-white flex flex-col pl-10 p-4">
-                                <h2 class="h2 font-medium text-nowrap">Intigrate Messenger</h2>
-                                <p class="line-clamp-1">Easy 2 min setup</p>
-                            </div>
-                        </div> {% endcomment %}
                     
 
 
@@ -323,7 +328,7 @@ window.addEventListener('online', () => {
                                             <div x-data="{ switchOn: {% if page.enabled %} true {% else %} false {% endif %} }" class="flex items-center justify-center space-x-3">
                                                 <input id="thisId" type="checkbox" name="switch" class="hidden" :checked="switchOn">
 
-                                                <button 
+                                                <button x-tooltip.left="Turn {% if page.enabled %} off {% else %} on {% endif %}" 
                                                     x-ref="switchButton"
                                                     type="submit" 
                                                     @click="switchOn = ! switchOn"
@@ -345,10 +350,11 @@ window.addEventListener('online', () => {
                                                 </label>
                                             </div>
                                         </form>
-                                        <a href="{% url "page" page.id %}#settings" class="btn-link p-2 relative">
+                                        <a href="{% url "page" page.id %}#settings" class="btn-link p-2 relative" x-tooltip.left="Settings" >
                                             <lord-icon
                                                 src="https://cdn.lordicon.com/asyunleq.json"
                                                 trigger="hover"
+                                                target=".btn-link"
                                                 style="width:20px;height:20px">
                                             </lord-icon>
 
@@ -362,8 +368,8 @@ window.addEventListener('online', () => {
                             {% empty %}
                                 <hr class="my-0">
                                 <div class="py-16 flex flex-col items-center justify-center gap-4">
-                                    <svg class="stroke-neutral-500" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package-open-icon lucide-package-open"><path d="M12 22v-9"/><path d="M15.17 2.21a1.67 1.67 0 0 1 1.63 0L21 4.57a1.93 1.93 0 0 1 0 3.36L8.82 14.79a1.655 1.655 0 0 1-1.64 0L3 12.43a1.93 1.93 0 0 1 0-3.36z"/><path d="M20 13v3.87a2.06 2.06 0 0 1-1.11 1.83l-6 3.08a1.93 1.93 0 0 1-1.78 0l-6-3.08A2.06 2.06 0 0 1 4 16.87V13"/><path d="M21 12.43a1.93 1.93 0 0 0 0-3.36L8.83 2.2a1.64 1.64 0 0 0-1.63 0L3 4.57a1.93 1.93 0 0 0 0 3.36l12.18 6.86a1.636 1.636 0 0 0 1.63 0z"/></svg>
-                                    <p class="text-neutral-500">No pages connected</p>
+                                    <svg class="stroke-neutral-500" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-list-icon lucide-layout-list"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/><path d="M14 4h7"/><path d="M14 9h7"/><path d="M14 15h7"/><path d="M14 20h7"/></svg>
+                                    <p class="text-neutral-400">No pages connected</p>
                                 </div>
                             {% endfor %}
                         </ul>

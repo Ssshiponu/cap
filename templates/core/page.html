@@ -3,7 +3,7 @@
 {% block title %}{{ page.page_name }} - Page | Chat Autopilot{% endblock title %}
 
 {% block content %}
-<div class="p-6 w-full mx-auto" x-data="{ tab: window.location.hash ? window.location.hash.replace('#', '') : 'charts' }">
+<div class="p-4 w-full mx-auto" x-data="{ tab: window.location.hash ? window.location.hash.replace('#', '') : 'charts' }">
     <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-3">
             <img class="w-11 h-11 rounded-full" src="{{ page.picture }}" alt="">
@@ -13,12 +13,12 @@
             </div>
         </div>
         <div class="flex items-center gap-4">
-            <form action="{% url "page_toggle" page.id %}" method="POST"  x-tooltip="Turn on/off">
+            <form action="{% url "page_toggle" page.id %}" method="POST">
                 {% csrf_token %}
                 <div x-data="{ switchOn: {% if page.enabled %} true {% else %} false {% endif %} }" class="flex items-center justify-center space-x-3">
                     <input id="thisId" type="checkbox" name="switch" class="hidden" :checked="switchOn">
 
-                    <button
+                    <button x-tooltip.left="Turn {% if page.enabled %} off {% else %} on{% endif %}"
                         x-ref="switchButton"
                         type="submit" 
                         @click="switchOn = ! switchOn"
@@ -37,10 +37,10 @@
     <hr class="mb-6">
 
     <div class="mb-12">
-        <div class="w-full border-b border-neutral-200">
+        <div class="w-full border-b border-neutral-200 mb-4">
             <div class="flex gap-1">
                 <button x-on:click="tab = 'charts'; window.location.hash = '#charts'" class="p-3" :class="{ 'border-b-2 border-neutral-900': tab == 'charts' }">
-                    Charts
+                    Analytics
                 </button>
                 <button x-on:click="tab = 'conversations'; window.location.hash = '#conversations'" class="p-3" :class="{ 'border-b-2 border-neutral-900': tab == 'conversations' }">
                     Conversations
@@ -51,10 +51,11 @@
             </div>
         </div>
 
-        <div x-show="tab == 'conversations'" class="py-8" x-cloak>
-            <h2 class="h2 p-2">Conversations</h2>
-            <div class="info text-xs ml-2 mb-4">Delete conversation if you want ai to forget about the chat history</div>
-            <div class=" max-w-4xl border border-neutral-200 overflow-y-auto rounded-lg">
+        <div x-show="tab == 'conversations'" class="p-4 my-4 bg-white rounded-xl" x-cloak>
+            <h2 class="h2 px-2">Conversations</h2>
+            <hr class="my-4">
+            <p class="info text-xs ml-2 mb-4">Delete conversation if you want ai to forget about the chat history</p>
+            <div class="border border-neutral-200 overflow-y-auto rounded-lg">
                 <table class="w-full table-auto border-collapse">
                     <thead class="bg-white text-left text-sm font-medium text-neutral-700">
                         <tr>
@@ -88,7 +89,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="flex items-center justify-between w-full mt-4 max-w-4xl">
+            <div class="flex items-center justify-between w-full mt-4">
                 <p class="pl-2 text-sm text-neutral-700">{% if conversations.next_page_number > 1 %}<span class="font-medium">{{ conversations.number }} </span> to <span class="font-medium">{{ conversations.paginator.per_page }}</span> of <span class="font-medium">{{ conversations.paginator.count }}</span>{% else %}<span class="font-medium">{{ conversations.paginator.count }}</span>{% endif %} Conversations</p>
                 <nav>
                     <ul class="flex items-center text-sm leading-tight bg-white border divide-x rounded-lg h-9 text-neutral-500 divide-neutral-200 border-neutral-200">
@@ -118,7 +119,38 @@
             </div>
         </div>
 
-        <div x-show="tab == 'charts'" class="py-8" x-cloak>
+        <div x-show="tab == 'charts'" class="p-4 my-4 bg-white rounded-xl" x-cloak>
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex flex-col px-2">
+                    <h2 class="h2">Analytics</h2>
+                </div>
+                <div class="relative select-none text-sm" x-data="{ open: false }">
+                    <div @click="open = !open" class="btn pr-2 w-36 flex items-center gap-2 justify-between">
+                        <span class="">Last {{ days }} days</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+                    </div>
+                    <!-- Dropdown -->
+                    <div x-show="open" @click.away="open = false" x-transition class="absolute z-10 w-36 top-11 origin-top bg-white border border-neutral-200 rounded-xl shadow-lg">
+                        <div class="p-1.5" role="none">
+                            <a href="?days=3" class="btn-link no-underline" role="menuitem">3 days</a>
+                            <a href="?days=7" class="btn-link no-underline" role="menuitem">7 days</a>
+                            <a href="?days=30" class="btn-link no-underline" role="menuitem">30 days</a>
+                            <a href="?days=100" class="btn-link no-underline" role="menuitem">100 days</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-6">
+                    <p class="text-sm text-neutral-600">Credits used</p>
+                    <p class="font-medium text-xl" x-text="{{ credits_used }}"></p>
+                </div>
+                <div class="p-6">
+                    <p class="text-sm text-neutral-600">AI replies</p>
+                    <p class="font-medium text-xl" x-text="{{ ai_replies }}"></p>
+                </div>
+            </div>
             <div class="flex flex-col lg:flex-row gap-6">
                 <div class="w-full">
                     <canvas class="credits-chart w-full h-auto"></canvas>
@@ -129,17 +161,16 @@
             </div>
         </div>
 
-        <div x-show="tab == 'settings'" class="py-8" x-cloak>
+        <div x-show="tab == 'settings'" x-cloak>
             <form x-data="{
                 system_prompt: '{{ page.system_prompt|escapejs }}',
             }"
-            action="" method="post" class="flex flex-col gap-6">
+            action="" method="post">
                 {% csrf_token %}
-                <div class="flex flex-col gap-3">
-                    <h2 class="h2">System Prompt</h2>
-                    <div>
-                        <p class="text-neutral-800">Customize AI behavior. Chose a <a href="{% url 'templates' %}" class="link">Templates</a></p>
-                    </div>
+                <div class="p-4 my-4 bg-white rounded-xl">
+                    <h2 class="h2 px-2">System Prompt</h2>
+                    <hr class="my-4">
+                    <p class="text-neutral-800 mb-4">Customize AI behavior. Chose a <a href="{% url 'templates' %}" class="link">Templates</a></p>
                     <textarea x-model="system_prompt" name="system_prompt" id="system_prompt" rows="10" class="input w-full p-3"></textarea>
                     <div class="flex justify-between gap-2">
                     <p class="text-neutral-600"><span x-text="{{ settings.CREDITS_PER_REPLY }} + Math.round(countTokens(system_prompt) * {{ settings.CREDITS_PER_TOKEN }})"></span>  Credits/reply</p>
@@ -151,13 +182,15 @@
             </form>
 
             <hr class="my-6">
-            <h2 class="h2 mb-2">Dnager Zone</h2>
-            <div class="info mb-4">Deleting this page all of its data will be lost.</div>
-            <form action="{% url "delete_page" page.id %}" method="POST" onsubmit="return confirm('Are you sure you want to delete this page? This action cannot be undone.');">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger flex items-center gap-2">
-                    Delete Page</button>
-            </form>
+            <div class="p-4">
+                <h2 class="h2 mb-2">Dnager Zone</h2>
+                <div class="info mb-4">Deleting this page all of its data will be lost.</div>
+                <form action="{% url "delete_page" page.id %}" method="POST" onsubmit="return confirm('Are you sure you want to delete this page? This action cannot be undone.');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger flex items-center gap-2">
+                        Delete Page</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -170,7 +203,6 @@
     const messagesData = {{ charts.messages|safe }};
 
     const creditsData = {{ charts.credits|safe }};
-
 
     new Chart(creditsChart,  creditsData);
     new Chart(messagesChart, messagesData);

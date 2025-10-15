@@ -75,8 +75,6 @@ def dashboard(request):
     user = request.user
     pages = FacebookPage.objects.filter(user=user, active=True)
     
-
-    
     context = {
         'pages': pages,
         }
@@ -89,14 +87,16 @@ def page(request, page_id):
     page = get_object_or_404(FacebookPage, id=page_id, user=request.user)
     
     # Date ranges
-    last_30_days = days_ago(30)
-    last_7_days = days_ago(7)
-    today = days_ago(0)
-    
+    try:
+        days = int(request.GET.get('days', 7))
+    except ValueError:
+        days = 7
+
+    days = max(1, min(days, 100))
     # Optimized conversation query
     conversations = Conversation.objects.filter(
         facebook_page=page,
-        updated_at__gte=last_30_days
+        updated_at__gte=days_ago(days)
     ).select_related('facebook_page').prefetch_related('messages')
      
     # Handle POST request for system prompt update
@@ -112,14 +112,21 @@ def page(request, page_id):
     paginator = Paginator(conversations.filter(active=True).order_by('-updated_at'), 10)
     page_number = request.GET.get('page', 1)
     
+    messages_chart = chart.messages(pages=[page], start_date=days_ago(days))
+    credits_chart = chart.credits(pages=[page], start_date=days_ago(days))
+    
+    
     # ===== CONTEXT =====
     context = {
         'page': page,
 
         'charts': {
-            'messages': json.dumps(chart.messages(pages=[page])),
-            'credits': json.dumps(chart.credits(pages=[page])),
+            'messages': json.dumps(messages_chart),
+            'credits': json.dumps(credits_chart),
         },
+        'days': days,
+        'credits_used': sum(credits_chart.get("data", {}).get("datasets", [{}])[0].get("data", [0])),
+        'ai_replies': sum(messages_chart.get("data", {}).get("datasets", [{}])[-1].get("data", [0])),
         'conversations': paginator.get_page(page_number),
         'settings': settings,
     }
