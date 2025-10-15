@@ -75,7 +75,7 @@ def process_event(event: dict):
             conversation=conversation,
             role="user",
             content=user_text,
-        )
+        )        
     
     if not page.user.has_credits(page.credits_per_reply()):
         page.user.notify(
@@ -98,7 +98,7 @@ def process_event(event: dict):
     reply = ai.reply(history)
 
     if reply is None:
-        return False
+        return True
 
 
     conversation.input_tokens = conversation.input_tokens + reply.usage_metadata.prompt_token_count
@@ -110,7 +110,7 @@ def process_event(event: dict):
         reply_json = json.loads(reply.text)
     except Exception as e:
         logger.error(f"Invalid AI response: {reply.text}")
-        return False
+        return True
         
     for reply_part in reply_json:
         if reply_part.get('action') == 'block':
@@ -129,8 +129,8 @@ def process_event(event: dict):
                 content = reader.make_readable(reply_part, role="assistant"),
                 credits_used = page.credits_per_reply()
             )
-            page.user.use_credits(page.credits_per_reply())
-            
+            if not page.user.use_credits(page.credits_per_reply()):
+                logger.info(f"User {page.user} has not enough credits to reply")
         else:
             logger.error(f"Failed to send message: {reply_part}. Response: {sent}")
             

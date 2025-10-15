@@ -44,17 +44,17 @@ class Messenger:
                     "elements":[
                     {
                         "title":"Welcome!",
-                        "image_url":"https://raw.githubusercontent.com/fbsamples/original-coast-clothing/main/public/styles/male-work.jpg",
-                        "subtitle":"We have the right hat for everyone.",
+                        "image_url":"https://nixagone.pythonanywhere.com/media/products/git1.jpg",
+                        "subtitle":"We have the best clothes for everyone.",
                         "default_action": {
                         "type": "web_url",
-                        "url": "https://www.originalcoastclothing.com/",
-                        "webview_height_ratio": "tall"
+                        "url": "https://nixagone.pythonanywhere.com/products/git-logo-t-shirt",
+                        "webview_height_ratio": "full"
                         },
                         "buttons":[
                         {
                             "type":"web_url",
-                            "url":"https://www.originalcoastclothing.com/",
+                            "url":"https://nixagone.pythonanywhere.com/",
                             "title":"View Website"
                         },{
                             "type":"postback",

@@ -60,9 +60,9 @@ window.addEventListener('online', () => {
                                 x-cloak>
                                 <div class="p-2">
                                     <p class="font-semibold p-3">Notifications</p>
-                                    <div class="flex flex-col gap-6 p-3 border-t border-neutral-200">
+                                    <div class="flex flex-col gap-2 p-2 border-t border-neutral-200">
                                         {% for n in user.notification_list %}
-                                            <div class="relative" x-data="{ notification: {{ n }} }">
+                                            <div class="relative p-3 rounded-lg {% if not n.read %} bg-neutral-100 font-semibold {% endif %}" x-data="{ notification: {{ n }} }">
                                                 <div class="flex items-center"
                                                     :class="{ 'text-green-500' : notification.type=='success', 'text-blue-500' : notification.type=='info', 'text-orange-400' : notification.type=='warning', 'text-red-500' : notification.type=='error', 'text-gray-800' : notification.type=='default' }">
                                                     

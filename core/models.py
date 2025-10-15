@@ -32,9 +32,12 @@ class User(AbstractUser):
         return self.credits - self.credits_used
     
     def use_credits(self, amount):
-        self.credits -= amount
+        if amount > self.credits_left():
+            return False
+        
         self.credits_used += amount
         self.save()
+        return True
         
     def add_credits(self, amount, name=None):
         if name != 'Free':
@@ -58,8 +61,7 @@ class User(AbstractUser):
         return not CreditTransaction.objects.filter(name="Free", ip=self.ip).exists()
     
     def notification_list(self):
-        return self.notifications.filter(read=False).order_by('-created_at')[:4]
-    
+        return self.notifications.all().order_by('read', '-created_at')[:4]
             
     def has_notifications(self):
         return self.notifications.filter(read=False).exists()
