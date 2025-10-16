@@ -64,7 +64,7 @@ window.addEventListener('online', () => {
                                     <p class="font-semibold p-3">Notifications</p>
                                     <div class="flex flex-col gap-2 p-2 border-t border-neutral-200">
                                         {% for n in user.notification_list %}
-                                            <div class="relative p-3 rounded-lg {% if not n.read %} bg-neutral-100 font-semibold {% endif %}" x-data="{ notification: {{ n }} }">
+                                            <div class="relative p-3 rounded-lg {% if not n.read %} bg-neutral-100 font-semibold text-black {% else %} text-neutral-500 {% endif %}" x-data="{ notification: {{ n }} }">
                                                 <div class="flex items-center"
                                                     :class="{ 'text-green-500' : notification.type=='success', 'text-blue-500' : notification.type=='info', 'text-orange-400' : notification.type=='warning', 'text-red-500' : notification.type=='error', 'text-gray-800' : notification.type=='default' }">
                                                     
@@ -72,11 +72,11 @@ window.addEventListener('online', () => {
                                                     <svg x-show="notification.type=='info'" class="w-[18px] h-[18px] mr-1.5 -ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM12 9C12.5523 9 13 8.55228 13 8C13 7.44772 12.5523 7 12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z" fill="currentColor"></path></svg>
                                                     <svg x-show="notification.type=='warning'" class="w-[18px] h-[18px] mr-1.5 -ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M9.44829 4.46472C10.5836 2.51208 13.4105 2.51168 14.5464 4.46401L21.5988 16.5855C22.7423 18.5509 21.3145 21 19.05 21L4.94967 21C2.68547 21 1.25762 18.5516 2.4004 16.5862L9.44829 4.46472ZM11.9995 8C12.5518 8 12.9995 8.44772 12.9995 9V13C12.9995 13.5523 12.5518 14 11.9995 14C11.4473 14 10.9995 13.5523 10.9995 13V9C10.9995 8.44772 11.4473 8 11.9995 8ZM12.0009 15.99C11.4486 15.9892 11.0003 16.4363 10.9995 16.9886L10.9995 16.9986C10.9987 17.5509 11.4458 17.9992 11.9981 18C12.5504 18.0008 12.9987 17.5537 12.9995 17.0014L12.9995 16.9914C13.0003 16.4391 12.5532 15.9908 12.0009 15.99Z" fill="currentColor"></path></svg>
                                                     <svg x-show="notification.type=='error'" class="w-[18px] h-[18px] mr-1.5 -ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9996 7C12.5519 7 12.9996 7.44772 12.9996 8V12C12.9996 12.5523 12.5519 13 11.9996 13C11.4474 13 10.9996 12.5523 10.9996 12V8C10.9996 7.44772 11.4474 7 11.9996 7ZM12.001 14.99C11.4488 14.9892 11.0004 15.4363 10.9997 15.9886L10.9996 15.9986C10.9989 16.5509 11.446 16.9992 11.9982 17C12.5505 17.0008 12.9989 16.5537 12.9996 16.0014L12.9996 15.9914C13.0004 15.4391 12.5533 14.9908 12.001 14.99Z" fill="currentColor"></path></svg>
-                                                    <p class="font-medium leading-none text-gray-800" x-text="notification.message"></p>
+                                                    <p class="font-medium leading-none {% if not n.read %} font-bold text-black {% else %} text-neutral-500 {% endif %}" x-text="notification.message"></p>
                                                 </div>
                                                 <p x-show="notification.description" 
                                                     :class="{ 'pl-5' : notification.type!='default' }"
-                                                    class="mt-1.5 text-sm leading-none opacity-70" x-html="notification.description"></p>
+                                                    class="mt-1.5 text-sm leading-none" x-html="notification.description"></p>
                                             </div>
 
                                         {% empty %}
@@ -308,8 +308,9 @@ window.addEventListener('online', () => {
                     <div class="flex flex-col gap-4 p-4 bg-white rounded-xl">
                         <div class="flex items-center justify-between ml-2">
                             <h2 class="h2">Pages</h2>
-                            <a href="{% url "add_page" %}" class="btn bg-white hover:bg-neutral-100 active:bg-neutral-200 text-sm py-1.5 px-3 flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                            <a x-data="{ loading: false }" @click="loading = true" href="{% url "add_page" %}" class="btn bg-white hover:bg-neutral-100 active:bg-neutral-200 text-sm py-1.5 px-3 flex items-center gap-2">
+                                <svg x-show="!loading" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                                <svg x-show="loading" x-cloak xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-circle-icon lucide-loader-circle"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
                                 Add Page
                             </a>
                         </div>
@@ -380,9 +381,10 @@ window.addEventListener('online', () => {
             {% endblock content %}
             <div class="flex z-[var(--z-footer)] items-center justify-between gap-4 py-2 px-4 border-t bg-white border-neutral-200">
                 <div class="flex items-center justify-center gap-2">
-                    <p class="text-neutral-500 text-xs">Powered by</p>
+                    {% comment %} <p class="text-neutral-500 text-xs">Powered by</p>
                     <img src="https://www.gstatic.com/lamda/images/gemini_sparkle_aurora_33f86dc0c0257da337c63.svg" alt="Gemini logo" class="h-4">
-                    <p class="text-neutral-800 text-sm">Gemini</p></p>
+                    <p class="text-neutral-800 text-sm">Gemini</p></p> {% endcomment %}
+                    <p class="text-neutral-500 text-xs">© 2025 Chat Autopilot</p>
                 </div>
                 <div class="flex items-center divide divide-neutral-200 text-xs *:px-1 *:sm:px-2">
                     <a href="{% url "privacy" %}" class="link">Privacy <span class="hidden sm:inline">Policy</span></a>|

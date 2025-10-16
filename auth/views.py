@@ -174,10 +174,8 @@ def register(request):
         
         # Send Otp if not already 1 sent in last 30 seconds and 3 sent in 1 day
         otp_objs = Otp.objects.filter(user=user, created_at__gte=timezone.now() - timedelta(days=1))
-        print(otp_objs.count())
         if otp_objs.count() < 3:
             otp = str(random.randint(100000, 999999))
-            print('sending otp..')
                 
             try:
                 send_mail(
@@ -187,9 +185,10 @@ def register(request):
                         'email/otp.html',
                         {'otp': otp}
                     ),
-                    from_email=settings.EMAIL_HOST_USER,
+                    from_email= 'Chat Autopilot ' + settings.EMAIL_HOST_USER,
                     recipient_list=[email],
                 )
+                
 
                 Otp.objects.create(user=user, ip=ip, otp=otp)
                 
