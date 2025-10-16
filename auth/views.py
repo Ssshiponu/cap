@@ -206,7 +206,7 @@ def verify_otp(request):
         otp_obj = Otp.objects.filter(user=user, otp=otp).first()
         if otp_obj is None:
             messages.error(request, 'Invalid OTP')
-            return render(request, 'auth/verify_otp.html', {'user_id': user_id})
+            return render(request, 'auth/verify_otp.html', {'user_id': user_id, 'expire_in': otp_obj.get_expire_seconds()})
         
         if otp_obj.is_expired():
             messages.error(request, 'OTP has expired')

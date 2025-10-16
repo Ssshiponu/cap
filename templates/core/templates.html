@@ -3,12 +3,12 @@
 {% block title %}System Prompt Templates | Chat Autopilot{% endblock title %}
 
 {% block content %}
-    <div class="p-6 md:p-10 max-w-4xl">
+    <div class="p-6 md:p-10">
 
         <div class="flex flex-col gap-6">
 
 
-            <div class="max-w-4xl mx-auto" 
+            <div class="max-w-7xl mx-auto" 
                 x-data="{
                     selected: 'F-commerce',
                     modal: false,
@@ -23,7 +23,7 @@
                 <h2 class="h2 mb-4">System Prompt Templates</h2>
                 <p class="info text-xs mb-8">Choose a template, edit and paste it into the system prompt.</p>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                     {% for template in templates %}
                         <div @click="modal = true; selected = '{{ template.name }}'" class="w-full p-4 bg-white border border-neutral-200 hover:border-neutral-400 transition-colors rounded-xl cursor-pointer" x-on:click="selected = '{{ template.name }}'">
                             <h3 class="text-lg font-semibold">{{ template.name }}</h3>

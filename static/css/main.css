@@ -4,17 +4,25 @@
 @source "../templates/**/*.html";
 
 :root {
-    --s: 0; /* scroll progress 0..1 */
+    --s: 0;
+}
+
+@theme {
+    --z-header: 100;
+    --z-sidebar: 80;
+    --z-modal: 90;
+    --z-overlay: 70;
+    --z-footer: 50;
+    --z-content: 0;
+    --z-content-top: 1;
 }
 
 header {
-    /* smooth transitions and hardware-accelerated transform */
     transition: box-shadow 200ms ease, background-color 200ms ease;
     will-change: transform, height, width, border-radius, border-width;
     background-clip: padding-box;
 }
 
-/* Use the --s variable to animate properties in CSS only */
 .header-inner {
     border-radius: calc(var(--s) * 12px);
     border-width: 1px;
@@ -23,32 +31,19 @@ header {
     width: calc(100dvw - calc(var(--s) * 2rem));
     max-width: 1158px;
     margin: 0 auto;
-    /* padding-inline: calc(1rem - calc(var(--s) * 0.5rem)); */
 }
 
-/* Subtle shadow and border change when scrolled */
 .scrolled {
     box-shadow: 0 calc(var(--s) * 6px) calc(var(--s) * 20px) rgba(16,24,40,0.08);
     border-color: #e5e5e5;
 }
 
-/* Respect users who prefer reduced motion */
+footer {
+    z-index: var(--z-footer);
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .header-inner { transition: none !important; }
-    header { transition: none !important; }
-}
-
-ul.features {
-    @apply flex flex-col gap-2 text-neutral-700 font-medium;
-}
-ul.features li::before {
-    content: '✓';
-    @apply mr-2 text-black font-bold;
-}
-
-ul.features li[no]::before {
-    content: '✗';
-    @apply mr-2 text-black font-bold;
+    header, .header-inner { transition: none !important; }
 }
 
 
@@ -82,11 +77,6 @@ ul.features li[no]::before {
         @apply border-0 border-t border-neutral-200 my-4;
     }
 
-    .input {
-        @apply border border-neutral-200 rounded-lg bg-white text-neutral-800 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:border-transparent transition-all duration-200 ease-in-out;
-        @apply py-1.5 px-3;
-    }
-
     .center {
         @apply h-full w-full flex items-center justify-center;
     }
@@ -98,10 +88,10 @@ ul.features li[no]::before {
     }
 
     .overlay {
-        @apply bg-white/50 backdrop-blur-sm fixed inset-0 z-40;
+        @apply bg-white/50 backdrop-blur-sm fixed inset-0 z-[var(--z-overlay)];
     }
     .modal {
-        @apply border border-neutral-200 p-4 w-full max-w-3xl  rounded-xl fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-white overflow-y-auto;
+        @apply border border-neutral-200 p-4 w-full max-w-3xl  rounded-xl fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[var(--z-modal)] bg-white overflow-y-auto;
     }
 
 
@@ -109,24 +99,6 @@ ul.features li[no]::before {
     .scrollbar-thin {
         scrollbar-width: thin;
         scrollbar-color: #e0e0e0 transparent;
-    }
-    .scrollbar-thin::-webkit-scrollbar {
-        width: 8px;
-    }
-    .scrollbar-thin::-webkit-scrollbar-track {
-        background: transparent;
-    }
-    .scrollbar-thin:hover ::-webkit-scrollbar-thumb {
-        background-color: #ff0000;
-        border-radius: 20px;
-        border: 3px solid transparent;
-        background-clip: content-box;
-    }
-    .scrollbar-invisible {
-        scrollbar-width: none;
-    }
-    .scrollbar-invisible::-webkit-scrollbar {
-        display: none;
     }
 }
 
@@ -142,6 +114,11 @@ ul.features li[no]::before {
 
     .btn-danger {
         @apply bg-red-50 hover:bg-red-100 active:bg-red-200 text-red-600 border border-red-200;
+    }
+
+    .input {
+        @apply border border-neutral-200 rounded-lg bg-white text-neutral-800 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:border-transparent transition-all duration-200 ease-in-out;
+        @apply py-1.5 px-3;
     }
 
     .bold-underline {

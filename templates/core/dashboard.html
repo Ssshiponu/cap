@@ -21,7 +21,7 @@ window.addEventListener('online', () => {
 </script>
 
 <div x-data="main()" class="h-dvh flex flex-col">
-    <header class="bg-white border-b border-neutral-200 z-20">
+    <header class="bg-white border-b border-neutral-200 z-[var(--z-header)]">
         <div class="flex items-center justify-between h-full py-3 px-4 mx-auto">
 
 
@@ -152,9 +152,9 @@ window.addEventListener('online', () => {
     </header>
 
     <div class="flex-1 flex transition-all">
-        <div x-show="sidebar" @click="sidebar = false" class="lg:hidden absolute z-1 inset-0 bg-white/50 backdrop-blur-xs" x-transition style="display: none;"></div>
-        <aside x-show="sidebar"
-            class="origin-left absolute pt-14 lg:pt-4 lg:static inset-y-0 left-0 overflow-hidden bg-white border-r border-neutral-200 w-60 h-full z-2 transition-transform duration-300 ease-in-out"
+        <div x-show="sidebar" @click="sidebar = false" class="lg:hidden overlay" x-transition style="display: none;"></div>
+        <aside x-show="sidebar" x-init="window.addEventListener('resize', () => { if(window.innerWidth > 1024) { sidebar = true; }else{ sidebar = false; } })"
+            class="origin-left absolute pt-14 lg:pt-4 lg:static inset-y-0 left-0 overflow-hidden bg-white border-r border-neutral-200 w-60 h-full z-[var(--z-sidebar)] transition-transform duration-300 ease-in-out"
             x-transition:enter="ease-out duration-200"
             x-transition:enter-start="scale-x-0"
             x-transition:enter-end="scale-x-100"
@@ -378,7 +378,7 @@ window.addEventListener('online', () => {
 
                 </div>
             {% endblock content %}
-            <div class="flex z-[1] items-center justify-between gap-4 py-2 px-4 border-t bg-white border-neutral-200">
+            <div class="flex z-[var(--z-footer)] items-center justify-between gap-4 py-2 px-4 border-t bg-white border-neutral-200">
                 <div class="flex items-center justify-center gap-2">
                     <p class="text-neutral-500 text-xs">Powered by</p>
                     <img src="https://www.gstatic.com/lamda/images/gemini_sparkle_aurora_33f86dc0c0257da337c63.svg" alt="Gemini logo" class="h-4">
@@ -399,6 +399,6 @@ window.addEventListener('online', () => {
 {% endblock body %}
 
 {% block scripts %}
- 
+
 {% endblock scripts %}
 

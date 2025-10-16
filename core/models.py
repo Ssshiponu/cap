@@ -201,5 +201,7 @@ class Otp(models.Model):
     
     def is_expired(self):
         return self.created_at < timezone.now() - timezone.timedelta(minutes=5)
-    
+    # get expire seconds
+    def get_expire_seconds(self):
+        return max(0, (self.created_at + timezone.timedelta(minutes=5) - timezone.now()).total_seconds())
     

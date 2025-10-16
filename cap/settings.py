@@ -182,24 +182,24 @@ PACKAGES = [
     },
     {   
         'name': 'Basic',
-        'price': 250,
+        'price': 500,
         'duration': '1 month',
         'description': 'Good for a single person or a very small business',
-        'credits': 10000,
+        'credits': 20000,
     },
     {
         'name': 'Pro',
-        'price': 700,
+        'price': 1000,
         'duration': '1 months',
         'description': 'Best for a small or medium business',
-        'credits': 25000,
+        'credits': 45000,
     },
     {
         'name': 'Business',
         'price': 2000,
         'duration': '2 months',
         'description': 'Best for a medium or large business',
-        'credits': 80000,
+        'credits': 100000,
     }
 ]
 

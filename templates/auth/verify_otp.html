@@ -1,45 +1,42 @@
-{% extends 'base.html' %}
+{% extends 'auth/base.html' %}
 {% load static %}
 
 {% block title %}Verify OTP | Chat Autopilot{% endblock %}
-
-{% block body %}
-
-    <div class="relative flex flex-col gap-6 items-center justify-center min-h-screen p-8">
-
-        <header>
-            {% include "core/partials/brand.html" %}
-        </header>
-                        
-        <div
-        class="relative w-full max-w-sm mx-auto lg:mb-0">
-            <div class="relative text-center">
                 
-                <div class="flex flex-col mb-6 space-y-2">
-                    <h1 class="text-xl font-semibold tracking-tight">Verify OTP</h1>
-                    <p class="text-neutral-800">We sent an OTP to your email. </p>
-                </div>
+{% block heading %}Verify OTP{% endblock heading %}
+{% block subheading %}Enter the OTP sent to your email{% endblock subheading %}
 
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="mb-3 p-2 rounded-lg text-sm {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
 
-                <form action="{% url "verify_otp" %}" method="post" class="space-y-3 text-left">
-                
-                    {% csrf_token %}
-                    <input type="hidden" name="user_id" value="{{ user_id }}">
-                    <input type="text" name="otp" class="input w-full" placeholder="Enter OTP">
-                    
-                    <div class="flex justify-end">
-                        <button type="submit" class="btn">Verify</button>
-                    </div>
+{% block content %}
+<form action="{% url "verify_otp" %}" method="post" class="space-y-3 text-left">
 
-                </form>
-            </div>
-        </div>
+    {% csrf_token %}
+    <input type="hidden" name="user_id" value="{{ user_id }}">
+    <input type="text" name="otp" class="input w-full" placeholder="Enter OTP">
+    
+    <div class="flex justify-end">
+        <button type="submit" class="btn w-full">Verify</button>
     </div>
-{% endblock %}
+
+</form>
+{% endblock content %}
+
+{% block footer %}
+<p class="mt-6 text-sm text-center text-neutral-500">The OTP will expire in <span id="timer">5:00</span></p>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const timer = document.getElementById('timer');
+        let seconds = {{ expire_in|default:300 }};
+
+        setInterval(function() {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            timer.textContent = `${minutes}:${String(remainingSeconds).padStart(2, '0')}`;
+            if (seconds === 0) {
+                location.reload();
+            }
+            seconds--;
+        }, 1000);
+    });
+</script>
+{% endblock footer %}
