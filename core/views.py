@@ -168,3 +168,4 @@ def notifications_read(request):
     for n in request.user.notifications.filter(read=False):
         n.mark_as_read()
     return JsonResponse({'success': True})
+
