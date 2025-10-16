@@ -3,7 +3,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
+from django.utils import timezone
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from django.conf import settings
 from core.utils import get_ip
 
@@ -12,6 +14,7 @@ import requests
 import json
 import uuid
 import random
+from datetime import timedelta
 
 from core.models import User, FacebookPage, Attempt, Otp
 from .utils import generate_random_token
@@ -162,26 +165,45 @@ def register(request):
             messages.error(request, 'Email already in use.')
             return render(request, 'auth/register.html', {'email': email, 'full_name': full_name})
 
-        inactive_users = User.objects.filter(email__iexact=email, is_active=False)
-        if inactive_users.exists():
-            inactive_users.delete()
+        user = User.objects.filter(email__iexact=email, is_active=False).first()
             
         password = request.POST['password']
         ip = get_ip(request)
-        user = User.objects.create_user(id=uuid.uuid4(), ip=ip, first_name=full_name, password=password, email=email, username=generate_random_token(26), is_active=False)
+        if user is None:
+            user = User.objects.create_user(id=uuid.uuid4(), ip=ip, first_name=full_name, password=password, email=email, username=generate_random_token(26), is_active=False)
         
-        # Send Otp
-        otp = random.randint(100000, 999999)
-        Otp.objects.create(user=user, otp=otp)
+        # Send Otp if not already 1 sent in last 30 seconds and 3 sent in 1 day
+        otp_objs = Otp.objects.filter(user=user, created_at__gte=timezone.now() - timedelta(days=1))
+        print(otp_objs.count())
+        if otp_objs.count() < 3:
+            otp = str(random.randint(100000, 999999))
+            print('sending otp..')
+                
+            try:
+                send_mail(
+                    subject='Verification OTP for Chat Autopilot',
+                    message=f'Veify your email by entering the following OTP',
+                    html_message=render_to_string(
+                        'email/otp.html',
+                        {'otp': otp}
+                    ),
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[email],
+                )
+
+                Otp.objects.create(user=user, ip=ip, otp=otp)
+                
+            except Exception as e:
+                print(e)
+                messages.error('Email could not be sent. Please try again')
+                return render(request, 'auth/verify_otp.html', {'user_id': user.id})
         
-        send_mail(
-            'Verification code',
-            f'Verification code: {otp}\n\nIf you did not request this, please ignore this email.',
-            settings.EMAIL_HOST_USER,
-            [email],
-        )
+        else:
+            messages.error(request, 'You have already sent 3 OTPs. Please try again 24 hours later.')
+            return render(request, 'auth/verify_otp.html', {'user_id': user.id, 'resend_seconds': 0})
         
-        return render(request, 'auth/verify_otp.html', {'user_id': user.id})
+        return render(request, 'auth/verify_otp.html', {'user_id': user.id, 'resend_seconds': otp_objs.first().get_resend_seconds()})
+                
         
     if request.method == 'GET':
         email = request.GET.get('email', '')
@@ -206,17 +228,21 @@ def verify_otp(request):
         otp_obj = Otp.objects.filter(user=user, otp=otp).first()
         if otp_obj is None:
             messages.error(request, 'Invalid OTP')
-            return render(request, 'auth/verify_otp.html', {'user_id': user_id, 'expire_in': otp_obj.get_expire_seconds()})
+            return render(
+                request,
+                'auth/verify_otp.html',
+                {'user_id': user_id, 'resend_seconds': Otp.objects.filter(user=user).first().get_resend_seconds()}
+            )
         
-        if otp_obj.is_expired():
+        elif otp_obj.created_ago() > 300:
             messages.error(request, 'OTP has expired')
             return render(request, 'auth/verify_otp.html', {'user_id': user_id})
-        
-        user.is_active = True
-        user.save()
-        user.backend = 'django.contrib.auth.backends.ModelBackend'
-        login(request, user)
-        return redirect('dashboard')
+        else:
+            user.is_active = True
+            user.save()
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
+            login(request, user)
+            return redirect('dashboard')
     
     return redirect('register_lander')
 

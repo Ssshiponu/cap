@@ -15,25 +15,29 @@
     <input type="text" name="otp" class="input w-full" placeholder="Enter OTP">
     
     <div class="flex justify-end">
-        <button type="submit" class="btn w-full">Verify</button>
+        <button type="submit" class="btn btn-primary w-full">Verify</button>
     </div>
 
 </form>
 {% endblock content %}
 
 {% block footer %}
-<p class="mt-6 text-sm text-center text-neutral-500">The OTP will expire in <span id="timer">5:00</span></p>
+<p class="mt-6 text-sm text-center text-neutral-500">Didn't receive the OTP? <span class="ml-2" id="timer"></span></p>
+<p class="mt-2 text-sm text-center text-neutral-500">The OTP will expire in 5 minutes</p>
+
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const timer = document.getElementById('timer');
-        let seconds = {{ expire_in|default:300 }};
+        let seconds = {{ resend_seconds|default:30 }};
 
-        setInterval(function() {
+        const interval = setInterval(function() {
             const minutes = Math.floor(seconds / 60);
             const remainingSeconds = seconds % 60;
-            timer.textContent = `${minutes}:${String(remainingSeconds).padStart(2, '0')}`;
+            timer.textContent = `resend after ${minutes}:${String(remainingSeconds).padStart(2, '0')}`;
             if (seconds === 0) {
-                location.reload();
+                timer.innerHTML = '<a @click="window.location.reload()" class="link cursor-pointer">Resend</a>';
+                clearInterval(interval);
             }
             seconds--;
         }, 1000);
