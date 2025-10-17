@@ -30,7 +30,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const timer = document.getElementById('timer');
-        let seconds = {{ resend_seconds|default:30 }};
+        let seconds = {{ resend_seconds }};
 
         const interval = setInterval(function() {
             const minutes = Math.floor(seconds / 60);

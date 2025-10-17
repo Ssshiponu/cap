@@ -9,6 +9,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 from core.utils import get_ip
+from django.contrib.auth import password_validation
 
 import base64
 import requests
@@ -20,6 +21,7 @@ from datetime import timedelta
 from core.models import FacebookPage, Attempt, Otp
 from .utils import *
 from .mail import send_otp
+from .validator import *
 
 User = get_user_model()
 
@@ -164,115 +166,126 @@ def register(request):
         return redirect('dashboard')
     
     if request.method == 'POST':
+        email = request.POST.get('email', '').strip().lower()
+        full_name = request.POST.get('full_name', '').strip()
+        password = request.POST.get('password', '')
         
-        email = request.POST['email']
-        full_name = request.POST['full_name']
+        # Input validation
+        if not all([email, full_name, password]):
+            messages.error(request, 'All fields are required.')
+            return render(request, 'auth/register.html', {
+                'email': email, 
+                'full_name': full_name
+            })
+        
+        # Check for existing active user
         if User.objects.filter(email__iexact=email, is_active=True).exists():
-            messages.error(request, 'Email already in use.')
-            return render(request, 'auth/register.html', {'email': email, 'full_name': full_name})
-
-        user = User.objects.filter(email__iexact=email, is_active=False).first()
+            messages.error(request, 'An account with this email already exists.')
+            return render(request, 'auth/register.html', {
+                'email': email, 
+                'full_name': full_name
+            })
             
-        password = request.POST['password']
+                # Email validation
+        is_valid, message = validate_email(email)
+        if not is_valid:
+            messages.error(request, message)
+            return render(request, 'auth/register.html', {
+                'email': email, 
+                'full_name': full_name
+            })
+        
+        # Password validation
+        is_valid, message = validate_password(password)
+        if not is_valid:
+            messages.error(request, message)
+            return render(request, 'auth/register.html', {
+                'email': email, 
+                'full_name': full_name,
+                'password': password
+            })
+        
         ip = get_ip(request)
-        if user is None:
-            user = User.objects.create_user(id=uuid.uuid4(), ip=ip, first_name=full_name, password=password, email=email, username=generate_random_token(26), is_active=False)
         
-        # Send Otp if not already 1 sent in last 30 seconds and 3 sent in 1 day
-        otp_objs = Otp.objects.filter(user=user, created_at__gte=timezone.now() - timedelta(days=1))
-        if otp_objs.count() < 3:
-            
-            otp = send_otp(user)
-            if otp is not None:
-                Otp.create_otp(user=user, ip=ip, otp=otp)
-            else:
-                messages.error(request, 'Failed to send OTP. Please try again.')
-                return render(request, 'auth/verify_otp.html', {'user_id': user.id, 'resend_seconds': 0})
-        
+        # Get or create inactive user
+        user = User.objects.filter(email__iexact=email, is_active=False).first()
+        if user:
+            # Update existing inactive user
+            user.first_name = full_name
+            user.set_password(password)
+            user.ip = ip
+            user.save()
         else:
-            messages.error(request, 'You have already sent 3 OTPs. Please try again 24 hours later.')
-            return render(request, 'auth/verify_otp.html', {'user_id': user.id, 'resend_seconds': 0})
+            # Create new user
+            user = User.objects.create_user(
+                id=uuid.uuid4(),
+                ip=ip,
+                first_name=full_name,
+                password=password,
+                email=email,
+                username=generate_random_token(26),
+                is_active=False
+            )
         
-        return render(request, 'auth/verify_otp.html', {'user_id': user.id, 'resend_seconds': otp_objs.first().get_resend_seconds()})
-                
-        
-    if request.method == 'GET':
-        email = request.GET.get('email', '')
-        if email:
-            if User.objects.filter(email__iexact=email, is_active=True).exists():
-                messages.error(request, 'Email already in use.')
-            return render(request, 'auth/register.html', {'email': email})
+        # Send OTP
+        context = {'user_id': user.id, 'resend_seconds': 30}
+        is_sent, message = handle_otp_sending(user, ip)
+        if not is_sent:
+            messages.error(request, message)
+            return render(request, 'auth/verify_otp.html', context)
+        else:
+            return render(request, 'auth/verify_otp.html', context)
+    
+    # GET request handling
+    email = request.GET.get('email', '').strip().lower()
+    if not email:
         return redirect('register_lander')
-
-    return render(request, 'auth/register.html')
+        
+    return render(request, 'auth/register.html', {'email': email})
 
 
 def verify_otp(request):
-    if request.method == 'POST':
-        user_id = request.POST.get('user_id', '')
-        # optional password for reset password
-        password = request.POST.get('password', None)
-        user = User.objects.filter(id=user_id).first()
-        if user is None:
-            messages.error(request, 'Invalid user')
-            return redirect('login')
-        
-        otp = request.POST.get('otp', 0)
-        otp_obj = Otp.objects.filter(user=user, otp=otp).first()
-        if otp_obj is None:
-            messages.error(request, 'Invalid OTP')
-            return render(
-                request,
-                'auth/verify_otp.html',
-                {'user_id': user_id, 'password': password, 'resend_seconds': Otp.objects.filter(user=user).first().get_resend_seconds()}
-            )
-        
-        elif otp_obj.created_ago() > 300:
-            messages.error(request, 'OTP has expired')
-            return render(request, 'auth/verify_otp.html', {'user_id': user_id, 'password': password, 'resend_seconds': 0})
-        else:
-            user.is_active = True
-            user.save()
-            if password:
-                user.set_password(password)
-                user.save()
-                messages.success(request, 'Password reset successful')
-                logout_from_all(user)
-                return redirect('login')
-            else:
-                user.backend = 'django.contrib.auth.backends.ModelBackend'
-                login(request, user)
-                messages.success(request, 'Account created successfully')
-                return redirect('dashboard')
+    if request.method != 'POST':
+        return redirect('register_lander')
     
-    return redirect('register_lander')
-
+    user_id = request.POST.get('user_id', '')
+    otp_code = request.POST.get('otp', '').strip()
+    
+    user = User.objects.filter(id=user_id).first()
+    if not user:
+        messages.error(request, 'Invalid verification request.')
+        return redirect('login')
+    
+    otp_obj = Otp.objects.filter(user=user, otp=otp_code).first()
+    context = {
+            'user_id': user_id, 
+            'resend_seconds': 0
+        }
+    
+    if not otp_obj:
+        messages.error(request, 'Invalid OTP code.')
+        return render(request, 'auth/verify_otp.html', context)
+    
+    # Check OTP expiration (5 minutes)
+    if otp_obj.created_ago() > 300:
+        messages.error(request, 'OTP has expired. Please request a new one.')
+        otp_obj.delete()  # Clean up expired OTP
+        return render(request, 'auth/verify_otp.html',  context)
+    
+    # Valid OTP - process verification
+    otp_obj.delete()  # Prevent reuse
+    
+    user.is_active = True
+    user.save()
+    
+    # Registration flow
+    user.backend = 'django.contrib.auth.backends.ModelBackend'
+    login(request, user)
+    messages.success(request, 'Account created successfully!')
+    return redirect('dashboard')
+    
+    
 def password_reset(request):
-    if request.method == 'POST':
-        email = request.POST['email']
-        password = request.POST['password']
-        user = User.objects.filter(email__iexact=email, is_active=True).first()
-        if user is None:
-            messages.error(request, 'Email not found.')
-            return render(request, 'auth/password_reset.html')
-        
-        ip = get_ip(request)
-    
-        otp_objs = Otp.objects.filter(user=user, created_at__gte=timezone.now() - timedelta(days=1))
-        if otp_objs.count() < 3:
-            
-            otp = send_otp(user)
-            if otp is not None:
-                create_otp(user=user, ip=ip, otp=otp)
-            else:
-                messages.error(request, 'Failed to send OTP. Please try again.')
-                return render(request, 'auth/verify_otp.html', {'user_id': user.id, 'password': password, 'resend_seconds': 0})
-        
-        else:
-            messages.error(request, 'You have already sent 3 OTPs. Please try again 24 hours later.')
-            return render(request, 'auth/verify_otp.html', {'user_id': user.id, 'password': password, 'resend_seconds': 0})
-        
-        return render(request, 'auth/verify_otp.html', {'user_id': user.id, 'password': password, 'resend_seconds': otp_objs.first().get_resend_seconds()})
-                
-    return render(request, 'auth/password_reset.html')
+    messages.warning(request,'password reset feature is currently in developement')
+    return redirect("dashboard")
 
