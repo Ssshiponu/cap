@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse, HttpResponseForbidden
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -89,50 +90,51 @@ def add_page_callback(request):
     
     return render(request, 'auth/connect_page.html', {"pages": pages})
             
+@require_http_methods(["POST"])
 def connect_page(request):
-    if request.method == 'POST':
-        pages = request.POST['pages']
-        pages = json.loads(pages)
-        for page in pages:
-            page_id = page.get("id")
-            page_name = page.get("name")
-            page_access_token = page.get("access_token")
-            page_category = page.get("category", "No category")
-            picture_data = page.get("picture")
+    pages = request.POST['pages']
+    pages = json.loads(pages)
+    for page in pages:
+        page_id = page.get("id")
+        page_name = page.get("name")
+        page_access_token = page.get("access_token")
+        page_category = page.get("category", "No category")
+        picture_data = page.get("picture")
 
-            
-            page = FacebookPage.objects.filter(id=page_id).first()
-            
-            
-            
-            if page is not None:
-                page.active = True
-                page.user = request.user
-                page.page_name = page_name
-                page.page_category = page_category
-                page.access_token = page_access_token
-                page.picture = picture_data
-                page.save()
+        
+        page = FacebookPage.objects.filter(id=page_id).first()
+        
+        
+        if page is not None:
+            if page.user != request.user:
+                messages.error(request, f"Page {page_name} already connected to an account")
                 continue
             
-            FacebookPage.objects.create(
-                id = page_id,
-                user=request.user,
-                page_name=page_name,
-                page_category=page_category,
-                picture=picture_data,
-                access_token=page_access_token,
-            )
-            
-            subscribe_url = f"https://graph.facebook.com/v17.0/{page_id}/subscribed_apps"
-            r = requests.post(
-                subscribe_url,
-                params={"access_token": page_access_token},
-                json={"subscribed_fields": ["messages", "messaging_postbacks"]}
-            )
-            
-        return redirect('dashboard')
-    return HttpResponseForbidden("Method not allowed")
+            page.active = True
+            page.page_name = page_name
+            page.page_category = page_category
+            page.access_token = page_access_token
+            page.picture = picture_data
+            page.save()
+            continue
+        
+        FacebookPage.objects.create(
+            id = page_id,
+            user=request.user,
+            page_name=page_name,
+            page_category=page_category,
+            picture=picture_data,
+            access_token=page_access_token,
+        )
+        
+        subscribe_url = f"https://graph.facebook.com/v17.0/{page_id}/subscribed_apps"
+        r = requests.post(
+            subscribe_url,
+            params={"access_token": page_access_token},
+            json={"subscribed_fields": ["messages", "messaging_postbacks"]}
+        )
+        
+    return redirect('dashboard')
 
 
 def login_view(request):

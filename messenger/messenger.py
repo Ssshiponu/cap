@@ -33,39 +33,70 @@ class Messenger:
         payload = {"recipient": {"id": self.sender_id}, "sender_action": action}
         return self._send_api_request(payload)
     
-    def send_template(self, template_name: str, elements: list):
+    def send_template(self):
         payload = {
             "recipient": {"id": self.sender_id},
+            
             "message": {
-                "attachment":{
-                "type":"template",
-                "payload":{
-                    "template_type":"generic",
-                    "elements":[
+                "attachment": {
+                "type": "template",
+                "payload": {
+                    "template_type": "generic",
+                    "image_aspect_ratio": "square",
+                    "elements": [
                     {
-                        "title":"Welcome!",
-                        "image_url":"https://nixagone.pythonanywhere.com/media/products/git1.jpg",
-                        "subtitle":"We have the best clothes for everyone.",
+                        "title": "Python T-Shirt",
+                        "subtitle": "200 ৳",
+                        "image_url": "https://nixagone.pythonanywhere.com/media/products/python1.jpg",
                         "default_action": {
                         "type": "web_url",
-                        "url": "https://nixagone.pythonanywhere.com/products/git-logo-t-shirt",
-                        "webview_height_ratio": "full"
+                        "url": "https://nixagone.pythonanywhere.com/product/python-t-shirt/",
+                        "webview_height_ratio": "tall"
                         },
-                        "buttons":[
+                        "buttons": [
                         {
-                            "type":"web_url",
-                            "url":"https://nixagone.pythonanywhere.com/",
-                            "title":"View Website"
-                        },{
-                            "type":"postback",
-                            "title":"Start Chatting",
-                            "payload":"DEVELOPER_DEFINED_PAYLOAD"
-                        }              
-                        ]      
+                            "type": "web_url",
+                            "url": "https://nixagone.pythonanywhere.com/product/python-t-shirt/",
+                            "title": "View",
+                            "webview_height_ratio": "tall"
+                        },
+                        {
+                            "type": "web_url",
+                            "url": "https://nixagone.pythonanywhere.com/product/python-t-shirt/",
+                            "title": "Buy",
+                            "webview_height_ratio": "tall"
+                        }
+                        ]
+                    },
+                    {
+                        "title": "Git T-Shirt",
+                        "subtitle": "200 ৳",
+                        "image_url": "https://nixagone.pythonanywhere.com/media/products/git1.jpg",
+                        "default_action": {
+                        "type": "web_url",
+                        "url": "https://nixagone.pythonanywhere.com/product/git-t-shirt/",
+                        "webview_height_ratio": "tall"
+                        },
+                        "buttons": [
+                        {
+                            "type": "web_url",
+                            "url": "https://nixagone.pythonanywhere.com/product/git-t-shirt/",
+                            "title": "View",
+                            "webview_height_ratio": "tall"
+                        },
+                        {
+                            "type": "web_url",
+                            "url": "https://nixagone.pythonanywhere.com/product/git-t-shirt/",
+                            "title": "Buy",
+                            "webview_height_ratio": "tall"
+                        }
+                        ]
                     }
                     ]
                 }
+                }
             }
-        }
+            
+
         }
         return self._send_api_request(payload)
