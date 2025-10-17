@@ -1,10 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
-from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
 import uuid
-
 from .utils import *
 
 
@@ -16,71 +14,77 @@ class User(AbstractUser):
     username = models.CharField(max_length=100, blank=True, null=True)
     picture_url = models.URLField(blank=True, null=True)
     is_email_verified = models.BooleanField(default=False)
-    
     credits = models.IntegerField(default=0)
     credits_used = models.IntegerField(default=0)
-    
-    
 
     class Meta:
         db_table = 'users'
 
     def __str__(self):
         return self.email
-    
+
     def credits_left(self):
         return self.credits - self.credits_used
-    
+
     def use_credits(self, amount):
         if amount > self.credits_left():
             return False
-        
+
         self.credits_used += amount
         self.save()
         return True
-        
+
     def add_credits(self, amount, name=None):
         if name != 'Free':
+            # TODO: Check if payment system is configured
             return (False, "Payment system is not configured")
         if CreditTransaction.objects.filter(name="Free", ip=self.ip).exists():
             return (False, "Free credits already used")
-        
+
         else:
             CreditTransaction.objects.create(user=self, amount=amount, name=name, ip=self.ip)
             self.credits += amount
             self.save()
             return (True, "Credits added")
-        
+
     def has_credits(self, amount):
         return self.credits_left() >= amount
-    
+
     def is_low_credits(self):
         return self.credits_left() < settings.LOW_CREDIT_THRESHOLD
-    
+
     def has_free_credits(self):
         return not CreditTransaction.objects.filter(name="Free", ip=self.ip).exists()
-    
+
     def notification_list(self):
         return self.notifications.all().order_by('read', '-created_at')[:4]
-            
+
     def has_notifications(self):
         return self.notifications.filter(read=False).exists()
-    
+
     def get_pages(self):
         return self.facebook_pages.filter(active=True)
-    
+
     def notify(self, message, description=None, type='info'):
         # check same notification already exists in last 24 hours
         if not self.notifications.filter(
             message=message,
             created_at__gte=timezone.now() - timezone.timedelta(days=1)
         ).exists():
-            Notification.objects.create(user=self, message=message, description=description, type=type)
-    
+            Notification.objects.create(
+                user=self, message=message,
+                description=description,
+                type=type
+            )
+
 
 class CreditTransaction(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='credit_transactions')
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='credit_transactions'
+    )
     ip = models.CharField(max_length=255, blank=True, null=True)
     pages = models.TextField(blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
