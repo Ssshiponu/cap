@@ -26,9 +26,7 @@
         <p class="text-xs text-neutral-500">Must be at least 8 characters</p>
     </div>
 
-    <button type="submit" class="btn btn-primary w-full mt-6">
-        Create Account
-    </button>
+    {% include "auth/partials/submit.html" with text="Create Account" %}
 </form>
 {% endblock content %}
 

@@ -10,9 +10,7 @@
 {% block content %}
 <form action="{% url "register" %}" method="get" class="space-y-3">
     <input type="email" name="email" placeholder="name@example.com" required class="input w-full">
-    <button type="submit" class="btn btn-primary w-full">
-        Sign up with Email
-    </button>
+    {% include "auth/partials/submit.html" with text="Continue with Email" %}
     {% include "auth/partials/oauth.html" %}
 
 </form>

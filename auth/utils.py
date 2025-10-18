@@ -9,6 +9,7 @@ import random
 from datetime import timedelta
 
 from core.models import Otp
+from core.limitation import is_rate_limited
 from .mail import send_otp
 
 
@@ -25,15 +26,6 @@ def logout_from_all(user):
         data = session.get_decoded()
         if data.get('_auth_user_id') == str(user.id):
             session.delete()
-
-
-def is_rate_limited(ip, limit_name, max_attempts, window_seconds):
-    key = f"{limit_name}_{ip}"
-    attempts = cache.get(key, 0)
-    if attempts >= max_attempts:
-        return True
-    cache.set(key, attempts + 1, window_seconds)
-    return False
 
 
 def handle_otp_sending(user, ip):

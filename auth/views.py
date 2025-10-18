@@ -2,11 +2,13 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.conf import settings
 from core.utils import get_ip
+from core.limitation import rate_limit
 
 import base64
 import requests
@@ -292,7 +294,6 @@ def verify_otp(request):
         messages.error(request, 'Invalid verification code.')
         return render(request, 'auth/verify_otp.html', context)
 
-
 def password_reset_lander(request):
     if request.method == 'POST':
         email = request.POST.get('email', '').strip().lower()
@@ -318,7 +319,7 @@ def password_reset_lander(request):
     
     return render(request, 'auth/password_reset_lander.html')
     
-    
+
 def password_reset(request):
     if request.method != 'POST':
         return redirect('login')
@@ -346,5 +347,7 @@ def password_reset(request):
     logout_from_all(user)
     messages.success(request, 'Password reset successfully!')
     return redirect('login')
-    
 
+
+    
+    

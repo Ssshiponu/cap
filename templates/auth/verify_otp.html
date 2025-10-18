@@ -15,9 +15,7 @@
     <input type="hidden" name="type" value="{{ type }}">
     <input type="text" name="otp" class="input w-full" placeholder="Enter OTP">
     
-    <div class="flex mt-6 justify-end">
-        <button type="submit" class="btn btn-primary w-full">Verify</button>
-    </div>
+{% include "auth/partials/submit.html" with text="Verify" %}
 
 </form>
 {% endblock content %}

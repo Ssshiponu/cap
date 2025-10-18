@@ -24,9 +24,7 @@
         {% include "auth/partials/password.html" %}
     </div>
 
-    <button type="submit" class="btn btn-primary w-full mt-6">
-        Sign In
-    </button>
+    {% include "auth/partials/submit.html" with text="Log In" %}
 
     {% include "auth/partials/oauth.html" %}
     
