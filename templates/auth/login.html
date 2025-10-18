@@ -16,7 +16,7 @@
         <input type="text" id="email" name="email" placeholder="e.g name@example.com" required class="input w-full" value="{{ email }}">
     </div>
 
-    <div class="space-y-1" x-data="{ show: false }">
+    <div class="space-y-1">
         <div class="flex items-center justify-between">
             <label for="password" class="text-sm font-medium">Password</label>
             <a href="{% url 'password_reset_lander' %}" class="text-xs link">Forgot password?</a>

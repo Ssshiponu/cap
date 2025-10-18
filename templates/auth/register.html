@@ -20,7 +20,7 @@
         <input type="text" id="full_name" name="full_name" value="{{ full_name }}" placeholder="e.g Asraf Uddin" required class="input w-full">
     </div>
 
-    <div class="space-y-1" x-data="{ show: false }">
+    <div class="space-y-1">
         <label for="password" class="text-sm font-medium">Password</label>
         {% include "auth/partials/password.html" %}
         <p class="text-xs text-neutral-500">Must be at least 8 characters</p>
