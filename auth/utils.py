@@ -8,7 +8,6 @@ import re
 import random
 from datetime import timedelta
 
-from core.models import Otp
 from core.limitation import is_rate_limited
 from .mail import send_otp
 

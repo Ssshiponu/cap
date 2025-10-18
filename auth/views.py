@@ -28,6 +28,7 @@ FB_APP_SECRET = settings.FB_APP_SECRET
 
 
 def add_page(request):
+    """redirect to facebook auth dialogue to add page"""
     scope = ",".join([
         "public_profile",
         "pages_show_list",
@@ -44,8 +45,8 @@ def add_page(request):
     )
     return redirect(auth_url)
 
-
 def add_page_callback(request):
+    """callback from facebook auth dialogue to add page"""
     code = request.GET.get("code")
     if not code:
         messages.error(request, "Failed add facebook page")
@@ -263,6 +264,7 @@ def verify_otp(request):
         }
     
     #when otp is valid
+    print(cache.get(f"otp_{user.email}"))
     if otp_code == cache.get(f"otp_{user.email}"):
         if type == 'register':
             user.is_active = True

@@ -190,29 +190,4 @@ class WebhookLog(models.Model):
     def __str__(self):
         return f"{self.event_type} - {self.created_at}"
 
-
-class Attempt(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='attempts')
-    attmpt = models.CharField()
-    ip = models.CharField(max_length=255, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
-class Otp(models.Model):
-    user = models.ForeignKey('core.User', on_delete=models.SET_NULL, null=True, blank=True)
-    ip = models.CharField(max_length=255, blank=True, null=True)
-    otp = models.CharField(max_length=6, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    def created_ago(self):
-        """returns how many secend ago it was created"""
-        return int((timezone.now() - self.created_at).total_seconds())
-    
-    def get_resend_seconds(self):
-        secend = int(max(0, (self.created_at + timezone.timedelta(seconds=30) - timezone.now()).total_seconds()))
-        return secend
-
-    
-    class Meta:
-        ordering = ['-created_at']
     
