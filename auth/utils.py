@@ -27,16 +27,6 @@ def logout_from_all(user):
             session.delete()
 
 
-def create_otp(user=None, ip=None, otp=None):
-    # first inactive all otps
-    otp_objs = Otp.objects.filter(user=user)
-    for obj in otp_objs:
-        obj.otp = None
-        obj.save()
-
-    Otp.objects.create(user=user, ip=ip, otp=otp)
-
-
 def is_rate_limited(ip, limit_name, max_attempts, window_seconds):
     key = f"{limit_name}_{ip}"
     attempts = cache.get(key, 0)
@@ -49,7 +39,7 @@ def is_rate_limited(ip, limit_name, max_attempts, window_seconds):
 def handle_otp_sending(user, ip):
     """Centralized OTP sending logic"""
     # Check daily limit
-    if is_rate_limited(ip, 'otp_daily', 3, 86400):
+    if is_rate_limited(ip, 'otp_daily', 5, 86400):
         return (False, 'You have reached the maximum number of OTP requests for today.')
 
     # Check recent OTP (30-second cooldown)
@@ -62,5 +52,5 @@ def handle_otp_sending(user, ip):
     if not otp_code:
         return (False, 'Failed to send OTP. Please try again.')
 
-    create_otp(user=user, ip=ip, otp=otp_code)
+    cache.set(f"otp_{user.email}", otp_code, 30)
     return (True, None)

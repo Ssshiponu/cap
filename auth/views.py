@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.conf import settings
 from core.utils import get_ip
 
@@ -12,7 +13,7 @@ import requests
 import json
 import uuid
 
-from core.models import FacebookPage, Otp
+from core.models import FacebookPage
 from .utils import *
 from .validator import *
 
@@ -136,8 +137,8 @@ def login_view(request):
         return redirect(next)
     
     if request.method == 'POST':
-        email = request.POST['email']
-        password = request.POST['password']
+        email = request.POST['email'].strip().lower()
+        password = request.POST['password'].strip()
         user = authenticate(request, email=email, password=password)
         if user is not None:
             
@@ -157,7 +158,6 @@ def logout_view(request):
 
 def register_lander(request):
     return render(request, 'auth/register_lander.html')
-
 
 def register(request):
     if request.user.is_authenticated:
@@ -226,7 +226,7 @@ def register(request):
             )
         
         # Send OTP
-        context = {'user_id': user.id, 'resend_seconds': 30}
+        context = {'user_id': user.id, 'resend_seconds': 30, 'type': 'register', 'redirect_url': 'dashboard'}
         is_sent, message = handle_otp_sending(user, ip)
         if not is_sent:
             messages.error(request, message)
@@ -248,42 +248,103 @@ def verify_otp(request):
     
     user_id = request.POST.get('user_id', '')
     otp_code = request.POST.get('otp', '').strip()
+    type = request.POST.get('type', '')
     
     user = User.objects.filter(id=user_id).first()
     if not user:
         messages.error(request, 'Invalid verification request.')
         return redirect('login')
     
-    otp_obj = Otp.objects.filter(user=user, otp=otp_code).first()
     context = {
             'user_id': user_id, 
-            'resend_seconds': 0
+            'resend_seconds': 0,
         }
     
-    if not otp_obj:
-        messages.error(request, 'Invalid OTP code.')
+    #when otp is valid
+    if otp_code == cache.get(f"otp_{user.email}"):
+        if type == 'register':
+            user.is_active = True
+            user.save()
+            
+            # Delete otp from cache
+            cache.delete(f"otp_{user.email}")
+            
+            # lofin user
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
+            login(request, user)
+            messages.success(request, 'Account created successfully!')
+            return redirect('dashboard')
+        elif type == 'password_reset':
+            # Password reset token for security
+            token = generate_random_token()
+            cache.set(key=f"reset_password_{user_id}", value=token, timeout=300)
+            
+            # Delete otp from cache
+            cache.delete(f"otp_{user.email}")
+            
+            return render(request, 'auth/password_reset.html', {'user_id': user_id, 'token': token})
+        else:
+            messages.error(request, 'Invalid verification request.')
+            return redirect('login')
+        
+    #when otp is invalid
+    else:
+        messages.error(request, 'Invalid verification code.')
         return render(request, 'auth/verify_otp.html', context)
+
+
+def password_reset_lander(request):
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip().lower()
+        if not email:
+            messages.error(request, 'Email is required.')
+            return render(request, 'auth/password_reset_lander.html', {'email': email})
+        
+        user = User.objects.filter(email__iexact=email).first()
+        if not user:
+            messages.error(request, 'No account found with this email.')
+            return render(request, 'auth/password_reset_lander.html', {'email': email})
+        
+        # Send OTP
+        ip = get_ip(request)
+        context = {'user_id': user.id, 'resend_seconds': 30, 'type': 'password_reset'}
+        is_sent, message = handle_otp_sending(user, ip)
+        if not is_sent:
+            messages.error(request, message)
+            context['resend_seconds'] = 0
+            return render(request, 'auth/verify_otp.html', context)
+        else:
+            return render(request, 'auth/verify_otp.html', context)
     
-    # Check OTP expiration (5 minutes)
-    if otp_obj.created_ago() > 300:
-        messages.error(request, 'OTP has expired. Please request a new one.')
-        otp_obj.delete()  # Clean up expired OTP
-        return render(request, 'auth/verify_otp.html',  context)
-    
-    # Valid OTP - process verification
-    otp_obj.delete()  # Prevent reuse
-    
-    user.is_active = True
-    user.save()
-    
-    # Registration flow
-    user.backend = 'django.contrib.auth.backends.ModelBackend'
-    login(request, user)
-    messages.success(request, 'Account created successfully!')
-    return redirect('dashboard')
+    return render(request, 'auth/password_reset_lander.html')
     
     
 def password_reset(request):
-    messages.warning(request, 'password reset feature is currently in developement')
-    return redirect("dashboard")
+    if request.method != 'POST':
+        return redirect('login')
+    
+    user_id = request.POST.get('user_id', '')
+    token = request.POST.get('token', '')
+    password = request.POST.get('password', '').strip()
+    
+    user = User.objects.filter(id=user_id).first()
+    if not user:
+        messages.error(request, 'Invalid verification request.')
+        return redirect('login')
+    
+    if token != cache.get(f"reset_password_{user_id}"):
+        messages.error(request, 'Invalid verification request.')
+        
+    is_valid, message = validate_password(password)
+    if not is_valid:
+        messages.error(request, message)
+        return render(request, 'auth/reset_password.html', {'user_id': user_id, 'token': token, 'password': password})
+        
+    user.set_password(password)
+    user.save()
+    cache.delete(f"reset_password_{user_id}")
+    logout_from_all(user)
+    messages.success(request, 'Password reset successfully!')
+    return redirect('login')
+    
 

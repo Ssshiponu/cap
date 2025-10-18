@@ -12,7 +12,7 @@
 
     {% csrf_token %}
     <input type="hidden" name="user_id" value="{{ user_id }}">
-    <input type="hidden" password="password", value="{{ password }}">
+    <input type="hidden" name="type" value="{{ type }}">
     <input type="text" name="otp" class="input w-full" placeholder="Enter OTP">
     
     <div class="flex mt-6 justify-end">

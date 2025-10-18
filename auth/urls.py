@@ -7,6 +7,7 @@ urlpatterns = [
    path('register-lander/', views.register_lander, name='register_lander'),
    path('register/', views.register, name='register'),
    path('verify-otp/', views.verify_otp, name='verify_otp'),
+   path('password-reset-lander/', views.password_reset_lander, name='password_reset_lander'),
    path('password-reset/', views.password_reset, name='password_reset'),
 
    #facebook oauth
