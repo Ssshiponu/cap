@@ -2,19 +2,19 @@
 {% extends "base.html" %}
 {% load static %}
 {% block body %}
-  <header class="sticky top-0 z-50">
-    <div id="header" class="header-inner bg-white/80 backdrop-blur-sm border-transparent">
-      <div class="flex items-center justify-between h-full max-w-6xl px-4 mx-auto">
+  <header class="sticky top-4 px-4 z-50">
+    <div id="header" class="header-inner bg-white/80 backdrop-blur-sm border-transparent" :class="mobileMenu ? 'scrolled': ''">
+      <div class="flex items-center justify-between h-full max-w-6xl mx-auto">
 
         {% include "core/partials/brand.html" %}
 
         <nav class="hidden lg:block">
             <div class="flex items-center gap-2">
-                <a href="#hero" class="btn-link">Home</a>
-                <a href="#features" class="btn-link">Features</a>
-                <a href="#pricing" class="btn-link">Pricing</a>
-                <a href="/about/" class="btn-link">About</a>
-                <a href="/contact/" class="btn-link">Contact</a>
+                <a href="#hero" @click="mobileMenu = false" class="btn-link">Home</a>
+                <a href="#features" @click="mobileMenu = false" class="btn-link">Features</a>
+                <a href="#pricing" @click="mobileMenu = false" class="btn-link">Pricing</a>
+                <a href="/about/" @click="mobileMenu = false" class="btn-link">About</a>
+                <a href="/contact/" @click="mobileMenu = false" class="btn-link">Contact</a>
             </div>
         </nav>
 
@@ -36,21 +36,16 @@
 
   <!-- mobile menu -->
   <nav x-show="mobileMenu"
-  x-transition:enter="ease-out duration-200"
-  x-transition:enter-start="scale-y-50"
-  x-transition:enter-end="scale-y-100"
-  x-transition:leave="ease-in duration-100"
-  x-transition:leave-start="opacity-100"
-  x-transition:leave-end="opacity-0"
+  x-transition.scale.96.opacity
   @click.outside="mobileMenu = false"
   class="fixed top-22 inset-0 z-50 origin-top lg:hidden w-[calc(100dvw-64px)] max-w-72 p-6 rounded-xl shadow-2xl ml-auto mr-4 h-[calc(100dvh-112px)] border border-neutral-200 bg-white/80 backdrop-blur-sm " x-cloak>
     <div class="flex flex-col justify-between h-full">
         <div class="flex flex-col gap-3">
-            <a href="#hero" class="btn-link">Home</a>
-            <a href="#features" class="btn-link">Features</a>
-            <a href="#pricing" class="btn-link">Pricing</a>
-            <a href="/about/" class="btn-link">About</a>
-            <a href="/contact/" class="btn-link">Contact</a>
+            <a href="#hero" @click="mobileMenu = false" class="btn-link">Home</a>
+            <a href="#features" @click="mobileMenu = false" class="btn-link">Features</a>
+            <a href="#pricing" @click="mobileMenu = false" class="btn-link">Pricing</a>
+            <a href="/about/" @click="mobileMenu = false" class="btn-link">About</a>
+            <a href="/contact/" @click="mobileMenu = false" class="btn-link">Contact</a>
         </div>
         <div class="flex gap-3">
             <a href="{% url "login" %}" class="btn flex-1">Login</a>
@@ -60,7 +55,7 @@
     
   </nav>
 
-<section id="hero" class="bg-whuite flex flex-col items-center justify-center min-h-[calc(100dvh-96px)] md:min-h-[550px] px-6 gap-8 max-w-6xl mx-auto">
+<section id="hero" class="bg-whuite flex flex-col items-center justify-center min-h-[calc(100dvh-32px)] md:min-h-[700px] px-6 gap-8 max-w-6xl mx-auto">
     <h1 class="h1">{{ metadata.hero.title|safe }}</h1>
     <div class="flex sm:flex-row flex-col-reverse gap-8 md:gap-12 lg:gap-16  max-w-4xl mx-auto">
             <lord-icon
@@ -137,7 +132,7 @@
 
   <div class="text-neutral-900 grid grid-cols-5 gap-2 sm:gap-6 gap-y-4 sm:gap-y-8 max-w-2xl mx-auto">
       <div class="box center col-span-2">
-        <p class="text-lg font-medium">{{ metadata.work.1st }} </p>
+        <p class="">{{ metadata.work.1st }} </p>
       </div>
 
       <div class="center">
@@ -149,7 +144,7 @@
       </div>
 
       <div class="center box col-span-2">
-        <p class="text-lg font-medium">{{ metadata.work.2nd }} </p>
+        <p class="">{{ metadata.work.2nd }} </p>
       </div>
 
       <div class="center col-span-2">
@@ -171,7 +166,7 @@
       </div>
 
       <div class="box center col-span-2">
-        <p class="text-lg font-medium">{{ metadata.work.4th }} </p>
+        <p class="">{{ metadata.work.4th }} </p>
       </div>
 
       <div class="center">
@@ -183,7 +178,7 @@
       </div>
 
       <div class="center box col-span-2">
-        <p class="text-lg font-medium">{{ metadata.work.3rd }} </p>
+        <p class="">{{ metadata.work.3rd }} </p>
       </div>
   </div>
   <p class="text-neutral-700 text-center mt-16">{{ metadata.work.subtitle }}</p>

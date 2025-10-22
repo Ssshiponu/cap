@@ -65,13 +65,14 @@ def credits(start_date=None, end_date=None, pages: list[FacebookPage] = []):
             'datasets': [{
                 'label': 'Credits Used',
                 'data': data,
-                'backgroundColor': 'rgba(54, 162, 235, 0.6)',
-                'borderColor': 'rgba(54, 162, 235, 1)',
+                'backgroundColor': '#000',
+                'borderColor': '#ddd',
                 'borderWidth': 1
             }]
         },
         'options': {
         'responsive': True,
+        'maintainAspectRatio': False,
         'scales': { 'y': { 'beginAtZero': True } }
         }
     }
@@ -145,30 +146,22 @@ def messages(start_date=None, end_date=None, pages: list[FacebookPage] | None = 
 
     # Return Chart.js config-like structure
     return {
-        'type': 'line',
+        'type': 'bar',
         'data': {
             'labels': labels,
             'datasets': [
                 {
-                    'label': 'User Messages',
-                    'data': user_data,
-                    'borderColor': 'rgba(75, 192, 192, 1)',
-                    'backgroundColor': 'rgba(75, 192, 192, 0.2)',
-                    'tension': 0.1,
-                    'fill': True
-                },
-                {
                     'label': 'AI Replies',
                     'data': assistant_data,
-                    'borderColor': 'rgba(153, 102, 255, 1)',
-                    'backgroundColor': 'rgba(153, 102, 255, 0.2)',
+                    'borderColor': '#ccc',
+                    'backgroundColor': '#000',
                     'tension': 0.1,
-                    'fill': True
                 }
             ]
         },
         'options': {
             'responsive': True,
+            'maintainAspectRatio': False,
             'scales': {'y': {'beginAtZero': True}}
         }
     }

@@ -13,8 +13,11 @@ CORE BEHAVIOR:
 * Respond ONLY in valid JSON array format with double quotes
 * Keep responses short, realistic and to the point without unnecessary details or repeations
 * image should be in a absolute url format like "https://nixagone.pythonanywhere.com/media/products/heroic1.jpg"
-
+* you can send multiple objects from below in the response list
 * Any line starts with ">" in history is an system log
+* Never send false information
+* add a extra text message for user when you take an action saying what you did
+
 
 RESPONSE FORMAT EXAMPLES:
 [{"text": "Your message here"}]
@@ -23,6 +26,12 @@ RESPONSE FORMAT EXAMPLES:
 
 * you can block(for 1h) a user by  for extream unusual activity or spamming fisrt alerting then returning
 [{"action": "block"}]
+* if user ask a question related to the page but the answer is not provided save it for admin to answer
+[{"action": "question", "question": "A clear question here"}]
+* you can place a order for the user buy a product
+[{"action": "order", "order": {order fields as json}}]
+
+order fields: product, price, shipping_cost, variation, quantity, customer, email, phone, address
     """
 
 # * Response array should have only one quick reply object at the end. but quik replies is optional
@@ -50,14 +59,14 @@ class AI:
         return 1
 
 
-    def reply(self, history: list) -> str:
+    def reply(self, history: list, context: list) -> str:
         """Generate AI response using Gemini API"""
 
         for model in self.models:
             try:
                 response = self.client.models.generate_content(
                     model=model,
-                    contents=str(history),
+                    contents=[str(history), str(context)],
                     config=types.GenerateContentConfig(
                         temperature=self.temperature(),
                         system_instruction=self.system_prompt(),
@@ -70,6 +79,19 @@ class AI:
             except Exception as e:
                 print(e)
                 continue
+            
+    def generate_query_text(self, history: list):
+        response = self.client.models.generate_content(
+            model="gemini-2.5-flash-lite",
+            contents=str(history),
+            config=types.GenerateContentConfig(
+                temperature=self.temperature(),
+                system_instruction="you are an ai to generate a query as plain text in english for searching vector database to generate next response",
+                response_mime_type="text/plain",
+            ),
+        )
+        if response:
+            return response.text
          
     def read_media(self, path: str, mime_type =  None) -> str:
         r = requests.get(path)

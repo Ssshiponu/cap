@@ -16,7 +16,7 @@ class User(AbstractUser):
     is_email_verified = models.BooleanField(default=False)
     credits = models.IntegerField(default=0)
     credits_used = models.IntegerField(default=0)
-
+    
     class Meta:
         db_table = 'users'
 
@@ -76,6 +76,20 @@ class User(AbstractUser):
                 description=description,
                 type=type
             )
+    
+    def get_primary_page(self, page_id=None):
+        if page_id is not None:
+            page = self.facebook_pages.filter(id=page_id).first()
+            if page is not None:
+                self.facebook_pages.filter(primary=True, active=True).exclude(id=page_id).update(primary=False)
+                page.primary = True
+                page.save()
+                return page
+
+        primary_page = self.facebook_pages.filter(primary=True, active=True).first()
+        if primary_page is not None:
+            return primary_page
+        return self.facebook_pages.filter(active=True).first()
 
 
 class CreditTransaction(models.Model):
@@ -124,8 +138,15 @@ class FacebookPage(models.Model):
     # Settings
     enabled = models.BooleanField(default=True)
     
+    primary = models.BooleanField(default=True)
+    
     system_prompt = models.TextField(
         help_text="Base instructions for AI behavior",
+        default=""
+    )
+    
+    business_context = models.TextField(
+        help_text="Extra knowledge about your business or product for ai",
         default=""
     )
     
@@ -142,7 +163,15 @@ class FacebookPage(models.Model):
     def credits_per_reply(self):
         return settings.CREDITS_PER_REPLY + round(count_tokens(self.system_prompt) * settings.CREDITS_PER_TOKEN)
     
-
+    
+    def get_questions(self):
+        return self.questions.filter(is_active=True)
+    
+    def get_orders(self, date=timezone.now().today()):
+        """Get orders for only a specific date"""
+        orders = self.orders.filter(created_at__date=date)
+        return orders
+    
     
 class Notification(models.Model):
     TYPES = [
@@ -189,5 +218,38 @@ class WebhookLog(models.Model):
 
     def __str__(self):
         return f"{self.event_type} - {self.created_at}"
+    
+    
+class Order(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    page = models.ForeignKey(FacebookPage, on_delete=models.CASCADE, related_name='orders')
+    product = models.CharField(max_length=255)
+    suk = models.CharField(max_length=255, blank=True, null=True)
+    quantity = models.IntegerField(default=1)
+    price = models.IntegerField()
+    shipping_cost = models.IntegerField(default=0)
+    variation = models.TextField(blank=True, null=True)
+    
+    customer = models.CharField(max_length=255)
+    email = models.EmailField(max_length=254, null=True, blank=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.product} - Q:{self.quantity}"
 
+
+class Questions(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    page = models.ForeignKey(FacebookPage, on_delete=models.CASCADE, related_name='questions')
+    question = models.TextField()
+    is_active = models.BooleanField(default=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.question[:50]
+    
     

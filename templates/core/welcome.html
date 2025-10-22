@@ -1,0 +1,14 @@
+{% include "base.html" %}
+
+{% block body %}
+<div class="flex flex-col items-center justify-center min-h-screen">
+    <h1 class="h2 mb-4">Welcome to Chat autopilot</h1>
+    <p class="info">Connect a facebook page to get started</p>
+    <div class="mt-12 flex flex-col items-center justify-center gap-4">
+        <a href="{% url 'add_page' %}" class="btn btn-primary">Connect Facebook Page</a>
+        <a href="{% url 'logout' %}" class="link p-2">Logout</a>
+    </div>
+
+</div>
+
+{% endblock body %}

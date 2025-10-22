@@ -107,3 +107,21 @@ window.toast = function(message, options = {}){
 }
 
 
+
+
+function exportChart(chart, filetype) {
+
+    const chartCanvas = document.getElementById(chart);
+    const validFileTypes = ['jpg', 'png'];
+    
+    if (!validFileTypes.includes(filetype)) {
+        console.error('Invalid file type');
+        return;
+    }
+
+    const chartUrl = chartCanvas.toDataURL('image/' + filetype);
+    const link = document.createElement('a');
+    link.href = chartUrl;
+    link.download = chart + '.' + filetype;
+    link.click();
+}

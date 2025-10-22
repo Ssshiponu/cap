@@ -13,11 +13,12 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 
 from core.ai import AI
-from core.models import FacebookPage, User, WebhookLog, Notification
+from core.models import FacebookPage, User, Questions, Order, WebhookLog, Notification
 
 from .models import Message, Conversation
 from .messenger import Messenger
 from .reader import Reader
+from core.chroma import ChromaDB
 from .utils import generate_conversation
 from core.utils import days_ago
 
@@ -92,10 +93,17 @@ def process_event(event: dict):
         return True
     
     history = generate_conversation(conversation)
+    chroma = ChromaDB(page)
+    query_text = ai.generate_query_text(history[-8:])
+    print("Q:", query_text)
+    context = chroma.query(query_text, k=5)
+    print("C:", context)
     
     messenger.send_action("mark_seen")
     print("started...")
-    reply = ai.reply(history)
+    
+    reply = ai.reply(history, context)
+    print("finished...")
 
     if reply is None:
         return True
@@ -117,7 +125,21 @@ def process_event(event: dict):
             conversation.blocked = True
             conversation.save()
             logger.info("Blocking conversation...")
-            break
+            continue
+        
+        if reply_part.get('action') == 'question':
+            Questions.objects.get_or_create(
+                page = page,
+                question = reply_part.get('question'),
+            )
+            continue
+        
+        if reply_part.get('action') == 'order':
+            Order.objects.get_or_create(
+                page = page,
+                **reply_part.get('order')
+            )
+            continue
         
         sent = messenger.send_reply(reply_part)
         

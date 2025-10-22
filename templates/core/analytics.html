@@ -1,0 +1,161 @@
+{% extends "core/dashboard.html" %}
+
+{% block title %}Analytics - {{ page.page_name }} | Chat Autopilot{% endblock title %}
+
+{% block content %}
+<div class="h-auto p-4 sm:p-6">
+    <div class="flex flex-col">
+        <div class="border-b border-neutral-200 p-2 pt-0">
+            <h1 class="h2">Analytics</h1>
+        </div>
+        <div class="flex-1 py-6 space-y-4">
+            
+            <div class="card flex items-center gap-4 p-3 pl-4">
+                    <div class="flex-1 flex gap-3 items-center justify-between flex-wrap">
+                    <div class="flex gap-3 items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brain-icon lucide-brain"><path d="M12 18V5"/><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"/><path d="M18 18a4 4 0 0 0 2-7.464"/><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"/><path d="M6 18a4 4 0 0 1-2-7.464"/><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77"/></svg>
+                        <p class="flex-1 text-nutral-800">A good system prompt will help you getting better response</p>
+                        
+                    </div>
+                    <a class="btn-link .go">
+                        Learn more
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+                    </a>
+                </div>
+            </div>
+            <div class="card space-y-4">
+                <div class="flex-1 flex gap-3 items-center justify-between flex-wrap">
+                    <div class="flex gap-3 items-center">
+                        <h2 class="h2 text-xl">Basic Stats</h2>
+                    </div>
+                    
+                </div>
+                <div class="flex flex-wrap items-center gap-y-2 gap-x-10">
+                    <p class="data-item text-neutral-800">1234 AI replies this month</p>
+                    <p class="data-item text-neutral-800">4352 Credits used this month</p>
+
+                    <p class="data-item text-neutral-800">12 fake conversation bloked this month</p>
+
+                </div>
+                
+
+            </div>
+            <div class="card flex flex-col gap-4 p-3 pl-4">
+                <div class="flex-1 flex gap-3 items-center justify-between flex-wrap">
+                    <div class="flex gap-3 items-center">
+                        <h2 class="h2 text-xl">AI Reply</h2>
+                    </div>
+                    <div class="flex gap-2 font-base">
+
+                        
+                        <div class="relative select-none" x-data="{ open: false }">
+                            <div @click="open = !open" class="btn-link justify-between">
+                                <span class="">Export</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-share-icon lucide-share"><path d="M12 2v13"/><path d="m16 6-4-4-4 4"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/></svg>
+
+                            </div>
+                            <!-- Dropdown -->
+                            <div x-show="open" @click.away="open = false" x-transition x-cloak class="absolute text-sm z-10 w-32 top-11 origin-top bg-white border border-neutral-200 rounded-xl shadow-lg">
+                                <div class="p-1.5" role="none">
+                                    <a href="#" class="btn-link no-underline" role="menuitem">Google Sheets</a>
+
+                                    <a href="#" class="btn-link no-underline" role="menuitem">CSV</a>
+                                    <a href="#" class="btn-link no-underline" role="menuitem">JPG</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative select-none" x-data="{ open: false }">
+                            <div @click="open = !open" class="btn-link w-36 justify-between">
+                                <span class="">Last {{ days }} days</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+                            </div>
+                            <!-- Dropdown -->
+                            <div x-show="open" @click.away="open = false" x-transition x-cloak class="absolute text-sm z-10 w-36 top-11 origin-top bg-white border border-neutral-200 rounded-xl shadow-lg">
+                                <div class="p-1.5" role="none">
+                                    <a href="?days=3" class="btn-link no-underline" role="menuitem">3 days</a>
+                                    <a href="?days=7" class="btn-link no-underline" role="menuitem">7 days</a>
+                                    <a href="?days=30" class="btn-link no-underline" role="menuitem">30 days</a>
+                                    <a href="?days=100" class="btn-link no-underline" role="menuitem">100 days</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <p class="data-item text-neutral-800">2924 AI replies this month</p>
+                </div>
+                <div class="w-full h-64">
+                    <canvas class="w-full h-full" id="messages-chart"></canvas>
+                </div>
+            </div>
+            <div class="card flex flex-col gap-4 p-3 pl-4">
+                    <div class="flex-1 flex gap-3 items-center justify-between flex-wrap">
+                    <div class="flex gap-3 items-center">
+                        <h2 class="h2 text-xl">Credits Used</h2>
+                    </div>
+
+                    <div class="flex gap-2 font-base">
+
+                        
+                        <div class="relative select-none" x-data="{ open: false }">
+                            <div @click="open = !open" class="btn-link justify-between">
+                                <span class="">Export</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-share-icon lucide-share"><path d="M12 2v13"/><path d="m16 6-4-4-4 4"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/></svg>
+
+                            </div>
+                            <!-- Dropdown -->
+                            <div x-show="open" @click.away="open = false" x-transition x-cloak class="absolute text-sm z-10 w-32 top-11 origin-top bg-white border border-neutral-200 rounded-xl shadow-lg">
+                                <div class="p-1.5" role="none">
+                                    <a href="#" class="btn-link no-underline" role="menuitem">Google Sheets</a>
+
+                                    <a href="#" class="btn-link no-underline" role="menuitem">CSV</a>
+                                    <button onclick="exportChart('credits-chart', 'jpg')" class="btn-link no-underline" role="menuitem">JPG</button>
+                                    <button onclick="exportChart('credits-chart', 'png')" class="btn-link no-underline" role="menuitem">PNG</button>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative select-none" x-data="{ open: false }">
+                            <div @click="open = !open" class="btn-link w-36 justify-between">
+                                <span class="">Last {{ days }} days</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+                            </div>
+                            <!-- Dropdown -->
+                            <div x-show="open" @click.away="open = false" x-transition x-cloak class="absolute text-sm z-10 w-36 top-11 origin-top bg-white border border-neutral-200 rounded-xl shadow-lg">
+                                <div class="p-1.5" role="none">
+                                    <a href="?days=3" class="btn-link no-underline" role="menuitem">3 days</a>
+                                    <a href="?days=7" class="btn-link no-underline" role="menuitem">7 days</a>
+                                    <a href="?days=30" class="btn-link no-underline" role="menuitem">30 days</a>
+                                    <a href="?days=100" class="btn-link no-underline" role="menuitem">100 days</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <p class="data-item text-neutral-800">4352 Credits used this month</p>
+                </div>
+                <div class="w-full h-64">
+                    <canvas class="w-full h-full" id="credits-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const creditsCanvas = document.querySelector('#credits-chart');
+    const messagesCanvas = document.querySelector('#messages-chart');
+
+
+    const messagesData = {{ charts.messages|safe }};
+    const creditsData = {{ charts.credits|safe }};
+    new Chart(creditsCanvas,  creditsData);
+    new Chart(messagesCanvas, messagesData);
+</script>
+
+{% endblock scripts %}

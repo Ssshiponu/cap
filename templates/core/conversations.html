@@ -1,0 +1,99 @@
+{% extends "core/dashboard.html" %}
+
+{% block title %}Conversations - {{ page.page_name }} | Chat Autopilot{% endblock title %}
+
+{% block content %}
+<div class="h-auto p-4 sm:p-6">
+    <div class="flex flex-col">
+        <div class="border-b border-neutral-200 p-2 pt-0">
+            <h1 class="h2">Conversations</h1>
+        </div>
+        <div class="flex-1 py-6 space-y-4">
+            
+            <div class="card flex items-center gap-4 p-3 pl-4">
+                    <div class="flex-1 flex gap-3 items-center justify-between flex-wrap">
+                    <div class="flex gap-3 items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brain-icon lucide-brain"><path d="M12 18V5"/><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"/><path d="M18 18a4 4 0 0 0 2-7.464"/><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"/><path d="M6 18a4 4 0 0 1-2-7.464"/><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77"/></svg>
+                        <p class="flex-1 text-nutral-800">A good system prompt will help you getting better response</p>
+                        
+                    </div>
+                    <a class="btn-link .go">
+                        Learn more
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="card p-3 overflow-y-auto">
+                <table class="w-full table-auto border-collapse">
+                    <thead class="bg-white border-b border-neutral-200 text-left text-sm font-medium text-neutral-700">
+                        <tr>
+                            <th class="px-4 py-3">#</th>
+                            <th class="px-4 py-3">Last Message</th>
+                            <th class="px-4 py-3">User ID</th>
+                            <th class="px-4 py-3">Messages</th>
+                            <th class="px-4 py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="mt-2">
+                        {% for c in conversations %}
+                        <tr class="hover:bg-neutral-50">
+                            <td class="px-4 py-2.5 text-sm text-neutral-700" x-text="{{ forloop.counter }} + {{ conversations.paginator.per_page }} * ({{ conversations.number }} - 1)"></td>
+                            <td class="px-4 py-2.5">
+                                <p class="line-clamp-1 text-neutral-600">{{ c.messages.first.content|truncatechars:30 }}</p>
+                            </td>
+                            <td class="px-4 py-2.5">
+                                <a target="_blank" href="https://facebook.com/profile.php?id={{ c.user_id }}" class="link">
+                                    {{ c.user_id }}
+                                </a>
+                            </td>
+                            <td class="px-4 py-2.5 text-sm text-neutral-700">{{ c.messages.count|default:0 }}</td>
+                            <td class="px-4 py-2.5"><a href="{% url "delete_conversation" page_id=page.id conversation_id=c.id %}?next={{ request.path }}" class="link text-red-600">Delete</a></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td class="px-4 text-center col-span-4 py-4 text-sm text-neutral-700" colspan="5">No conversations</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="flex items-center justify-between w-full mt-4">
+                    <p class="pl-2 text-sm text-neutral-700">{% if conversations.next_page_number > 1 %}<span class="font-medium">{{ conversations.number }} </span> to <span class="font-medium">{{ conversations.paginator.per_page }}</span> of <span class="font-medium">{{ conversations.paginator.count }}</span>{% else %}<span class="font-medium">{{ conversations.paginator.count }}</span>{% endif %} Conversations</p>
+                    <nav>
+                        <ul class="flex items-center text-sm leading-tight bg-white border divide-x rounded-lg h-9 text-neutral-500 divide-neutral-200 border-neutral-200">
+                            
+                            <li class="h-full">
+                                <a href="{% if conversations.has_previous %}?page={{ conversations.previous_page_number }}{% else %}#{% endif %}" class="relative inline-flex items-center h-full px-3 ml-0 rounded-l group hover:text-neutral-900">
+                                    <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left-icon lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg></span>
+                                </a>
+                            </li>
+
+                                
+                                <li class="hidden h-full md:block">
+                                    <a href="#" class="relative inline-flex items-center h-full px-3 text-neutral-900 group bg-neutral-50">
+                                        <span>{{ conversations.number }}</span>
+                                        <span class="box-content absolute bottom-0 left-0 w-full h-px -mx-px translate-y-px border-l border-r bg-neutral-900 border-neutral-900"></span>
+                                    </a>
+                                </li>
+                                
+                                
+                            <li class="h-full">
+                                <a href="{% if conversations.has_next %}?page={{ conversations.next_page_number }}{% else %}#{% endif %}" class="relative inline-flex items-center h-full px-3 rounded-r group hover:text-neutral-900">
+                                    <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            
+
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+
+
+{% endblock scripts %}

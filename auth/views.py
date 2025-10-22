@@ -26,7 +26,7 @@ FB_APP_ID = settings.FB_APP_ID
 FB_REDIRECT_URI = settings.FB_REDIRECT_URI
 FB_APP_SECRET = settings.FB_APP_SECRET
 
-
+@login_required
 def add_page(request):
     """redirect to facebook auth dialogue to add page"""
     scope = ",".join([

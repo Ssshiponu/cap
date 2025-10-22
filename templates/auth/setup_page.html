@@ -1,0 +1,23 @@
+{% extends 'auth/base.html' %}
+{% load static %}
+{% block title %}Use case for - {{ page.page_name }} | Chat Autopilot{% endblock %}
+                
+{% block heading %}Why you want to use Chat Autopilot{% endblock heading %}
+
+{% block content %}
+<form action="{% url "setup_page" %}" method="post" class="space-y-3 text-left">
+    <div class="flex gap-6 flex-wrap items-center justify-center">
+        <div class="card w-40">
+            <h3 class="text-lg font-semibold text-center">Sale Products</h3>
+        </div>
+    </div>
+    
+    {% include "auth/partials/submit.html" with text="Connect" %}
+
+</form>
+
+{% endblock content %}
+
+{% block footer %}
+<p class="px-8 mt-6 text-sm text-center text-neutral-500">If you want to stop giving permission to Chat Autopilot, you can disconnect at any time</p>
+{% endblock footer %}

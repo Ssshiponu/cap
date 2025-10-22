@@ -43,5 +43,5 @@ def handle_otp_sending(user, ip):
     if not otp_code:
         return (False, 'Failed to send OTP. Please try again.')
 
-    cache.set(f"otp_{user.email}", otp_code, 30)
+    cache.set(f"otp_{user.email}", otp_code, 300)
     return (True, None)
