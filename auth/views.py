@@ -123,14 +123,16 @@ def connect_page(request):
         )
 
         subscribe_url = f"https://graph.facebook.com/v17.0/{page_id}/subscribed_apps"
-        r = requests.post(
-            subscribe_url,
-            params={"access_token": page_access_token},
-            json={"subscribed_fields": ["messages", "messaging_postbacks"]}
-        )
-        if r.status_code != 200:
+        try:
+            r = requests.post(
+                subscribe_url,
+                params={"access_token": page_access_token},
+                json={"subscribed_fields": ["messages", "messaging_postbacks"]}
+            )
+        except Exception as e:
             messages.error(request, f"Page {page_name} is connected but cant't reply")
-            continue
+            print(e)
+            
     return redirect('dashboard')
 
 
