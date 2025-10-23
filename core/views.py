@@ -223,12 +223,12 @@ def page_toggle(request, page_id):
 @require_POST
 def delete_page(request, page_id):
     page = get_object_or_404(FacebookPage, id=page_id, user=request.user)
-    # conversations = Conversation.objects.filter(facebook_page=page)
-    # page.delete()
+    conversations = Conversation.objects.filter(facebook_page=page)
+    page.delete()
     
-    # for c in conversations:
-    #     c.active = False
-    #     c.save()
+    for c in conversations:
+        c.active = False
+        c.save()
     messages.success(request, f'Page {page.page_name} deleted')
     return redirect('dashboard')
 
