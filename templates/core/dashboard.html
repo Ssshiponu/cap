@@ -318,10 +318,8 @@ window.addEventListener('online', () => {
                                 <div class="flex flex-wrap items-center gap-y-2 gap-x-10">
                                     <p class="data-item text-neutral-800">{{ page.get_orders.count }} Orders</p>
                                 </div>
-                                {% if page.get_orders.count == 0 %}
-                                    <p class="text-sm text-neutral-600 text-center py-2 w-full">If an user made an order with chating, it will appear here</p>
-                                {% else %}
-                                <div class="relative" x-data="{ open: false }">
+                                {% if page.get_orders %}
+                                <div class="relative" x-data="{ open: {% if page.get_orders.count > 3 %}false{% else %}true{% endif %} }">
                                     <div x-show="open" x-collapse.min.120px x-cloak  class="overflow-x-auto scrollbar-thin">
                                         <table class="w-full  table-auto border-collapse">
                                             <thead class="bg-white border-b border-neutral-200 text-left text-sm text-neutral-700">
@@ -354,12 +352,16 @@ window.addEventListener('online', () => {
                                             </tbody>
                                         </table>
                                     </div>
+                                    {% if page.get_orders.count > 3 %}
                                     <div x-show="! open" class="absolute bottom-9 w-full h-7 bg-gradient-to-b from-transparent to-white"></div>
                                     <button @click="open = ! open" class="btn-link bg-white w-full">
                                         <span x-text="open ? 'Less' : 'More'"></span>
                                         <svg :class="open ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
                                     </button>
+                                    {% endif %}
                                 </div>
+                                {% else %}
+                                <p class="text-sm text-neutral-600 text-center py-2 w-full">If an user made an order with chating, it will appear here</p>
                                 {% endif %}
                             </div>
                             <div class="card flex flex-col gap-4">
@@ -375,19 +377,20 @@ window.addEventListener('online', () => {
                                 <div class="flex flex-wrap items-center gap-y-2 gap-x-10">
                                     <p class="data-item text-neutral-800">{{page.get_questions.count}} questions AI doesn't know the answers to</p>
                                 </div>
-                                {% if not page.get_questions %}
-                                    <div class="relative flex flex-col" x-data="{ open: false }">
+                                {% if page.get_questions %}
+                                    <div class="relative flex flex-col" x-data="{ open: {% if page.get_questions.count > 3 %}true{% else %}false{% endif %} }">
                                         <ul x-show="open" x-cloak x-collapse.min.46px class="flex flex-col gap-2 text-sm text-neutral-800">
                                             {% for q in page.get_questions %}
                                             <li>{{ q.question }}</li>
                                             {% endfor %}
                                         </ul>
+                                        {% if page.get_questions.count > 3 %}
                                         <div x-show="! open" class="absolute bottom-9 w-full h-7 bg-gradient-to-b from-transparent to-white"></div>
                                         <button @click="open = ! open" class="btn-link bg-white">
                                             <span x-text="open ? 'Less' : 'More'"></span>
                                             <svg :class="open ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
                                         </button>
-                                        
+                                        {% endif %}
                                     </div>
                                 {% else %}
                                     <p class="text-sm text-neutral-600 text-center py-2">If an user ask a question that AI doesn't know the answer to, it will be added to this list</p>
