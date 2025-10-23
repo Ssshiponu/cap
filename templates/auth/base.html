@@ -3,6 +3,18 @@
 
 {% block title %}Login | Chat Autopilot{% endblock %}
 
+{% include "partials/toast.html" %}
+
+<script>
+    {% if messages %}
+        document.addEventListener('DOMContentLoaded', () => {
+            {% for message in messages %}
+                toast('{{ message }}', { type: '{{ message.tags }}' });
+            {% endfor %}
+        })
+    {% endif %}
+</script>
+
 {% block body %}
 
     <div class="relative flex flex-col gap-6 items-center justify-center min-h-screen p-8">
@@ -18,14 +30,6 @@
                     <h1 class="text-xl font-semibold tracking-tight">{% block heading %}{% endblock heading %}</h1>
                     <p class="text-sm text-neutral-500">{% block subheading %}{% endblock subheading %}</p>
                 </div>
-
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="mb-3 p-2 rounded-lg text-sm {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
 
                 {% block content %}{% endblock content %}
                 
