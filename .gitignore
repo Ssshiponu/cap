@@ -5,6 +5,7 @@ __pycache__
 db.sqlite3
 .log
 .env
+.env.prod
 
 node_modules/
 

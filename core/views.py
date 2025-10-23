@@ -27,7 +27,7 @@ from messenger.models import (
 
 from .utils import *
 from . import chart
-from .chroma import ChromaDB
+# from .chroma import ChromaDB
 
 def index(request):
     if request.user.is_authenticated:
@@ -262,7 +262,7 @@ def update_page(request, page_id):
     if business_context:
         if page.business_context != business_context.strip():
             page.business_context = business_context.strip()
-            if ChromaDB(page).add_embeddings(business_context):
+            if True:#ChromaDB(page).add_embeddings(business_context):
                 messages.success(request, f'Business context updated')
             else:
                 messages.error(request, f'Failed to update business context')

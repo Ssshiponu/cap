@@ -18,7 +18,7 @@ from core.models import FacebookPage, User, Questions, Order, WebhookLog, Notifi
 from .models import Message, Conversation
 from .messenger import Messenger
 from .reader import Reader
-from core.chroma import ChromaDB
+# from core.chroma import ChromaDB
 from .utils import generate_conversation
 from core.utils import days_ago
 
@@ -93,14 +93,17 @@ def process_event(event: dict):
         return True
     
     history = generate_conversation(conversation)
-    chroma = ChromaDB(page)
-    query_text = ai.generate_query_text(history[-8:])
-    print("Q:", query_text)
-    context = chroma.query(query_text, k=5)
-    print("C:", context)
+    
+    # chroma = ChromaDB(page)
+    # query_text = ai.generate_query_text(history[-8:])
+    # print("Q:", query_text)
+    # context = chroma.query(query_text, k=5)
+    # print("C:", context)
     
     messenger.send_action("mark_seen")
     print("started...")
+    
+    context = [page.business_context]
     
     reply = ai.reply(history, context)
     print("finished...")
