@@ -66,8 +66,6 @@ def credits(start_date=None, end_date=None, pages: list[FacebookPage] = []):
                 'label': 'Credits Used',
                 'data': data,
                 'backgroundColor': '#000',
-                'borderColor': '#ddd',
-                'borderWidth': 1
             }]
         },
         'options': {
@@ -153,9 +151,7 @@ def messages(start_date=None, end_date=None, pages: list[FacebookPage] | None = 
                 {
                     'label': 'AI Replies',
                     'data': assistant_data,
-                    'borderColor': '#ccc',
                     'backgroundColor': '#000',
-                    'tension': 0.1,
                 }
             ]
         },

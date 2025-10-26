@@ -3,9 +3,9 @@ from django.utils.html import format_html
 from .models import Message, Conversation
 
 class ConversationAdmin(admin.ModelAdmin):
-    list_display = ('user_id', 'id', 'active', 'updated_at')
-    search_fields = ('user_id', 'id')
-    list_editable = ('active',)
+    list_display = ('user_id', 'id', 'active', 'blocked', 'updated_at')
+    search_fields = ('user_id', 'id'),
+    list_editable = ('active','blocked')
     
     fields = ('user_id', 'id', 'render_conversation', 'updated_at', 'created_at')
     readonly_fields = fields

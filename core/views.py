@@ -155,6 +155,7 @@ def analytics(request, page_id):
     # ===== CONTEXT =====
     context = {
         'page': page,
+        'basic': page.get_basic_stats(),
         'charts': {
             'messages': json.dumps(messages_chart),
             'credits': json.dumps(credits_chart),

@@ -20,7 +20,7 @@ window.addEventListener('online', () => {
 })
 </script>
 
-<div x-data="main()" class="h-dvh overflow-hidden flex flex-col">
+<div x-data="main()" class="flex flex-col">
     <header class="lg:hidden fixed top-0 left-0 w-full bg-white/70 backdrop-blur-sm border-b border-neutral-200 z-[var(--z-header)]">
         <div class="flex items-center justify-between h-full py-3 px-4 mx-auto">
             {% include "core/partials/brand.html" %}
@@ -282,21 +282,8 @@ window.addEventListener('online', () => {
                                     <div class="flex gap-3 items-center">
                                         <h2 class="h2 text-xl">Orders</h2>
                                     </div>
-                                    <div class="flex gap-0.5 items-center">
-                                        <div class="relative select-none" x-data="{ open: false }">
-                                            <div @click="open = !open" class="btn-link justify-between">
-                                                <span class="">Download</span>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-to-line-icon lucide-arrow-down-to-line"><path d="M12 17V3"/><path d="m6 11 6 6 6-6"/><path d="M19 21H5"/></svg>
+                                    <div class="flex gap-0.5 items-center text-sm">
 
-                                            </div>
-                                            <!-- Dropdown -->
-                                            <div x-show="open" @click.away="open = false" x-transition x-cloak class="absolute text-sm z-10 w-32 top-11 origin-top bg-white border border-neutral-200 rounded-xl shadow-lg">
-                                                <div class="p-1.5" role="none">
-                                                    <a href="#" class="btn-link no-underline" role="menuitem">Google Sheets</a>
-                                                    <a href="#" class="btn-link no-underline" role="menuitem">Excel</a>
-                                                </div>
-                                            </div>
-                                        </div>
                                         <div class="relative select-none" x-data="{ open: false, days: [], date: new Date() }">
                                             <div @click="open = !open" class="btn-link justify-between">
                                                 <span class="">Today</span>
@@ -310,6 +297,20 @@ window.addEventListener('online', () => {
                                                     <a href="?days=7" class="btn-link no-underline" role="menuitem">7 days</a>
                                                     <a href="?days=30" class="btn-link no-underline" role="menuitem">30 days</a>
                                                     <a href="?days=100" class="btn-link no-underline" role="menuitem">100 days</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="relative select-none" x-data="{ open: false }">
+                                            <div @click="open = !open" class="btn-link justify-between">
+                                                <span class="hidden sm:inline-block">Download</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-to-line-icon lucide-arrow-down-to-line"><path d="M12 17V3"/><path d="m6 11 6 6 6-6"/><path d="M19 21H5"/></svg>
+
+                                            </div>
+                                            <!-- Dropdown -->
+                                            <div x-show="open" @click.away="open = false" x-transition x-cloak class="absolute text-sm z-10 w-32 top-11 right-0 origin-top bg-white border border-neutral-200 rounded-xl shadow-lg">
+                                                <div class="p-1.5" role="none">
+                                                    <a href="#" class="btn-link no-underline" role="menuitem">Google Sheets</a>
+                                                    <a href="#" class="btn-link no-underline" role="menuitem">Excel</a>
                                                 </div>
                                             </div>
                                         </div>

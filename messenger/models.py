@@ -21,7 +21,7 @@ class Conversation(models.Model):
         ordering = ['updated_at']
     
     def __str__(self):
-        return f'C: {self.messages.all().first().content[:50]}... {self.facebook_page.id} - {self.user_id}'
+        return f'C: {self.messages.all().first().content[:50]}...'
     
     def total_credits_used(self):
         return sum(message.credits_used for message in self.messages.all())

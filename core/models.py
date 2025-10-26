@@ -167,10 +167,21 @@ class FacebookPage(models.Model):
     def get_questions(self):
         return self.questions.filter(is_active=True)
     
-    def get_orders(self, date=timezone.now().today()):
+    def get_orders_for_date(self, date=timezone.now().today()):
         """Get orders for only a specific date"""
         orders = self.orders.filter(created_at__date=date)
         return orders
+    
+    def get_orders(self):
+        return self.orders.all()
+    
+    def get_basic_stats(self):
+        return {
+            'ai_replies': sum(c.messages.filter(role='assistant').count() for c in self.conversations.all()),
+            'credits': sum(message.credits_used for message in [m for c in self.conversations.all() for m in c.messages.all()]),
+            'fake_conversations': self.conversations.filter(blocked=True).count(),
+            'orders': self.orders.count(),
+        }
     
     
 class Notification(models.Model):

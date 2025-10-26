@@ -24,17 +24,18 @@
                 </div>
             </div>
             <div class="card space-y-4">
-                <div class="flex-1 flex gap-3 items-center justify-between flex-wrap">
+                <div class="flex-1 flex gap-3 items-center flex-wrap">
                     <div class="flex gap-3 items-center">
                         <h2 class="h2 text-xl">Basic Stats</h2>
                     </div>
-                    
+                    <div class="text-sm px-2.5 py-1 rounded-full bg-gray-100">Lifetime</div>
                 </div>
                 <div class="flex flex-wrap items-center gap-y-2 gap-x-10">
-                    <p class="data-item text-neutral-800">1234 AI replies this month</p>
-                    <p class="data-item text-neutral-800">4352 Credits used this month</p>
+                    <p class="data-item text-neutral-800">{{ basic.ai_replies }} AI replies</p>
+                    <p class="data-item text-neutral-800">{{ basic.credits }} Credits used</p>
 
-                    <p class="data-item text-neutral-800">12 fake conversation bloked this month</p>
+                    <p class="data-item text-neutral-800">{{ basic.orders }} Orders</p>
+                    <p class="data-item text-neutral-800">{{ basic.fake_conversations }} fake conversation bloked</p>
 
                 </div>
                 
@@ -45,11 +46,11 @@
                     <div class="flex gap-3 items-center">
                         <h2 class="h2 text-xl">AI Reply</h2>
                     </div>
-                    <div class="flex gap-2 font-base">
+                    <div class="flex font-base">
 
                         
                         <div class="relative select-none" x-data="{ open: false }">
-                            <div @click="open = !open" class="btn-link justify-between">
+                            <div @click="open = !open" class="btn-link text-sm justify-between">
                                 <span class="">Export</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-share-icon lucide-share"><path d="M12 2v13"/><path d="m16 6-4-4-4 4"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/></svg>
 
@@ -57,20 +58,17 @@
                             <!-- Dropdown -->
                             <div x-show="open" @click.away="open = false" x-transition x-cloak class="absolute text-sm z-10 w-32 top-11 origin-top bg-white border border-neutral-200 rounded-xl shadow-lg">
                                 <div class="p-1.5" role="none">
-                                    <a href="#" class="btn-link no-underline" role="menuitem">Google Sheets</a>
-
-                                    <a href="#" class="btn-link no-underline" role="menuitem">Excel</a>
-                                    <button onclicke="exportChart('message-chart', 'png')" class="btn-link w-full no-underline" role="menuitem">as PNG</button>
+                                    <button onclick="exportChart('messages-chart', 'png')" class="btn-link w-full no-underline" role="menuitem">as PNG</button>
                                 </div>
                             </div>
                         </div>
                         <div class="relative select-none" x-data="{ open: false }">
-                            <div @click="open = !open" class="btn-link w-36 justify-between">
+                            <div @click="open = !open" class="btn-link text-sm justify-between">
                                 <span class="">Last {{ days }} days</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
                             </div>
                             <!-- Dropdown -->
-                            <div x-show="open" @click.away="open = false" x-transition x-cloak class="absolute text-sm z-10 w-36 top-11 origin-top bg-white border border-neutral-200 rounded-xl shadow-lg">
+                            <div x-show="open" @click.away="open = false" x-transition x-cloak class="absolute text-sm z-10 w-28 top-11 origin-top bg-white border border-neutral-200 rounded-xl shadow-lg">
                                 <div class="p-1.5" role="none">
                                     <a href="?days=3" class="btn-link no-underline" role="menuitem">3 days</a>
                                     <a href="?days=7" class="btn-link no-underline" role="menuitem">7 days</a>
@@ -82,23 +80,23 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <p class="data-item text-neutral-800">2924 AI replies this month</p>
+                    <p class="data-item text-neutral-800">{{ ai_replies }} AI replies</p>
                 </div>
                 <div class="w-full h-64">
                     <canvas class="w-full h-full" id="messages-chart"></canvas>
                 </div>
             </div>
             <div class="card flex flex-col gap-4 p-3 pl-4">
-                    <div class="flex-1 flex gap-3 items-center justify-between flex-wrap">
+                <div class="flex-1 flex gap-3 items-center justify-between flex-wrap">
                     <div class="flex gap-3 items-center">
                         <h2 class="h2 text-xl">Credits Used</h2>
                     </div>
 
-                    <div class="flex gap-2 font-base">
+                    <div class="flex font-base">
 
                         
                         <div class="relative select-none" x-data="{ open: false }">
-                            <div @click="open = !open" class="btn-link justify-between">
+                            <div @click="open = !open" class="btn-link text-sm justify-between">
                                 <span class="">Export</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-share-icon lucide-share"><path d="M12 2v13"/><path d="m16 6-4-4-4 4"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/></svg>
 
@@ -106,21 +104,18 @@
                             <!-- Dropdown -->
                             <div x-show="open" @click.away="open = false" x-transition x-cloak class="absolute text-sm z-10 w-32 top-11 origin-top bg-white border border-neutral-200 rounded-xl shadow-lg">
                                 <div class="p-1.5" role="none">
-                                    <a href="#" class="btn-link no-underline" role="menuitem">Google Sheets</a>
-
-                                    <a href="#" class="btn-link no-underline" role="menuitem">Excel</a>
                                     <button onclick="exportChart('credits-chart', 'png')" class="btn-link w-full no-underline" role="menuitem">as PNG</button>
                                     
                                 </div>
                             </div>
                         </div>
                         <div class="relative select-none" x-data="{ open: false }">
-                            <div @click="open = !open" class="btn-link w-36 justify-between">
+                            <div @click="open = !open" class="btn-link text-sm justify-between">
                                 <span class="">Last {{ days }} days</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
                             </div>
                             <!-- Dropdown -->
-                            <div x-show="open" @click.away="open = false" x-transition x-cloak class="absolute text-sm z-10 w-36 top-11 origin-top bg-white border border-neutral-200 rounded-xl shadow-lg">
+                            <div x-show="open" @click.away="open = false" x-transition x-cloak class="absolute text-sm z-10 w-28 top-11 origin-top bg-white border border-neutral-200 rounded-xl shadow-lg">
                                 <div class="p-1.5" role="none">
                                     <a href="?days=3" class="btn-link no-underline" role="menuitem">3 days</a>
                                     <a href="?days=7" class="btn-link no-underline" role="menuitem">7 days</a>
@@ -132,7 +127,7 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <p class="data-item text-neutral-800">4352 Credits used this month</p>
+                    <p class="data-item text-neutral-800">{{ credits_used }} Credits used</p>
                 </div>
                 <div class="w-full h-64">
                     <canvas class="w-full h-full" id="credits-chart"></canvas>
