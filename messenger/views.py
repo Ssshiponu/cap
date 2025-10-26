@@ -201,6 +201,11 @@ def webhook_view(request):
     """Main webhook endpoint for Facebook Messenger."""
     
     VERIFY_TOKEN = settings.FB_VERIFY_TOKEN
+    APP_SECRET = settings.FB_APP_SECRET
+    
+    if not verify_signature(request, APP_SECRET):
+        logger.warning("Signature verification failed.")
+        return HttpResponseForbidden("Signature verification failed.")
 
     if request.method == "GET":
         mode = request.GET.get("hub.mode")
