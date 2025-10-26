@@ -42,6 +42,9 @@ def process_event(event: dict):
     
     # get page
     page = get_object_or_404(FacebookPage, id=recipient_id)
+    if not page.enabled:
+        return False
+    
     access_token = page.access_token
     
     # initialize tools
