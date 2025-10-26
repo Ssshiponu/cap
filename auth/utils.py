@@ -7,6 +7,7 @@ from django.contrib import messages
 import re
 import random
 from datetime import timedelta
+import requests
 
 from core.limitation import is_rate_limited
 from .mail import send_otp
@@ -45,3 +46,12 @@ def handle_otp_sending(user, ip):
 
     cache.set(f"otp_{user.email}", otp_code, 300)
     return (True, None)
+
+def subscribe_page(page_id, page_access_token):
+    subscribe_url = f"https://graph.facebook.com/v17.0/{page_id}/subscribed_apps"
+    r = requests.post(
+        subscribe_url,
+        params={"access_token": page_access_token},
+        json={"subscribed_fields": ["messages", "messaging_postbacks"]}
+    )
+    return r

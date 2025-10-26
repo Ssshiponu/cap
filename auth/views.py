@@ -111,27 +111,24 @@ def connect_page(request):
             page.access_token = page_access_token
             page.picture = picture_data
             page.save()
-            continue
 
-        FacebookPage.objects.create(
-            id=page_id,
-            user=request.user,
-            page_name=page_name,
-            page_category=page_category,
-            picture=picture_data,
-            access_token=page_access_token,
-        )
-
-        subscribe_url = f"https://graph.facebook.com/v17.0/{page_id}/subscribed_apps"
-        try:
-            r = requests.post(
-                subscribe_url,
-                params={"access_token": page_access_token},
-                json={"subscribed_fields": ["messages", "messaging_postbacks"]}
+        else:
+            page = FacebookPage.objects.create(
+                id=page_id,
+                user=request.user,
+                page_name=page_name,
+                page_category=page_category,
+                picture=picture_data,
+                access_token=page_access_token,
             )
+
+        try:
+            r = subscribe_page(page_id, page_access_token)
         except Exception as e:
             messages.error(request, f"Page {page_name} is connected but cant't reply")
             print(e)
+            
+        messages.success(request, f"Page {page_name} connected successfully")
             
     return redirect('dashboard')
 
