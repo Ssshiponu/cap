@@ -19,6 +19,10 @@ class Reader:
             url = attachment["payload"]["url"]
             message = self.ai.read_media(url, SUPPORTED_MEDIA_TYPES[attachment_type]) if role == 'user' else url
             return f"> {role} sent an {attachment_type}: {message}"
+        
+        elif attachment_type == "template":
+            return f"> {role} sent a {attachment['payload']['template_type']} template"
+            
         else:
             return f"> {role} sent an {attachment_type} - can't read"
 
