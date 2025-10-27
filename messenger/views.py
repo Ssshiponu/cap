@@ -18,6 +18,9 @@ from core.models import FacebookPage, User, Questions, Order, WebhookLog, Notifi
 from .models import Message, Conversation
 from .messenger import Messenger
 from .reader import Reader
+
+from .generater import *
+
 # from core.chroma import ChromaDB
 from .utils import generate_conversation
 from core.utils import days_ago
@@ -148,8 +151,11 @@ def process_event(event: dict):
             continue
         
         if "products" in reply_part:
+            reply_part = generate_products(reply_part["products"])
+            
+        if "receipt" in reply_part:
             print(reply_part)
-            reply_part = messenger.generate_products(reply_part["products"])
+            reply_part = generate_receipt(receipt=reply_part["receipt"])
         
         sent = messenger.send_reply(reply_part)
         

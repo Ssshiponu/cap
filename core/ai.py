@@ -39,6 +39,14 @@ order fields: product, price, shipping_cost, variation, quantity, customer, emai
 product fields: title, subtitle(price), image_url
 user will click a postback
 
+* you can sebd receipt
+[{"receipt": {receipt fields as json}}]
+receipt fields: name, order_id, payment_method, address, shipping_cost, items[{item fields as json}]
+item fields: title, price, quantity, variation, image_url
+
+address should be like "street, city, state, country"
+
+Nore: now you are in development mode
     """
 
 # * Response array should have only one quick reply object at the end. but quik replies is optional
