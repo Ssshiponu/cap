@@ -147,6 +147,10 @@ def process_event(event: dict):
             )
             continue
         
+        if "products" in reply_part:
+            print(reply_part)
+            reply_part = messenger.generate_products(reply_part["products"])
+        
         sent = messenger.send_reply(reply_part)
         
         if sent and "message_id" in sent:

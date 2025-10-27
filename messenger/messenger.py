@@ -1,4 +1,5 @@
 import requests
+import json
 
 API_URL = "https://graph.facebook.com/v19.0/me/messages"
 
@@ -26,6 +27,7 @@ class Messenger:
     def send_reply(self,message: dict):
         """Sends a message object (text, attachment, quick replies) via Facebook."""
         payload = {"recipient": {"id": self.sender_id}, "message": message, "messaging_type": "RESPONSE"}
+        print(json.dumps(payload, indent=4))
         return self._send_api_request(payload)
 
     def send_action(self, action: str):
@@ -33,70 +35,3 @@ class Messenger:
         payload = {"recipient": {"id": self.sender_id}, "sender_action": action}
         return self._send_api_request(payload)
     
-    def send_template(self):
-        payload = {
-            "recipient": {"id": self.sender_id},
-            
-            "message": {
-                "attachment": {
-                "type": "template",
-                "payload": {
-                    "template_type": "generic",
-                    "image_aspect_ratio": "square",
-                    "elements": [
-                    {
-                        "title": "Python T-Shirt",
-                        "subtitle": "200 ৳",
-                        "image_url": "https://nixagone.pythonanywhere.com/media/products/python1.jpg",
-                        "default_action": {
-                        "type": "web_url",
-                        "url": "https://nixagone.pythonanywhere.com/product/python-t-shirt/",
-                        "webview_height_ratio": "tall"
-                        },
-                        "buttons": [
-                        {
-                            "type": "web_url",
-                            "url": "https://nixagone.pythonanywhere.com/product/python-t-shirt/",
-                            "title": "View",
-                            "webview_height_ratio": "tall"
-                        },
-                        {
-                            "type": "web_url",
-                            "url": "https://nixagone.pythonanywhere.com/product/python-t-shirt/",
-                            "title": "Buy",
-                            "webview_height_ratio": "tall"
-                        }
-                        ]
-                    },
-                    {
-                        "title": "Git T-Shirt",
-                        "subtitle": "200 ৳",
-                        "image_url": "https://nixagone.pythonanywhere.com/media/products/git1.jpg",
-                        "default_action": {
-                        "type": "web_url",
-                        "url": "https://nixagone.pythonanywhere.com/product/git-t-shirt/",
-                        "webview_height_ratio": "tall"
-                        },
-                        "buttons": [
-                        {
-                            "type": "web_url",
-                            "url": "https://nixagone.pythonanywhere.com/product/git-t-shirt/",
-                            "title": "View",
-                            "webview_height_ratio": "tall"
-                        },
-                        {
-                            "type": "web_url",
-                            "url": "https://nixagone.pythonanywhere.com/product/git-t-shirt/",
-                            "title": "Buy",
-                            "webview_height_ratio": "tall"
-                        }
-                        ]
-                    }
-                    ]
-                }
-                }
-            }
-            
-
-        }
-        return self._send_api_request(payload)

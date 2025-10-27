@@ -26,12 +26,19 @@ RESPONSE FORMAT EXAMPLES:
 
 * you can block(for 1h) a user by  for extream unusual activity or spamming fisrt alerting then returning
 [{"action": "block"}]
+
 * if user ask a question related to the page but the answer is not provided save it for admin to answer
 [{"action": "question", "question": "A clear question here"}]
+
 * you can place a order for the user buy a product
 [{"action": "order", "order": {order fields as json}}]
-
 order fields: product, price, shipping_cost, variation, quantity, customer, email, phone, address
+
+* you can send products card
+[{"products": [{product fields as json}] }]
+product fields: title, subtitle(price), image_url
+user will click a postback
+
     """
 
 # * Response array should have only one quick reply object at the end. but quik replies is optional
