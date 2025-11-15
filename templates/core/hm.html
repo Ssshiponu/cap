@@ -1,0 +1,280 @@
+
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+  <header class="sticky top-4 px-4 z-50">
+    <div id="header" class="header-inner bg-white/80 backdrop-blur-sm border-transparent" :class="mobileMenu ? 'scrolled': ''">
+      <div class="flex items-center justify-between h-full max-w-6xl mx-auto">
+
+        {% include "core/partials/brand.html" %}
+
+        <nav class="hidden lg:block">
+            <div class="flex items-center gap-2">
+                <a href="#hero" @click="mobileMenu = false" class="btn-link">Home</a>
+                <a href="#features" @click="mobileMenu = false" class="btn-link">Features</a>
+                <a href="#pricing" @click="mobileMenu = false" class="btn-link">Pricing</a>
+                <a href="/about/" @click="mobileMenu = false" class="btn-link">About</a>
+                <a href="/contact/" @click="mobileMenu = false" class="btn-link">Contact</a>
+            </div>
+        </nav>
+
+        <nav class="hidden lg:block">
+            <div class="flex items-center gap-2">
+                <a href="{% url "login" %}" class="btn">Login</a>
+                <a href="{% url "register" %}" class="btn btn-primary">Sign Up</a>
+            </div>
+        </nav>
+
+        <button class="lg:hidden btn border-none bg-white p-2 aspect-square" @click="mobileMenu = ! mobileMenu">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu-icon lucide-menu"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>
+        </button>
+        
+
+      </div>
+    </div>
+  </header>
+
+  <!-- mobile menu -->
+  <nav x-show="mobileMenu"
+  x-transition.scale.96.opacity
+  @click.outside="mobileMenu = false"
+  class="fixed top-22 inset-0 z-50 origin-top lg:hidden w-[calc(100dvw-64px)] max-w-72 p-6 rounded-xl shadow-2xl ml-auto mr-4 h-[calc(100dvh-112px)] border border-neutral-200 bg-white/80 backdrop-blur-sm " x-cloak>
+    <div class="flex flex-col justify-between h-full">
+        <div class="flex flex-col gap-3">
+            <a href="#hero" @click="mobileMenu = false" class="btn-link">Home</a>
+            <a href="#features" @click="mobileMenu = false" class="btn-link">Features</a>
+            <a href="#pricing" @click="mobileMenu = false" class="btn-link">Pricing</a>
+            <a href="/about/" @click="mobileMenu = false" class="btn-link">About</a>
+            <a href="/contact/" @click="mobileMenu = false" class="btn-link">Contact</a>
+        </div>
+        <div class="flex gap-3">
+            <a href="{% url "login" %}" class="btn flex-1">Login</a>
+            <a href="{% url "register" %}" class="btn btn-primary flex-1">Sign Up</a>
+        </div>
+    </div>
+    
+  </nav>
+
+<section id="hero" class="bg-whuite flex flex-col items-center justify-center min-h-[calc(100dvh-32px)] md:min-h-[700px] px-6 gap-8 max-w-6xl mx-auto">
+    <h1 class="h1">{{ metadata.hero.title|safe }}</h1>
+    <div class="flex sm:flex-row flex-col-reverse gap-8 md:gap-12 lg:gap-16  max-w-4xl mx-auto">
+            <lord-icon
+                src="https://cdn.lordicon.com/ndwqegog.json"
+                trigger="loop"
+                class="not-sm:hidden sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 mx-auto absolute sm:static inset-x-0 top-56 opacity-15 sm:opacity-100 -z-10">
+            </lord-icon>
+        <div class="flex-1 flex flex-col justify-center gap-6">
+            <p class="text-neutral-900 sm:text-lg md:text-xl font-medium">{{ metadata.hero.description|safe }} </p>
+            <div class="flex items-center flex-wrap gap-3">
+                <a href="{% url "register" %}" class="btn btn-primary">Try for Free</a>
+                <a href="#" class="btn">See Demo</a>
+
+            </div>
+        </div>
+    </div>
+    <div>
+    <lord-icon
+        src="https://cdn.lordicon.com/ndwqegog.json"
+        trigger="loop"
+        class="sm:hidden w-52 h-52 mx-auto">
+    </lord-icon>
+    </div>
+</section>
+
+<section id="features" class="py-16 sm:py-28 px-6 bg-neutral-50 flex justify-center">
+  <div class="flex flex-col gap-12 max-w-4xl mx-auto">
+    <h2 class="h text-center">{{ metadata.features.title|safe }} </h2>
+
+    <div class="flex flex-col md:flex-row gap-12 mx-auto">
+        <div class="flex gap-3">
+          <lord-icon
+              src="https://cdn.lordicon.com/xadyodkg.json"
+              trigger="hover"
+              style="width:80px;height:80px">
+          </lord-icon>
+          <div class="flex-1 flex flex-col gap-2">
+            <h3 class="h3">Fast</h3>
+            <p>{{ metadata.features.1st }}</p>
+          </div>
+          
+        </div>
+        <div class="flex gap-3">
+          <lord-icon
+              src="https://cdn.lordicon.com/acmootjs.json"
+              trigger="hover"
+              style="width:80px;height:80px">
+          </lord-icon>
+          <div class="flex-1 flex flex-col gap-2">
+            <h3 class="h3">Realistic</h3>
+            <p>{{ metadata.features.2nd }}</p>
+          </div>
+          
+        </div>
+        <div class="flex gap-3">
+          <lord-icon
+              src="https://cdn.lordicon.com/qedxglkx.json"
+              trigger="hover"
+              style="width:80px;height:80px">
+          </lord-icon>
+          <div class="flex-1 flex flex-col gap-2">
+            <h3 class="h3">Multichating</h3>
+            <p>{{ metadata.features.3rd }}</p>
+          </div>
+          
+        </div>
+    </div>
+    <p class="text-neutral-700 text-center">{{ metadata.features.subtitle|safe }}</p>
+  </div>
+</section>
+
+<section class="py-16 sm:py-24 p-6 max-w-4xl mx-auto bg-white">
+  <h2 class="h mb-16 text-center">{{ metadata.work.title }}</h2>
+
+  <div class="text-neutral-900 grid grid-cols-5 gap-2 sm:gap-6 gap-y-4 sm:gap-y-8 max-w-2xl mx-auto">
+      <div class="box center col-span-2">
+        <p class="">{{ metadata.work.1st }} </p>
+      </div>
+
+      <div class="center">
+        <lord-icon
+          src="https://cdn.lordicon.com/moedrfvp.json"
+          trigger="hover"
+          class="arrow">
+        </lord-icon>
+      </div>
+
+      <div class="center box col-span-2">
+        <p class="">{{ metadata.work.2nd }} </p>
+      </div>
+
+      <div class="center col-span-2">
+        <lord-icon
+          src="https://cdn.lordicon.com/fuaumwut.json"
+          trigger="hover"
+          class="arrow">
+        </lord-icon>
+      </div>
+
+      <div></div>
+
+      <div class="center col-span-2">
+        <lord-icon
+          src="https://cdn.lordicon.com/kopdsdez.json"
+          trigger="hover"
+          class="arrow">
+        </lord-icon>
+      </div>
+
+      <div class="box center col-span-2">
+        <p class="">{{ metadata.work.4th }} </p>
+      </div>
+
+      <div class="center">
+        <lord-icon
+          src="https://cdn.lordicon.com/ezcxsdmh.json" 
+          trigger="hover"
+          class="arrow">
+        </lord-icon>
+      </div>
+
+      <div class="center box col-span-2">
+        <p class="">{{ metadata.work.3rd }} </p>
+      </div>
+  </div>
+  <p class="text-neutral-700 text-center mt-16">{{ metadata.work.subtitle }}</p>
+</section>
+
+
+<section id="pricing" class="py-16 sm:py-22 bg-neutral-50 flex flex-col items-center" arial-label="Pricing">
+    <h2 class="h mb-12">{{ metadata.pricing.title }}</h2>
+    <div class="flex items-center gap-2 mb-4 text-neutral-800">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap-icon lucide-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+        <p class="text-lg font-medium">10 Credits = 1 Reply</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mx-6">
+        {% for p in packages %}
+            <div class="border border-neutral-200 w-full max-w-96 bg-white hover:border-neutral-400 transition-colors p-4 rounded-xl">
+              <div class="flex items-center justify-between gap-2">
+                  <h3 class="text-2xl font-bold">{% if p.price == 0 %} Free {% else %} ৳{{ p.price }}{% endif %} </h3>
+                  <span class="text-neutral-700 text-sm py-1 px-2.5 bg-neutral-200 rounded-full font-medium text-nowrap">{{ p.duration }}</span>
+              </div>
+              <div class="py-2">
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap-icon lucide-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+                    <p class="text-lg font-medium">{{ p.credits }} Credits</p>
+                </div>
+                
+                <p class="text-xs">{{ p.description }}</p>
+              </div>
+              <div class="flex justify-end">
+                <a href="{% url "buy_credits" %}?buy={{ p.name }}" class="btn {% if p.price == 0 %} btn-primary {% endif %} py-1 px-2.5">{% if p.price == 0 %} Claim {% else %} Buy {% endif %} </a>
+
+              </div>
+            </div>
+        {% endfor %}
+    </div>
+    <p class="text-neutral-700 text-center mt-16">{{ metadata.pricing.subtitle|safe }} </p>
+</section>
+
+<section class="py-16 sm:py-24 p-6 max-w-4xl mx-auto bg-white">
+  <h2 class="h mb-16 text-center">{{ metadata.start.title }}</h2>
+      <div class="flex flex-col md:flex-row gap-12 mx-auto">
+        <div class="flex gap-3">
+          <lord-icon
+              src="https://cdn.lordicon.com/zdedkaho.json"
+              trigger="hover"
+              style="width:80px;height:80px">
+          </lord-icon>
+          <div class="flex-1 flex flex-col gap-2">
+            <h3 class="h3">Account</h3>
+            <p>{{ metadata.start.1st }}</p>
+          </div>
+          
+        </div>
+        <div class="flex gap-3">
+          <lord-icon
+              src="https://cdn.lordicon.com/bqzrducy.json"
+              trigger="hover"
+              style="width:80px;height:80px">
+          </lord-icon>
+          <div class="flex-1 flex flex-col gap-2">
+            <h3 class="h3">Connecting pages</h3>
+            <p>{{ metadata.start.2nd }}</p>
+          </div>
+          
+        </div>
+        <div class="flex gap-3">
+          <lord-icon
+              src="https://cdn.lordicon.com/hikglskt.json"
+              trigger="hover"
+              style="width:80px;height:80px">
+          </lord-icon>
+          <div class="flex-1 flex flex-col gap-2">
+            <h3 class="h3">Settings</h3>
+            <p>{{ metadata.start.3rd }}</p>
+          </div>
+          
+        </div>
+    </div>
+    <p class="text-neutral-700 text-center mt-16">{{ metadata.start.subtitle|safe }} </p>
+</section>
+
+<section id="cta" class="py-16 sm:py-24 p-6 bg-neutral-50">
+    <div class="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-12 max-w-2xl mx-auto">
+      <div class="flex items-center gap-3">
+        <lord-icon
+            src="https://cdn.lordicon.com/yejbwtri.json"
+            trigger="hover"
+            class="w-20 h-20 md:w-28 md:h-28">
+        </lord-icon>
+        <div class="flex-1">
+          <h3 class="h3">{{ metadata.cta.title }}</h3>
+          <p>{{ metadata.cta.subtitle }}</p>
+        </div>
+      </div>
+      <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+    </div>
+</section>
+
+{% include "core/partials/footer.html" %}
+{% endblock body %}

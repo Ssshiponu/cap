@@ -9,11 +9,11 @@ class Messenger:
         self.sender_id = sender_id
         self.page_id = page_id
     
-    def _send_api_request(self, payload: dict):
+    def _send_api_request(self, payload: dict, api_url=API_URL):
         """Generic function to send a POST request to the Messenger Send API."""
         params = {"access_token": self.access_token}
         try:
-            r = requests.post(API_URL, params=params, json=payload, timeout=10)
+            r = requests.post(api_url, params=params, json=payload, timeout=10)
             r.raise_for_status()
             response_data = r.json()
             if "error" in response_data:
@@ -34,4 +34,12 @@ class Messenger:
         """Sends sender actions like 'typing_on' or 'mark_seen'."""
         payload = {"recipient": {"id": self.sender_id}, "sender_action": action}
         return self._send_api_request(payload)
+    
+    # def whitelist_domain(self, domain: str):
+    #     """
+    #     Whitelists a domain for use in webviews.
+    #     https://developers.facebook.com/docs/messenger-platform/reference/messaging-profile-api/#whitelisted-domains
+    #     """
+    #     payload = {"whitelisted_domains": [domain], "domain_action_type": "whitelist"}
+    #     return self._send_api_request(payload, api_url=f"https://graph.facebook.com/v24.0/me/messenger_profile")
     

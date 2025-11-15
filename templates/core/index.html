@@ -1,280 +1,276 @@
 
 {% extends "base.html" %}
 {% load static %}
+{% block styles %}
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+{% endblock styles %}
 {% block body %}
-  <header class="sticky top-4 px-4 z-50">
-    <div id="header" class="header-inner bg-white/80 backdrop-blur-sm border-transparent" :class="mobileMenu ? 'scrolled': ''">
-      <div class="flex items-center justify-between h-full max-w-6xl mx-auto">
+<div class="body-wraper">
+    <header class="z-50 bg-white">
+        <div id="header" class="z-50 header-inner max-w-6xl mx-auto bg-white border border-t-0 rounded-[20px] rounded-t-none border-neutral-200">
+            <div class="flex items-center justify-between h-full p-4">
 
-        {% include "core/partials/brand.html" %}
+                {% include "core/partials/brand.html" %}
 
-        <nav class="hidden lg:block">
-            <div class="flex items-center gap-2">
-                <a href="#hero" @click="mobileMenu = false" class="btn-link">Home</a>
-                <a href="#features" @click="mobileMenu = false" class="btn-link">Features</a>
-                <a href="#pricing" @click="mobileMenu = false" class="btn-link">Pricing</a>
-                <a href="/about/" @click="mobileMenu = false" class="btn-link">About</a>
-                <a href="/contact/" @click="mobileMenu = false" class="btn-link">Contact</a>
+                <div class="hidden lg:block">
+                    {% include "core/partials/nav.html" %}
+                </div>
+
+                <nav class="hidden lg:block">
+                    <div class="flex items-center gap-2">
+                        {% if user.is_authenticated %}
+                            <a href="{% url "dashboard" %}" class="btn">Dashboard</a>
+                        {% else %}
+                            <a href="{% url "login" %}" class="btn">Login</a>
+                            <a href="{% url "register" %}" class="btn btn-primary">Sign Up</a>
+                        {% endif %}
+                    </div>
+                </nav>
+
+                <button class="lg:hidden btn border-none bg-white p-1.5 aspect-square" @click="mobileMenu = ! mobileMenu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu-icon lucide-menu"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>
+                </button>
+                
+
             </div>
-        </nav>
-
-        <nav class="hidden lg:block">
-            <div class="flex items-center gap-2">
-                <a href="{% url "login" %}" class="btn">Login</a>
-                <a href="{% url "register" %}" class="btn btn-primary">Sign Up</a>
+            <div x-show="mobileMenu" @click.outside="mobileMenu = false" x-collapse class="p-4" x-cloak>
+                <div class="flex flex-col gap-6">
+                    <div class="flex flex-col gap-3">
+                        <a href="#hero" @click="mobileMenu = false" class="btn-link">Home</a>
+                        <a href="#features" @click="mobileMenu = false" class="btn-link">Features</a>
+                        <a href="#pricing" @click="mobileMenu = false" class="btn-link">Pricing</a>
+                        <a href="/about/" @click="mobileMenu = false" class="btn-link">About</a>
+                        <a href="/contact/" @click="mobileMenu = false" class="btn-link">Contact</a>
+                    </div>
+                    <div class="flex gap-3">
+                        {% if user.is_authenticated %}
+                            <a href="{% url "dashboard" %}" class="btn flex-1">Dashboard</a>
+                        {% else %}
+                            <a href="{% url "login" %}" class="btn flex-1">Login</a>
+                            <a href="{% url "register" %}" class="btn btn-primary flex-1">Sign Up</a>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
-        </nav>
-
-        <button class="lg:hidden btn border-none bg-white p-2 aspect-square" @click="mobileMenu = ! mobileMenu">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu-icon lucide-menu"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>
-        </button>
-        
-
-      </div>
-    </div>
-  </header>
-
-  <!-- mobile menu -->
-  <nav x-show="mobileMenu"
-  x-transition.scale.96.opacity
-  @click.outside="mobileMenu = false"
-  class="fixed top-22 inset-0 z-50 origin-top lg:hidden w-[calc(100dvw-64px)] max-w-72 p-6 rounded-xl shadow-2xl ml-auto mr-4 h-[calc(100dvh-112px)] border border-neutral-200 bg-white/80 backdrop-blur-sm " x-cloak>
-    <div class="flex flex-col justify-between h-full">
-        <div class="flex flex-col gap-3">
-            <a href="#hero" @click="mobileMenu = false" class="btn-link">Home</a>
-            <a href="#features" @click="mobileMenu = false" class="btn-link">Features</a>
-            <a href="#pricing" @click="mobileMenu = false" class="btn-link">Pricing</a>
-            <a href="/about/" @click="mobileMenu = false" class="btn-link">About</a>
-            <a href="/contact/" @click="mobileMenu = false" class="btn-link">Contact</a>
         </div>
-        <div class="flex gap-3">
-            <a href="{% url "login" %}" class="btn flex-1">Login</a>
-            <a href="{% url "register" %}" class="btn btn-primary flex-1">Sign Up</a>
-        </div>
-    </div>
+    </header>
+
+   
     
-  </nav>
 
-<section id="hero" class="bg-whuite flex flex-col items-center justify-center min-h-[calc(100dvh-32px)] md:min-h-[700px] px-6 gap-8 max-w-6xl mx-auto">
-    <h1 class="h1">{{ metadata.hero.title|safe }}</h1>
-    <div class="flex sm:flex-row flex-col-reverse gap-8 md:gap-12 lg:gap-16  max-w-4xl mx-auto">
-            <lord-icon
-                src="https://cdn.lordicon.com/ndwqegog.json"
-                trigger="loop"
-                class="not-sm:hidden sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 mx-auto absolute sm:static inset-x-0 top-56 opacity-15 sm:opacity-100 -z-10">
-            </lord-icon>
-        <div class="flex-1 flex flex-col justify-center gap-6">
-            <p class="text-neutral-900 sm:text-lg md:text-xl font-medium">{{ metadata.hero.description|safe }} </p>
-            <div class="flex items-center flex-wrap gap-3">
-                <a href="{% url "register" %}" class="btn btn-primary">Try for Free</a>
-                <a href="#" class="btn">See Demo</a>
+    <section id="hero" class="bg-white max-w-5xl mx-auto px-4 sm:px-6 py-12">
+        
+        <div class="flex gap-8 flex-col justify-center md:flex-row md:items-center">
+            <div class="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
+                <div id="new-feature" data-aos="fade-down" class="px-4 py-2 border border-neutral-100 rounded-full inline-block mb-4">
+                    <div class="flex items-center text-sm text-neutral-800">
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="none"><path d="M10.1893 8.12241C9.48048 8.50807 9.66948 9.5633 10.4691 9.68456L13.5119 10.0862C13.7557 10.1231 13.7595 10.6536 13.7968 10.8949L14.2545 13.5486C14.377 14.3395 15.4432 14.5267 15.8333 13.8259L17.1207 11.3647C17.309 11.0046 17.702 10.7956 18.1018 10.8845C18.8753 11.1023 19.6663 11.3643 20.3456 11.4084C21.0894 11.4567 21.529 10.5994 21.0501 10.0342C20.6005 9.50359 20.0352 8.75764 19.4669 8.06623C19.2213 7.76746 19.1292 7.3633 19.2863 7.00567L20.1779 4.92643C20.4794 4.23099 19.7551 3.52167 19.0523 3.82031L17.1037 4.83372C16.7404 4.99461 16.3154 4.92545 16.0217 4.65969C15.3919 4.08975 14.6059 3.39451 14.0737 2.95304C13.5028 2.47955 12.6367 2.91341 12.6845 3.64886C12.7276 4.31093 13.0055 5.20996 13.1773 5.98734C13.2677 6.3964 13.041 6.79542 12.658 6.97364L10.1893 8.12241Z" stroke="currentColor" stroke-width="1.5"></path><path d="M12.1575 9.90759L3.19359 18.8714C2.63313 19.3991 2.61799 20.2851 3.16011 20.8317C3.70733 21.3834 4.60355 21.3694 5.13325 20.8008L13.9787 11.9552" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5 6.25V3.75M3.75 5H6.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M18 20.25V17.75M16.75 19H19.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
+                            <strong class="font-semibold text-nowrap">New Feature</strong>
+                            <span class="w-px h-4 mx-2 rounded-full bg-neutral-200"></span>
+                        </span>
+                        <span class="block leading-none">Products card template</span>
 
+                    </div>
+                
+
+                </div>
+                <h1 class="h1 mb-6" data-aos="zoom-out">{{ metadata.hero.title|safe }}</h1>
+                <p data-aos="zoom-out" class="text-neutral-900 sm:text-base mb-12 max-w-xl">{{ metadata.hero.description|safe }} </p>
+
+                <div class="mb-8" data-aos="fade-right">
+                    <div class="flex items-center justify-center md:justify-start flex-wrap gap-3">
+                        {% if  user.is_authenticated %}
+                            <a href="{% url "dashboard" %}" class="btn btn-primary">Dashboard</a>
+                        {% else %}
+                            <a href="{% url "register" %}" class="btn btn-primary">Try for Free</a>
+                            <a href="#" class="btn">See Demo</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div data-aos="fade-left" class="relative h-[440px] p-2 border-t border-neutral-200 overflow-hidden flex justify-center items-end">
+                
+                                
+                <div x-data="phoneComponent(mainChat)">
+                    <div x-html="renderPhone()" x-init="play()"></div>
+                </div>
             </div>
         </div>
-    </div>
-    <div>
-    <lord-icon
-        src="https://cdn.lordicon.com/ndwqegog.json"
-        trigger="loop"
-        class="sm:hidden w-52 h-52 mx-auto">
-    </lord-icon>
-    </div>
-</section>
+        
+    </section>
 
-<section id="features" class="py-16 sm:py-28 px-6 bg-neutral-50 flex justify-center">
-  <div class="flex flex-col gap-12 max-w-4xl mx-auto">
-    <h2 class="h text-center">{{ metadata.features.title|safe }} </h2>
-
-    <div class="flex flex-col md:flex-row gap-12 mx-auto">
-        <div class="flex gap-3">
-          <lord-icon
-              src="https://cdn.lordicon.com/xadyodkg.json"
-              trigger="hover"
-              style="width:80px;height:80px">
-          </lord-icon>
-          <div class="flex-1 flex flex-col gap-2">
-            <h3 class="h3">Fast</h3>
-            <p>{{ metadata.features.1st }}</p>
-          </div>
-          
+    <section id="problems" class="py-12 sm:py-16 p-6 bg-neutral-50">
+        <div class="flex flex-col gap-4 items-center justify-center mb-8 px-4 max-w-4xl mx-auto text-center" data-aos="fade-up">
+            <div class="flex items-center gap-3 text-sm">
+                <h2 class="h2 text-center uppercase">Problems We Solve</h2>
+                <div class="flex items-center gap-2 py-1 px-1 border border-neutral-200 rounded-full">
+                    <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                    
+                </div>
+            </div>
+            <p class="text-sm text-neutral-800">We know your problems and we know how to solve them.</p>
         </div>
-        <div class="flex gap-3">
-          <lord-icon
-              src="https://cdn.lordicon.com/acmootjs.json"
-              trigger="hover"
-              style="width:80px;height:80px">
-          </lord-icon>
-          <div class="flex-1 flex flex-col gap-2">
-            <h3 class="h3">Realistic</h3>
-            <p>{{ metadata.features.2nd }}</p>
-          </div>
-          
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 py-8 max-w-5xl mx-auto">
+            <div class="flex flex-col gap-4" data-aos="fade-right">
+                <div class="text-sm text-red-600 uppercase text-center">Problems</div>
+                {% for p in metadata.problems.problems %}
+                    {% include "core/partials/problems_card.html" with q=p %}
+                {% endfor %}
+            </div>
+            <div class="flex flex-col gap-4" data-aos="fade-left">
+                <div class="text-sm text-green-600 uppercase text-center">Solutions</div>
+                {% for s in metadata.problems.solutions %}
+                    {% include "core/partials/problems_card.html" with q=s %}
+                {% endfor %}
+            </div>
         </div>
-        <div class="flex gap-3">
-          <lord-icon
-              src="https://cdn.lordicon.com/qedxglkx.json"
-              trigger="hover"
-              style="width:80px;height:80px">
-          </lord-icon>
-          <div class="flex-1 flex flex-col gap-2">
-            <h3 class="h3">Multichating</h3>
-            <p>{{ metadata.features.3rd }}</p>
-          </div>
-          
+    </section>
+
+    <section id="features" class="py-12 sm:py-16 bg-white">
+        <div class="flex flex-col gap-4 items-center justify-center mb-12 px-4">
+            <div class="flex items-center gap-3 text-sm">
+                <h2 class="h2 text-center uppercase">Features</h2>
+                <div class="flex items-center gap-2 py-1 px-2 border border-neutral-200 rounded-full">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span class="block leading-none">New 2+</span>
+                </div>
+            </div>
+            <p class="text-sm text-neutral-80  text-center">Our AI agent performs far better than humans, with outstanding features. </p>
         </div>
-    </div>
-    <p class="text-neutral-700 text-center">{{ metadata.features.subtitle|safe }}</p>
-  </div>
-</section>
+        <div class="relative feature-cards flex flex-col gap-4 max-w-4xl mx-auto">
+            {% include "core/partials/feature_card.html" with title="Products Card Template" description="ChatAutopilot can fetch from a website and display a list of products as cards. It can also display product details when a user clicks on a card." tags="Add products manually,Fetch products from a website" chat="productCardChat" %}
+            {% include "core/partials/feature_card.html" with title="Image and Voice support" description="ChatAutopilot can send images, receive images, and even handle voice messages. Your customers can ask using text, voice, or photos for a much smoother experience." tags="Voice-to-text, Image sending, Image understanding" chat="imageVoiceChat" %}
+            {% include "core/partials/feature_card.html" with title="AI-Powered Order Handling" description="Customers can place complete orders inside the chat—name, phone, address, confirmation, and receipt. Everything happens automatically with zero human effort." tags="Auto order form, Address collection, Chat-based checkout" chat="orderFlowChat" %}
+            
 
-<section class="py-16 sm:py-24 p-6 max-w-4xl mx-auto bg-white">
-  <h2 class="h mb-16 text-center">{{ metadata.work.title }}</h2>
+            
 
-  <div class="text-neutral-900 grid grid-cols-5 gap-2 sm:gap-6 gap-y-4 sm:gap-y-8 max-w-2xl mx-auto">
-      <div class="box center col-span-2">
-        <p class="">{{ metadata.work.1st }} </p>
-      </div>
-
-      <div class="center">
-        <lord-icon
-          src="https://cdn.lordicon.com/moedrfvp.json"
-          trigger="hover"
-          class="arrow">
-        </lord-icon>
-      </div>
-
-      <div class="center box col-span-2">
-        <p class="">{{ metadata.work.2nd }} </p>
-      </div>
-
-      <div class="center col-span-2">
-        <lord-icon
-          src="https://cdn.lordicon.com/fuaumwut.json"
-          trigger="hover"
-          class="arrow">
-        </lord-icon>
-      </div>
-
-      <div></div>
-
-      <div class="center col-span-2">
-        <lord-icon
-          src="https://cdn.lordicon.com/kopdsdez.json"
-          trigger="hover"
-          class="arrow">
-        </lord-icon>
-      </div>
-
-      <div class="box center col-span-2">
-        <p class="">{{ metadata.work.4th }} </p>
-      </div>
-
-      <div class="center">
-        <lord-icon
-          src="https://cdn.lordicon.com/ezcxsdmh.json" 
-          trigger="hover"
-          class="arrow">
-        </lord-icon>
-      </div>
-
-      <div class="center box col-span-2">
-        <p class="">{{ metadata.work.3rd }} </p>
-      </div>
-  </div>
-  <p class="text-neutral-700 text-center mt-16">{{ metadata.work.subtitle }}</p>
-</section>
+            
+        </div>
+    </section>
 
 
-<section id="pricing" class="py-16 sm:py-22 bg-neutral-50 flex flex-col items-center" arial-label="Pricing">
-    <h2 class="h mb-12">{{ metadata.pricing.title }}</h2>
-    <div class="flex items-center gap-2 mb-4 text-neutral-800">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap-icon lucide-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
-        <p class="text-lg font-medium">10 Credits = 1 Reply</p>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mx-6">
-        {% for p in packages %}
-            <div class="border border-neutral-200 w-full max-w-96 bg-white hover:border-neutral-400 transition-colors p-4 rounded-xl">
-              <div class="flex items-center justify-between gap-2">
-                  <h3 class="text-2xl font-bold">{% if p.price == 0 %} Free {% else %} ৳{{ p.price }}{% endif %} </h3>
-                  <span class="text-neutral-700 text-sm py-1 px-2.5 bg-neutral-200 rounded-full font-medium text-nowrap">{{ p.duration }}</span>
-              </div>
-              <div class="py-2">
-                <div class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap-icon lucide-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
-                    <p class="text-lg font-medium">{{ p.credits }} Credits</p>
+
+
+
+
+    <section id="pricing" class="py-12 sm:py-16 px-6 bg-neutral-50 flex flex-col items-center" arial-label="Pricing">
+        <div class="flex flex-col gap-4 items-center justify-center mb-8 px-4 max-w-4xl mx-auto text-center" data-aos="fade-up">
+            <div class="flex items-center gap-3 text-sm">
+                <h2 class="h2 text-center uppercase">Pricing</h2>
+                <div class="flex items-center gap-2 py-1 px-1 border border-neutral-200 rounded-full">
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                    
+                </div>
+            </div>
+            <p class="text-sm text-neutral-800">You will be charged according to usage. </p>
+        </div>
+        <div class="w-full max-w-[792px] mb-8 flex flex-col sm:flex-row items-center justify-center gap-2">
+            <span class="badge text-blue-500" data-aos="fade-up">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap-icon lucide-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+                10 Credits/Reply
+            </span>
+            <span class="badge text-blue-500" data-aos="fade-up">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap-icon lucide-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+                2 Credits/Comment Reply
+            </span>
+        </div>
+        <div class="flex flex-wrap items-center justify-center gap-6 mx-6 max-w-5xl">
+            {% for p in packages %}
+                <div data-aos="fade-up" class="card rounded-2xl w-full max-w-52 bg-white hover:border-neutral-400 transition-colors">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="text-xl font-semibold">{% if p.price == 0 %} Free {% else %} ৳{{ p.price }}{% endif %} </h3>
+                        <span class="badge text-sm">{{ p.duration }}</span>
+                    </div>
+                    <div class="py-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap-icon lucide-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+                            <p class="text-2xl font-bold">{{ p.credits }} 
+                                <span class="text-base text-neutral-500 font-medium">Credits</span>
+                            </p>
+                        </div>
+                        
+                        <p class="text-sm text-neutral-800">{{ p.description }}</p>
+                    </div>
+                    <div class="flex justify-end">
+                        <a href="{% url "buy_credits" %}?buy={{ p.name }}" class="btn flex-1 {% if p.price == 0 %} btn-primary {% endif %}">{% if p.price == 0 %} Claim {% else %} Buy {% endif %} </a>
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <p class="text-neutral-800 text-center text-sm mt-12">{{ metadata.pricing.subtitle|safe }} </p>
+    </section>
+
+    <section class="py-12 sm:py-16 p-6 max-w-5xl mx-auto bg-white">
+        <div class="flex flex-col gap-4 items-center justify-center mb-16 px-4 max-w-4xl mx-auto text-center" data-aos="fade-up">
+            <div class="flex items-center gap-3 text-sm">
+                <h2 class="h2 text-center uppercase">Getting started</h2>
+                <div class="flex items-center gap-2 py-0.5 px-2 border border-neutral-200 rounded-full">
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                    <spa class="text-sm">3 min</span>
+                </div>
+            </div>
+            <p class="text-sm text-neutral-800">Test everything ypur own without any worry or paying</p>
+        </div>
+        <div class="flex flex-col md:flex-row gap-12 mx-auto text-neutral-800 leading-5">
+            <div class="divide-y divide-neutral-200">
+                <div data-aos="fade-up" class="grid justify-center grid-cols-4 p-8 mx-auto space-y-8 lg:space-y-0" bis_skin_checked="1">
+                    <div class="flex items-center justify-center lg:col-span-1 col-span-full" bis_skin_checked="1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round-plus-icon lucide-user-round-plus"><path d="M2 21a8 8 0 0 1 13.292-6"/><circle cx="10" cy="8" r="5"/><path d="M19 16v6"/><path d="M22 19h-6"/></svg>
+                    </div>
+                    <div class="flex flex-col justify-center max-w-3xl text-center col-span-full lg:col-span-3 lg:text-left" bis_skin_checked="1">
+                        <span class="text-xs tracking-wider uppercase">Step 1</span>
+                        <span class="h3">Create your account</span>
+                        <span class="mt-4 text-neutral-700">{{ metadata.start.1st }}</span>
+                    </div>
+                </div>
+                <div data-aos="fade-up" class="grid justify-center grid-cols-4 p-8 mx-auto space-y-8 lg:space-y-0" bis_skin_checked="1">
+                    <div class="flex items-center justify-center lg:col-span-1 col-span-full" bis_skin_checked="1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cable-icon lucide-cable"><path d="M17 19a1 1 0 0 1-1-1v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a1 1 0 0 1-1 1z"/><path d="M17 21v-2"/><path d="M19 14V6.5a1 1 0 0 0-7 0v11a1 1 0 0 1-7 0V10"/><path d="M21 21v-2"/><path d="M3 5V3"/><path d="M4 10a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2a2 2 0 0 1-2 2z"/><path d="M7 5V3"/></svg>
+                    </div>
+                    <div class="flex flex-col justify-center max-w-3xl text-center col-span-full lg:col-span-3 lg:text-left" bis_skin_checked="1">
+                        <span class="text-xs tracking-wider uppercase">Step 2</span>
+                        <span class="h3">Connect Facebook page</span>
+                        <span class="mt-4 text-neutral-700">{{ metadata.start.2nd }}</span>
+                    </div>
+                </div>
+                <div data-aos="fade-up" class="grid justify-center grid-cols-4 p-8 mx-auto space-y-8 lg:space-y-0" bis_skin_checked="1">
+                    <div class="flex items-center justify-center lg:col-span-1 col-span-full" bis_skin_checked="1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sliders-horizontal-icon lucide-sliders-horizontal"><path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/></svg>
+                    </div>
+                    <div class="flex flex-col justify-center max-w-3xl text-center col-span-full lg:col-span-3 lg:text-left" bis_skin_checked="1">
+                        <span class="text-xs tracking-wider uppercase">Step 3</span>
+                        <span class="h3">Configure your AI</span>
+                        <span class="mt-4 text-neutral-700">{{ metadata.start.3rd }}</span>
+                    </div>
                 </div>
                 
-                <p class="text-xs">{{ p.description }}</p>
-              </div>
-              <div class="flex justify-end">
-                <a href="{% url "buy_credits" %}?buy={{ p.name }}" class="btn {% if p.price == 0 %} btn-primary {% endif %} py-1 px-2.5">{% if p.price == 0 %} Claim {% else %} Buy {% endif %} </a>
-
-              </div>
             </div>
-        {% endfor %}
-    </div>
-    <p class="text-neutral-700 text-center mt-16">{{ metadata.pricing.subtitle|safe }} </p>
-</section>
+        </div>
+    </section>
 
-<section class="py-16 sm:py-24 p-6 max-w-4xl mx-auto bg-white">
-  <h2 class="h mb-16 text-center">{{ metadata.start.title }}</h2>
-      <div class="flex flex-col md:flex-row gap-12 mx-auto">
-        <div class="flex gap-3">
-          <lord-icon
-              src="https://cdn.lordicon.com/zdedkaho.json"
-              trigger="hover"
-              style="width:80px;height:80px">
-          </lord-icon>
-          <div class="flex-1 flex flex-col gap-2">
-            <h3 class="h3">Account</h3>
-            <p>{{ metadata.start.1st }}</p>
-          </div>
-          
+    <section id="cta" class="pb-16 sm:pb-24 p-6 bg-white">
+        <div class="flex flex-col items-center justify-center sm:justify-between gap-12 sm:gap-16 max-w-xl mx-auto">
+        <h2 data-aos="zoom-in" class="h1">Ready to get started?</h2>
+        <div class="flex flex-col gap-4 w-full max-w-64">
+            <a data-aos="fade-left" href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+            <a data-aos="fade-right" href="https://facebook.com/chatautopilot" class="btn btn-secondary">Try Demo</a>
         </div>
-        <div class="flex gap-3">
-          <lord-icon
-              src="https://cdn.lordicon.com/bqzrducy.json"
-              trigger="hover"
-              style="width:80px;height:80px">
-          </lord-icon>
-          <div class="flex-1 flex flex-col gap-2">
-            <h3 class="h3">Connecting pages</h3>
-            <p>{{ metadata.start.2nd }}</p>
-          </div>
-          
         </div>
-        <div class="flex gap-3">
-          <lord-icon
-              src="https://cdn.lordicon.com/hikglskt.json"
-              trigger="hover"
-              style="width:80px;height:80px">
-          </lord-icon>
-          <div class="flex-1 flex flex-col gap-2">
-            <h3 class="h3">Settings</h3>
-            <p>{{ metadata.start.3rd }}</p>
-          </div>
-          
-        </div>
-    </div>
-    <p class="text-neutral-700 text-center mt-16">{{ metadata.start.subtitle|safe }} </p>
-</section>
-
-<section id="cta" class="py-16 sm:py-24 p-6 bg-neutral-50">
-    <div class="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-12 max-w-2xl mx-auto">
-      <div class="flex items-center gap-3">
-        <lord-icon
-            src="https://cdn.lordicon.com/yejbwtri.json"
-            trigger="hover"
-            class="w-20 h-20 md:w-28 md:h-28">
-        </lord-icon>
-        <div class="flex-1">
-          <h3 class="h3">{{ metadata.cta.title }}</h3>
-          <p>{{ metadata.cta.subtitle }}</p>
-        </div>
-      </div>
-      <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
-    </div>
-</section>
-
+    </section>
+</div>
 {% include "core/partials/footer.html" %}
 {% endblock body %}
+
+{% block scripts %}
+  <script src="{% static 'js/phone.js' %}"></script>
+  <script src="{% static 'js/chats.js' %}"></script>
+  
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
+{% endblock scripts %}
+

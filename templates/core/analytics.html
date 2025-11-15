@@ -5,24 +5,11 @@
 {% block content %}
 <div class="h-auto p-4 sm:p-6">
     <div class="flex flex-col">
-        <div class="border-b border-neutral-200 p-2 pt-0">
-            <h1 class="h2">Analytics</h1>
-        </div>
+        {% include "core/partials/breadcrumbs.html" with title="Analytics" %}
         <div class="flex-1 py-6 space-y-4">
             
-            <div class="card flex items-center gap-4 p-3 pl-4">
-                    <div class="flex-1 flex gap-3 items-center justify-between flex-wrap">
-                    <div class="flex gap-3 items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brain-icon lucide-brain"><path d="M12 18V5"/><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"/><path d="M18 18a4 4 0 0 0 2-7.464"/><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"/><path d="M6 18a4 4 0 0 1-2-7.464"/><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77"/></svg>
-                        <p class="flex-1 text-nutral-800">A good system prompt will help you getting better response</p>
-                        
-                    </div>
-                    <a class="btn-link .go">
-                        Learn more
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
-                    </a>
-                </div>
-            </div>
+            {% include "core/partials/alerts.html" %}
+
             <div class="card space-y-4">
                 <div class="flex-1 flex gap-3 items-center flex-wrap">
                     <div class="flex gap-3 items-center">

@@ -7,16 +7,54 @@
         "author": "Mohin Uddin Shipon",
         "image": "",
         "hero": {
-            "title": "Can AI reply on <div class='relative inline-block'> Messenger <span class='bold-underline'></span></div> ?",
-            "description": "<span class='text-black font-bold'>Yes</span> if you connect your Facebook page with our AI, it will automatically reply to messages based on your instructions and information."
-        }, 
-        "features": {
-            "title": "Why is this necessary?",
-            "1st": "No need to message the user and wait for a reply",
-            "2nd": "If the reply wasn't fast, the user wouldn't even realize they were talking to AI.",
-            "3rd": "Can chat with many users at the same time",
-            "subtitle": "Everyone has to adopt new technology to keep up with the times."
+            "title": "Your AI customer service agent who never sleeps",
+            "description": "An AI agent who understands context, speaks naturally, and closes deals while you sleep. It outperforms human agents in speed, efficiency and extra features that human agents can't do."
         },
+        "problems": {
+            "title": "Problems We Solve",
+            "subtitle": "We understand your challenges—and we know exactly how to fix them.",
+            "problems": [
+                {
+                "title": "Slow Replies",
+                "icon": "slow-reply",
+                "description": "Customers wait too long for answers, leading to frustration and missed opportunities. Delayed responses damage trust and directly impact your brand reputation.",
+                "tags": ["Lost sales", "Customer dissatisfaction"]
+                },
+                {
+                "title": "High Support Workload",
+                "icon": "high-workload",
+                "description": "Your team is overwhelmed with repetitive questions and manual tasks. This reduces productivity and increases operational costs.",
+                "tags": ["Agent burnout", "Slower customer support"]
+                },
+                {
+                "title": "Inconsistent Service Quality",
+                "icon": "inconsistent-service",
+                "description": "Human-only support means responses vary based on the agent, mood, or workload. Customers expect consistency—every time.",
+                "tags": ["Confusion", "Reduced customer loyalty"]
+                }
+            ],
+            "solutions": [
+                {
+                "title": "Instant Replies",
+                "icon": "instant-reply",
+                "description": "No more waiting. Your customers get instant, accurate responses 24/7—boosting satisfaction and conversions.",
+                "tags": ["3–5s per reply", "Happier customers"]
+                },
+                {
+                "title": "Automated Workflows",
+                "icon": "automated-workflows",
+                "description": "AI handles repetitive questions, status updates, order tracking, and more—so your team focuses on what truly matters.",
+                "tags": ["Increased efficiency", "Lower operational costs"]
+                },
+                {
+                "title": "Consistent, Professional Support",
+                "icon": "consistent-support",
+                "description": "AI ensures every customer receives the same high-quality service every time.",
+                "tags": ["Brand trust", "Stronger customer retention"]
+                }
+            ]
+        },
+
         "work": {
             "title": "How does it work?",
             "1st": "User send a message on Facebook page",
@@ -30,16 +68,59 @@
             "subtitle": " Which plan is best for you? If you don't find what you need, <a class='link' href='/contact/'>Contact us</a>"
         },
         "start": {
-            "title": "How do I get started?",
             "1st": "First create an account, if you already have an account, log in.",
             "2nd": "Select your Facebook page by clicking the Add page button from the dashboard and connect.",
-            "3rd": "Then, from the page settings, describe your AI's behavior and data in system_prompt.",
-            "subtitle": "If you tell us your business, we will create a system prompt for you."
+            "3rd": "Then, from the page settings, describe your AI's behavior in System prompts and business information in Business context."
         },
-        "cta": {
-            "title": "It's time to rest..",
-            "subtitle": "Are you ready to hand over your work to AI?"
-        }
+        "nav_features": [
+            {
+                "type": "major",
+                "title": "Product Cards",
+                "description": "Fetch and display products as interactive cards with details and images."
+            },
+            {
+                "type": "major",
+                "title": "Image & Voice",
+                "description": "Supports images and voice messages for natural, interactive chat experiences."
+            },
+            {
+                "type": "major",
+                "title": "Order Handling",
+                "description": "Automate complete order collection, confirmation, and receipt inside chat."
+            },
+            {
+                "type": "minor",
+                "title": "Quick Replies",
+                "description": "Guide users with instant response buttons to boost engagement."
+            },
+            {
+                "type": "minor",
+                "title": "Smart Search",
+                "description": "Search products using natural language and filters instantly."
+            },
+            {
+                "type": "minor",
+                "title": "Website Sync",
+                "description": "Automatically fetch product info from your website for chat display."
+            },
+            {
+                "type": "minor",
+                "title": "Receipt Generator",
+                "description": "Generate order receipts automatically inside the chat for user confirmation."
+            },
+            {
+                "type": "minor",
+                "title": "Animated Preview",
+                "description": "See live chat simulation with products, replies, and images in action."
+            },
+            {
+                "type": "minor",
+                "title": "Multi-language",
+                "description": "Supports Bangla and English for better local customer interaction."
+            }
+        ]
+
+        
         
     },
     "/bn/": {
@@ -52,32 +133,9 @@
             "title": "AI কি <div class='relative inline-block'> Messenger <span class='bold-underline'></span></div> এ রিপ্লাই দিতে পারে ?",
             "description": "<span class='text-black font-bold'> হ্যাঁ</span> আমাদের তৈরি AI আপনার Facebook পেজের সাথে সংযুক্ত করলে আপনার দেওয়া নির্দেশনা এবং তথ্যের ভিত্তিতে মুহূর্তেই Messenger বা Whatsapp এ রিপ্লাই দিতে পারে"
         },
-        "features": {
-            "title": "এটা কেন দরকার?",
-            "1st": "ইউজার-কে মেসেজ করে রিপ্লাই এর জন্য অপেক্ষা করতে হয় না",
-            "2nd": "রিপ্লাই যদি দ্রুত না হতো, ইউজার বুজতেই পারতো না যে সে AI এর সাথে কথা বলছে",
-            "3rd": "একই সময়ে অনেকজন ইউজারের সাথে চ্যাট করতে পারে",
-            "subtitle": "যুগের সাথে তাল মেলাতে সবাইকে সেই নতুন প্রযুক্তি গ্রহণ করতে হয়"
-        },
-        "work": {
-            "title": "এটা কিভাবে কাজ করে ?",
-            "1st": "ইউসার Facebook পেজে মেসেজ পাঠায়",
-            "2nd": "Facebook সেই মেসেজ আমাদের AI এর কাছে ফরওয়ার্ড করে দেয়",
-            "3rd": "আমাদের AI মেসেজটিকে প্রসেস করে এবং একটা রিপ্লাই জেনারেট করে",
-            "4th": "সেই রিপ্লাই facebook কে পাঠায় এবং ফেসবুক ইউজারকে পাঠায়",
-            "subtitle": "এই সমস্ত কিছু মাত্র কয়েক সেকেন্ডের মধ্যে হয়"
-        },
-        "pricing": {
-            "title": "দাম কত ?",
-            "subtitle": "কোনটি পছন্দ হয়েছে ? কোনটি না হলে আমাদের সাথে <a class='link' href='/contact/'>যোগাযোগ করুন</a>"
-        },
-        "start": {
-            "title": "কিভাবে শুরু করবো ?",
-            "1st": "শুরুতে একটি একাউন্ট তৈরী করুন, আগে থেকে একাউন্ট থাকলে লগইন করুন",
-            "2nd": "ড্যাশবোর্ড থেকে Add page বাটনে ক্লিক করে আপনার Facebook পেজ সিলেক্ট করুন এবং connect করুন",
-            "3rd": "এরপর পেজের সেটিংস থেকে system_prompt এ আপনার AI এর আচরণ ও ডাটা বর্ণনা করুন",
-            "subtitle": "আমাদেরকে আপনার ব্যবসা বুঝিয়ে বললে আমরা system prompt তৈরী করে দেবো"
-        },
+
+
+
         "cta": {
             "title": "বিশ্রামের সময় হয়েছে..",
             "subtitle": "AI কে আপনার কাজ বুঝিয়ে দিতে আপনি প্রস্তুত তো ?"

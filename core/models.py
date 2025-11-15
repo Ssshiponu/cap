@@ -137,6 +137,8 @@ class FacebookPage(models.Model):
     
     # Settings
     enabled = models.BooleanField(default=True)
+    comment_enabled = models.BooleanField(default=False)
+    product_enabled = models.BooleanField(default=False)
     
     primary = models.BooleanField(default=True)
     
@@ -172,8 +174,9 @@ class FacebookPage(models.Model):
         orders = self.orders.filter(created_at__date=date)
         return orders
     
-    def get_orders(self):
-        return self.orders.all()
+    
+    def get_orders(self, days=7):
+        return self.orders.filter(created_at__gte=days_ago(days))
     
     def get_basic_stats(self):
         return {
@@ -183,19 +186,42 @@ class FacebookPage(models.Model):
             'orders': self.orders.count(),
         }
     
+    def get_notifications(self):
+        return (self.notifications.filter(read=False) | self.user.notifications.filter(read=False)).order_by('-created_at')
+    
+class WooConnection(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    facebook_page = models.OneToOneField(FacebookPage, on_delete=models.CASCADE, related_name='woo')
+    store_url = models.CharField(max_length=255)
+    consumer_key = models.CharField(max_length=255)
+    consumer_secret = models.CharField(max_length=255)
+    
+    connected = models.BooleanField(default=False)
+    error = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.store_url
+    
     
 class Notification(models.Model):
     TYPES = [
+        ('success', 'Success'),
         ('info', 'Info'),
         ('warning', 'Warning'),
         ('error', 'Error'),
+        ('helpful', 'Helpful'),
+        ('debug', 'Debug'),
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications', blank=True, null=True)
+    FacebookPage = models.ForeignKey(FacebookPage, on_delete=models.CASCADE, related_name='notifications', blank=True, null=True)
     message = models.TextField()
     description = models.TextField(blank=True, null=True)
     type = models.CharField(max_length=20, choices=TYPES, default='info')
+    action_text = models.CharField(max_length=255, blank=True, null=True)
+    action_url = models.CharField(max_length=255, blank=True, null=True, default='#')
     read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -232,7 +258,6 @@ class WebhookLog(models.Model):
     
     
 class Order(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     page = models.ForeignKey(FacebookPage, on_delete=models.CASCADE, related_name='orders')
     product = models.CharField(max_length=255)
     suk = models.CharField(max_length=255, blank=True, null=True)
@@ -262,5 +287,4 @@ class Questions(models.Model):
     
     def __str__(self):
         return self.question[:50]
-    
     

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, FileResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count, Q, Avg, Sum
@@ -11,14 +11,18 @@ from django.core.cache import cache
 from django.utils import timezone
 from django.conf import settings
 from datetime import timedelta, datetime
+from urllib.parse import unquote
+from woocommerce import API
 import requests
 import hmac
 import hashlib
 import json
 import time
+import csv
+import os
 
 from .models import (
-    User, FacebookPage, Notification, CreditTransaction
+    User, FacebookPage, Notification, CreditTransaction, WooConnection, Order
 )
 
 from messenger.models import (
@@ -30,16 +34,8 @@ from . import chart
 # from .chroma import ChromaDB
 
 def index(request):
-    if request.user.is_authenticated:
-        return redirect('dashboard')
     
     lang = request.META.get('HTTP_ACCEPT_LANGUAGE', '')
-    if request.path == '/':
-        if 'bn' in lang:
-            return redirect('/bn/')
-        else:
-            return redirect('/en/')
-        
     
     context = {
         'packages': settings.PACKAGES[:4]
@@ -100,6 +96,9 @@ def overview(request, page_id):
 
     cache_timeout = 60  # 1 minute
     cache_key = f"chart-{page_id}-{days}"
+    
+    order_days = request.GET.get('days')
+    orders = page.get_orders(days=int(order_days) if order_days else 7)
 
     cached_chart = cache.get(cache_key)
     if cached_chart:
@@ -121,7 +120,8 @@ def overview(request, page_id):
             'messages': json.dumps(messages_chart),
             'credits': json.dumps(credits_chart),
         },
-        'days': days,
+        'orders': orders,
+        'order_days': order_days,
         'credits_used': sum(credits_chart.get("data", {}).get("datasets", [{}])[0].get("data", [0])),
         'ai_replies': sum(messages_chart.get("data", {}).get("datasets", [{}])[-1].get("data", [0])),
         'settings': settings,
@@ -197,28 +197,56 @@ def page_settings(request, page_id):
     page = request.user.get_primary_page(page_id)
     context = {
         'page': page,
+        'settings': settings,
     }
     return render(request, 'core/settings.html', context)
 
 
 
 @login_required
-def delete_conversation(request, page_id, conversation_id):
+def conversation_action(request, page_id, conversation_id):
     conversation = get_object_or_404(Conversation, id=conversation_id, facebook_page__id=page_id, facebook_page__user=request.user)
-    conversation.active = False
-    conversation.save()
+    action = request.GET.get('action')
+    if action == 'pause':
+        conversation.paused = True
+        conversation.save()
+    elif action == 'resume':
+        conversation.paused = False
+        conversation.save()
+    elif action == 'delete':
+        conversation.active = False
+        conversation.save()
+    
     return redirect(request.GET.get('next', 'dashboard'))
 
 @login_required
 @require_POST
-def page_toggle(request, page_id):
+def toggle(request, page_id):
     """Toggle page enabled status"""
     page = get_object_or_404(FacebookPage, id=page_id, user=request.user)
-    page.enabled = not page.enabled
-    page.save()
-    status = 'enabled' if page.enabled else 'disabled'
-    messages.success(request, f'Page {page.page_name} {status}')
-    return redirect(request.GET.get('next', 'dashboard'))
+    t = request.GET.get('t')
+    if t == 'replies':
+        page.enabled = not page.enabled
+        page.save()
+        status = 'enabled' if page.enabled else 'disabled'
+        message = f'Page {page.page_name} replies {status}'
+    elif t == 'comments':
+        page.comment_enabled = not page.comment_enabled
+        page.save()
+        status = 'enabled' if page.comment_enabled else 'disabled'
+        message = f'Page {page.page_name} comments {status}'
+        
+    elif t == 'product':
+        page.product_enabled = not page.product_enabled
+        page.save()
+        status = 'enabled' if page.product_enabled else 'disabled'
+        message = f'Page {page.page_name} products {status}'
+        
+    else:
+        return JsonResponse({'success': False, 'type': 'error', 'message': 'Invalid request', 'status': 400})
+        
+    
+    return JsonResponse({'success': True, 'type': 'success', 'message': message, 'status': 200})
 
 @login_required
 @require_POST
@@ -244,10 +272,40 @@ def reconnect_page(request, page_id):
     return redirect(request.GET.get('next', 'dashboard'))
 
 @login_required
-def notifications_read(request):
-    for n in request.user.notifications.filter(read=False):
-        n.mark_as_read()
+def notification_read(request):
+    id = request.GET.get('id')
+    Notification.objects.filter(id=id).update(read=True)
     return JsonResponse({'success': True})
+
+@login_required
+def download_orders(request, page_id):
+    """Download orders as CSV"""
+    # Get the model dynamically
+    days = request.GET.get('days')
+    days = int(days) if days else 7
+    page = get_object_or_404(FacebookPage, id=page_id, user=request.user)
+    queryset = page.get_orders()
+
+    if not queryset.exists():
+        messages.error(request, "No data found in the table.")
+        return redirect(request.GET.get('next', 'dashboard'))
+
+    # Get field names (excluding relations)
+    field_names = [field.name for field in Order._meta.get_fields() if not field.is_relation]
+    file = os.path.join(settings.CACHE_DIR, f'orders-{generate_random_token(8)}.csv')
+    print(file)
+    # Write to CSV
+    with open(file, mode='w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(field_names)  # header row
+
+        for obj in queryset:
+            row = [getattr(obj, field) for field in field_names]
+            writer.writerow(row)
+            
+    return FileResponse(open(file, 'rb'), as_attachment=True)
+
+
 
 @login_required
 @require_POST
@@ -273,3 +331,76 @@ def update_page(request, page_id):
     
     return redirect(request.GET.get('next', 'dashboard'))
 
+
+
+@login_required
+@require_POST
+def connect_woo(request):
+    data = request.POST
+    page_id = data.get('page_id')
+    page = get_object_or_404(FacebookPage, id=page_id, user=request.user)
+    
+    store_url = data.get('store_url').strip()
+    consumer_key = data.get('consumer_key').strip()
+    consumer_secret = data.get('consumer_secret').strip()
+    
+    if page and store_url and consumer_key and consumer_secret:
+        woo, _ = WooConnection.objects.get_or_create(
+            facebook_page=page,
+            store_url=store_url,
+            consumer_key=consumer_key,
+            consumer_secret=consumer_secret,
+        )
+    
+        # test connection
+        wcapi = API(
+            url=store_url,
+            consumer_key=consumer_key,
+            consumer_secret=consumer_secret,
+            version="wc/v3",
+            timeout=10
+            
+        )
+        r = wcapi.get("products", params={"per_page": 1})
+        
+        if r.status_code == 200:
+            # try requesting as facebook bot
+            r = requests.get(
+                store_url,
+                headers={
+                    "User-Agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+                }
+            )
+            if r.status_code == 200:
+                woo.connected = True
+                woo.save()
+                messages.success(request, f'WooCommerce connection established')
+            
+            else:
+                woo.error = "Your site blocking requests from facebook. make sure <span class='bg-neutral-100 rounded'>facebookexternalhits<span> is allowed in robots.txt"
+                woo.save()
+                messages.error(request, "Your site blocking requests from facebook.")
+                
+        else:
+            error="Your site blocking us"
+            woo.error = error
+            woo.save()
+            messages.error(request, error)
+            
+    else:
+        messages.error(request, "All fields are required")
+        
+    return redirect("settings", page_id = page_id)
+            
+
+@login_required
+def disconnect_woo(request):
+    page_id = request.GET.get('page_id')
+    woo = get_object_or_404(WooConnection, facebook_page__id=page_id, facebook_page__user=request.user)
+    woo.delete()
+    messages.success(request, f'WooCommerce connection removed')
+    return redirect("settings", page_id = page_id)
+            
+            
+        
+    

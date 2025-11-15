@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
     <title>{% block title %}Chat Autopilot - {{ metadata.title }}{% endblock title %}</title>
     
     <!-- SEO Meta Tags -->
@@ -30,7 +32,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{% static "img/icons/favicon-16x16.png" %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static "img/icons/favicon-32x32.png" %}">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static "img/icons/apple-touch-icon.png" %}">
-    <link rel="icon" type="image/png" sizes="192x192" href="{% static "static" "img/android-chrome-192x192.png" %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static "static" "img/icons/android-chrome-192x192.png" %}">
     <link rel="icon" type="image/png" sizes="512x512" href="{% static 'img/icons/android-chrome-512x512.png' %}">
     <link rel="shortcut icon" href="{% static 'img/icons/favicon.ico' %}" type="image/x-icon">
     <link rel="manifest" href="{% static 'img/icons/site.webmanifest' %}">
@@ -73,10 +75,7 @@
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body x-data="{ sidebar: false, modal: false, mobileMenu: false }"
-
-
-class="h-dvh w-dvw">
+<body x-data="{ sidebar: false, modal: false, mobileMenu: false }">
     {% block body %}
     {% endblock body %}
     <script src="https://cdn.lordicon.com/lordicon.js"></script>

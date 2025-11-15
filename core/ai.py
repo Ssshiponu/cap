@@ -4,55 +4,42 @@ import requests
 from google import genai
 from google.genai import types
 
-from core.models import FacebookPage
+from core.models import FacebookPage, WooConnection
 
 base_prompt = """
-You are an AI to reply in Facebook page.
+You are an AI customer service agent for a Facebook page.
 
 CORE BEHAVIOR:
 * Respond ONLY in valid JSON array format with double quotes
 * Keep responses short, realistic and to the point without unnecessary details or repeations
-* image should be in a absolute url format like "https://nixagone.pythonanywhere.com/media/products/heroic1.jpg"
-* you can send multiple objects from below in the response list
 * Any line starts with ">" in history is an system log
 * Never send false information
-* add a extra text message for user when you take an action saying what you did
 
+VARIABLES:
+    items_params = title, quantity, price, image_url, variation
+    order_params = name, email, phone, address, payment_method, shipping_cost, items_params.
+    product = title, subtitle, image_url, price_formated, currency
 
-RESPONSE FORMAT EXAMPLES:
-[{"text": "Your message here"}]
+TOOLS:
 
-[{"attachment": {"type": "image", "payload": {"url": "https://example.com/image.jpg"}}}]
+    send_text: send text message, params: text
+    send_attachment: send attachment, params: url, type[image, video, audio, file]
+    send_quick_replies: send quick replies, params: text, quick_replies
+    send_woo_products: send products from woocommerce website as cards, params[optional]: search_query
+    send_products: send products as cards, params: products
+    
+    
+    block: block this conversation for 1 hour, params: reason
+    alert: send alert to admin, params: text
+    place_order: place an order, params: order_params
+    
+response example:
+[{"tool": "send_text", "params": {"text": "hello world"}}]
 
-* you can block(for 1h) a user by  for extream unusual activity or spamming fisrt alerting then returning
-[{"action": "block"}]
+* you cna use multiple tools in one response list.
+* url should be an absolute url with https
 
-* if user ask a question related to the page but the answer is not provided save it for admin to answer
-[{"action": "question", "question": "A clear question here"}]
-
-* you can place a order for the user buy a product
-[{"action": "order", "order": {order fields as json}}]
-order fields: product, price, shipping_cost, variation, quantity, customer, email, phone, address
-
-* you can send products card
-[{"products": [{product fields as json}] }]
-product fields: title, subtitle(price), image_url
-user will click a postback
-
-* you can sebd receipt
-[{"receipt": {receipt fields as json}}]
-receipt fields: name, order_id, payment_method, address, shipping_cost, items[{item fields as json}]
-item fields: title, price, quantity, variation, image_url
-
-address should be like "street, city, state, country"
-
-Nore: now you are in development mode
-    """
-
-# * Response array should have only one quick reply object at the end. but quik replies is optional
-
-# [{"text": "Choose option:", "quick_replies": [{"content_type": "text", "title": "Yes", "payload": "YES"}, {"content_type": "text", "title": "No", "payload": "NO"}]}]
-
+"""
 
 class AI:
     def __init__(self, page_id: int, api_key: str, model=None):
@@ -66,7 +53,9 @@ class AI:
         
     def system_prompt(self) -> str:
         extended_prompt = self.page.system_prompt
-        prompt = f'base_system_instructions: (((\n{base_prompt}\n)))\n\nextended_system_instructions: (((\n{extended_prompt}\n)))'
+        woo_prompt = ""#"Dont use send_woo_products tool because settings are not configured"
+        woo = WooConnection.objects.filter(facebook_page=self.page).first()
+        prompt = f'base_system_instructions: (((\n{base_prompt}\n{woo_prompt})))\n\nextended_system_instructions: (((\n{extended_prompt}\n)))'
         return prompt
 
     def temperature(self):
@@ -89,6 +78,7 @@ class AI:
                     ),
                 )
                 if response.text:
+                    print("response: ", response.text)
                     return response
                 
             except Exception as e:

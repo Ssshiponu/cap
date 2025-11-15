@@ -1,6 +1,8 @@
 import datetime
+import requests
 from django.utils import timezone
 from .models import Message
+from django.conf import settings
 from core.ai import AI
 from core.utils import generate_random_token
 
@@ -98,3 +100,27 @@ def generate_conversation(conv, last_n=30):
         
     if len(conversation) > 2: conversation[-1]['last_message'] = time_ago(conv.updated_at) 
     return conversation
+
+def cache_file(url: str) -> str:
+    """Cache file from url"""
+    
+    headers = {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/142.0.0.0 Safari/537.36",
+        "Referer": settings.SITE_URL,
+        "Accept": "image/webp,image/apng,image/*,*/*;q=0.8",
+    }
+    
+    folder = settings.CACHE_DIR
+    filename = generate_random_token(length=32)
+
+    r = requests.get(url, headers=headers, timeout=10, stream=True)
+    r.raise_for_status()
+    filename += r.url.split("/")[-1]
+    with open( f"{folder}/{filename}", "wb") as f:
+        for chunk in r.iter_content(1024*8):
+            if chunk:
+                f.write(chunk)
+                
+    url = f"{settings.SITE_URL}{settings.CACHE_URL}{filename}"
+    print(url)
+    return url

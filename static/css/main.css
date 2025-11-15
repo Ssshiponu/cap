@@ -2,6 +2,7 @@
 @import "./md.css";
 
 @source "../templates/**/*.html";
+@source "../static/js/**/*.js";
 
 :root {
     --s: 1;
@@ -17,27 +18,7 @@
     --z-content-top: 1;
 }
 
-header {
-    transition: box-shadow 200ms ease, background-color 200ms ease;
-}
 
-.header-inner {
-    border-radius: calc(var(--s) * 12px);
-    padding: 0.75rem;
-    border-width: 1px;
-    max-width: 1158px;
-    margin: 0 auto;
-    transition: all 300ms ease;
-}
-
-.scrolled {
-    box-shadow: 0 calc(var(--s) * 6px) calc(var(--s) * 20px) rgba(16,24,40,0.08);
-    border-color: #e5e5e5;
-}
-
-footer {
-    z-index: var(--z-footer);
-}
 
 @layer base {
     body {
@@ -52,7 +33,7 @@ footer {
     }
 
     .h1 {
-        @apply text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-[600];
+        @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-[600];
     }
     .h2 {
         @apply text-xl md:text-2xl text-neutral-900 font-[600];
@@ -63,7 +44,7 @@ footer {
     }
 
     .h3 {
-        @apply text-[18px] text-neutral-900 font-[600];
+        @apply text-[18px] text-neutral-900 font-[500];
     }
     hr {
         @apply border-0 border-t border-neutral-200 my-4;
@@ -71,6 +52,16 @@ footer {
 
     .card {
         @apply p-5 gap-4 rounded-xl bg-white border border-neutral-200;
+    }
+
+    .feature-cards > .card {
+        @apply w-[90vw] max-w-4xl mx-auto rounded-3xl p-0 overflow-hidden;
+
+        animation: Anm ease;
+        animation-timeline: view();
+
+
+        
     }
 
     .center {
@@ -113,7 +104,7 @@ footer {
 
 @layer components {
     .btn {
-        @apply inline-block text-center hover:cursor-pointer bg-neutral-50 hover:bg-neutral-100 active:bg-neutral-200 text-neutral-800 border border-neutral-200 text-nowrap font-medium py-1.5 px-5 rounded-lg disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 ease-in-out;
+        @apply inline-block text-center hover:cursor-pointer bg-neutral-50 hover:bg-neutral-100 active:bg-neutral-200 text-neutral-800 border border-neutral-200 text-nowrap font-medium py-1.5 px-5 rounded-[20px] disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 ease-in-out;
     }
     .btn-primary {
         @apply bg-neutral-950 hover:bg-neutral-800 active:bg-neutral-700 text-white border border-neutral-700;
@@ -125,6 +116,10 @@ footer {
 
     .btn-danger {
         @apply bg-red-50 hover:bg-red-100 active:bg-red-200 text-red-600 border border-red-200;
+    }
+
+    .btn-sm {
+        @apply py-1 px-3 text-sm;
     }
 
     .input {
@@ -143,6 +138,10 @@ footer {
         @apply hover:cursor-pointer hover:underline text-neutral-800 hover:bg-neutral-100 active:bg-neutral-200 text-nowrap font-medium py-1.5 px-3 rounded-md flex flex-row items-center gap-2 transition-all duration-200 ease-in-out;
     }
 
+    .badge {
+        @apply bg-neutral-100 text-neutral-800 text-sm text-nowrap font-medium py-1 px-3 rounded-full inline-flex flex-row items-center gap-2 transition-all duration-200 ease-in-out;
+    }
+
 
 
     .link {
@@ -152,4 +151,68 @@ footer {
         @apply text-neutral-600 text-sm flex items-center gap-2;
     }
 
+    .msg {
+        display: block;
+        width: fit-content;
+        padding: 6px 10px;
+        margin-bottom: 6px;
+        border-radius: 14px;
+        font-size: 12px;
+        line-height: 1.4;
+        animation: scaleIn 0.3s ease forwards;
+    }
+    .msg.user {
+        background-color: #0584FE;
+        color: white;
+        margin-left: auto;
+        transform-origin: right bottom;
+    }
+    .msg.bot {
+        background-color: #E5E5EA;
+        color: black;
+        margin-right: auto;
+        transform-origin: left bottom;
+    }
+
+}
+
+
+
+
+@keyframes scaleIn {
+    from { transform: scale(0); }
+    to   { transform: scale(1); }
+}
+
+/* scroll snap + hide scrollbar */
+.scrollbar-hidden {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* firefox */
+    -ms-overflow-style: none; /* ie */
+}
+.scrollbar-hidden::-webkit-scrollbar { display: none; } /* webkit */
+
+.product-card { scroll-snap-align: start; }
+
+/* small visual tweak so product bubble looks separate from card backgrounds */
+.product-bubble { padding: 10px; display: inline-block; border-radius: 18px; }
+
+@keyframes Anm {
+    0%{
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    40%{
+        transform: scale(1);
+        opacity: 1;
+    }
+    70%{
+        transform: scale(1);
+        opacity: 1;
+    }
+    100%{
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
 }

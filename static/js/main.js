@@ -29,6 +29,7 @@ function main() {
         //API handler
         api: {
             baseUrl: window.location.origin+ '/',
+            csrfToken: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             async HTTPget(endpoint) {
                 console.log(this.baseUrl + endpoint);
             try {
@@ -40,11 +41,11 @@ function main() {
                 return {};
             }
             },
-            async post(endpoint, data) {
+            async HTTPpost(endpoint, data) {
             try {
                 const res = await fetch(this.baseUrl + endpoint, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': this.csrfToken },
                 body: JSON.stringify(data)
                 });
                 if (!res.ok) throw new Error(`POST ${endpoint} failed`);

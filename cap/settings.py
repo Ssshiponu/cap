@@ -17,6 +17,8 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",")
 
+SITE_URL = os.getenv("SITE_URL")
+
 LOGIN_URL = '/auth/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/auth/login/'
@@ -112,6 +114,12 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+CACHE_URL = MEDIA_URL + 'cache/'
+CACHE_DIR = MEDIA_ROOT / 'cache'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

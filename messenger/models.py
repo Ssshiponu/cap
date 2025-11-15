@@ -10,6 +10,7 @@ class Conversation(models.Model):
     input_tokens = models.IntegerField(default=0)
     output_tokens = models.IntegerField(default=0)
     active = models.BooleanField(default=True)
+    paused = models.BooleanField(default=False)
     blocked = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -39,6 +40,9 @@ class Conversation(models.Model):
         
         if self.messages.count() == 1:
             return (True, "First message")
+        
+        if self.paused:
+            return (False, "Conversation is paused")
         
         last_message = self.messages.filter(role="user").order_by('-created_at').first()
         if last_message.created_at + timezone.timedelta(seconds=5) < timezone.now():

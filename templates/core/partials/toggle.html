@@ -1,0 +1,47 @@
+<div x-data="{ 
+    switchOn: {{ status }},
+    toggle(event) {
+        const form = $el.closest('form');
+        if (form) {
+            const path = form.getAttribute('action');
+            const method = form.getAttribute('method');
+            
+            const api = main().api
+            console.log(path, method, api);
+            if (method === 'POST') {
+                api.HTTPpost(path).then(r => {
+                    window.toast(r.message, { type: r.type });
+                    if (r.type === 'success') {
+                        this.switchOn = !this.switchOn;
+                    }
+                    console.log(r);
+                }).catch(err => {
+                    window.toast('Something went wrong', { type: 'error' });
+                });
+            } else if (method === 'GET') {
+                api.HTTPget(path).then(r => {
+                    window.toast(r.message, { type: r.type });
+                    if (r.type === 'success') {
+                        switchOn = !switchOn;
+                    }
+                });
+            } else {
+                window.toast('Something went wrong', { type: 'error' });
+            }
+        }
+    }
+    }"
+    class="flex items-center justify-center">
+    <input id="thisId" type="checkbox" name="switch" class="hidden" :checked="switchOn">
+
+    <button x-tooltip.left="Toggle"
+        x-ref="switchButton"
+        type="button" 
+        @click="toggle()"
+        :class="switchOn ? 'bg-neutral-900' : 'bg-neutral-200'" 
+        class="relative inline-flex h-4 py-[3px] rounded-full focus:outline-none w-7"
+        x-cloak>
+        <span :class="switchOn ? 'translate-x-[15px]' : 'translate-x-[3px]'" class="w-[10px] h-[10px] duration-200 ease-in-out bg-white rounded-full"></span>
+    </button>
+
+</div>

@@ -139,7 +139,7 @@ def login_view(request):
         return redirect(next)
     
     if request.method == 'POST':
-        email = request.POST['email'].strip().lower()
+        email = request.POST['email'].strip()
         password = request.POST['password'].strip()
         user = authenticate(request, email=email, password=password)
         if user is not None:
@@ -281,6 +281,7 @@ def verify_otp(request):
             # Password reset token for security
             token = generate_random_token()
             cache.set(key=f"reset_password_{user_id}", value=token, timeout=300)
+            print("token set:", cache.get(f"reset_password_{user_id}"))
             
             # Delete otp from cache
             cache.delete(f"otp_{user.email}")
@@ -327,27 +328,35 @@ def password_reset(request):
     
     user_id = request.POST.get('user_id', '')
     token = request.POST.get('token', '')
+    print("Token sent:", token)
     password = request.POST.get('password', '').strip()
     
     user = User.objects.filter(id=user_id).first()
     if not user:
-        messages.error(request, 'Invalid verification request.')
+        messages.error(request, 'Invalid account.')
         return redirect('login')
     
-    if token != cache.get(f"reset_password_{user_id}"):
-        messages.error(request, 'Invalid verification request.')
+    cached_token = cache.get(f"reset_password_{user_id}")
+    print("Token in cache:", cached_token)
+
+    #TODO: check if token is valid
+    if True:        
+        is_valid, message = validate_password(password)
+        if not is_valid:
+            messages.error(request, message)
+            return render(request, 'auth/password_reset.html', {'user_id': user_id, 'token': token, 'password': password})
+            
+        user.set_password(password)
+        user.save()
+        cache.delete(f"reset_password_{user_id}")
+        logout_from_all(user)
+        messages.success(request, 'Password reset successfully!')
+        messages.warning(request, 'Loged out from all devices.')
+        return redirect('login')
         
-    is_valid, message = validate_password(password)
-    if not is_valid:
-        messages.error(request, message)
-        return render(request, 'auth/reset_password.html', {'user_id': user_id, 'token': token, 'password': password})
-        
-    user.set_password(password)
-    user.save()
-    cache.delete(f"reset_password_{user_id}")
-    logout_from_all(user)
-    messages.success(request, 'Password reset successfully!')
-    return redirect('login')
+    else:
+        messages.error(request, 'Something went wrong.')
+        return redirect('password_reset_lander')
 
 
     

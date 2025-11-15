@@ -1,4 +1,36 @@
 import time
+from urllib.parse import quote
+from html import escape, unescape
+from bs4 import BeautifulSoup
+
+def ssl_url(url):
+    return url.replace("http://", "https://")
+
+def generate_text(text: str):
+    return {
+        "text": text
+    }
+    
+def generate_attachment(url: str, type: str):
+    return {
+        "attachment": {
+            "type": type,
+            "payload": {
+                "url": ssl_url(url)
+            }
+        }
+    }
+    
+def generate_quick_replies(text: str, quick_replies: list):
+    return {
+        "text": text,
+        "quick_replies": [
+            {
+                "content_type": "text",
+                "title": r, "payload": r.upper().replace(" ", "_")
+            } for r in quick_replies
+        ]
+    }
 
 def generate_products(products: list):
     payload = {
@@ -13,23 +45,31 @@ def generate_products(products: list):
     }
     
     for product in products:
+        product_id = product.get('id', '')
+        image_url = product.get("images", [None])[0]
         payload["attachment"]["payload"]["elements"].append(
             {
-                "title": product["title"],
-                "subtitle": product["subtitle"],
-                "image_url": product["image_url"],
-                "buttons": [
-                    {
-                        "type": "postback",
-                        "title": "Buy",
-                        "payload": f"BUY_{product["title"].upper().replace(' ', '_')}"
-                    },
-                    {
-                        "type": "postback",
-                        "title": "View",
-                        "payload": f"VIEW_IMAGES_OF_{product['title'].upper().replace(' ', '_')}"
-                    }
-                ]
+            "title": product.get("title", ""),
+            "image_url": ssl_url(image_url if image_url else product.get("image_url", "")),
+            "subtitle": f'{product.get("price_formated", "")} - {product.get("subtitle", "")}',
+            
+            "buttons": [
+                {
+                "type": "postback",
+                "title": "Buy",
+                "payload": f'BUY_WOOCOMMERCE_PRODUCT_ID:{product_id}' if product_id else f"BUY_PRODUCT:{product.get('title', '')}",
+                },
+                {
+                "type": "web_url",
+                "url": ssl_url(product["url"]),
+                "title": "View",
+                
+                } if product.get("url", "") else {
+                "type": "postback",
+                "title": "View",
+                "payload": f"VIEW_PRODUCT_ID:{product_id if product_id else product.get('title', '')}",
+                }
+            ]
             }
         )
     return payload
@@ -86,3 +126,28 @@ def generate_receipt(receipt: dict):
         )
 
     return payload
+
+
+def translate_woocommerce_products(products: list):
+    """translate woocommerce products to messenger products"""
+    new_products = []
+    print(products)
+    
+    
+    for product in products:
+
+        new_products.append({
+            "id": product["id"],
+            "title": product["name"],
+            "subtitle": BeautifulSoup(product["short_description"], "html.parser").get_text(),
+            "images": [ssl_url(image["src"]) for image in product["images"]],
+            "url": ssl_url(product["permalink"]),
+            "price": product["price"],
+            "price_formated": unescape(BeautifulSoup(product["price_html"], "html.parser").get_text()),
+            "rating": product["average_rating"],
+            "stock": product["stock_quantity"]
+        })
+        
+        
+    
+    return new_products

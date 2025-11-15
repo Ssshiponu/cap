@@ -19,14 +19,19 @@ urlpatterns = [
     
     
     # Page actions
-    path("page-toggle/<int:page_id>/", page_toggle, name="page_toggle"),
+    path("toggle/<int:page_id>/", toggle, name="toggle"),
     path("update_page/<int:page_id>/",  update_page, name="update_page"),
-    path("page/<int:page_id>/conversation/<int:conversation_id>/delete/", delete_conversation, name="delete_conversation"),
+    path('page/<int:page_id>/conversation/<int:conversation_id>/action/', conversation_action, name="conversation_action"),
     path('page/<int:page_id>/delete/', delete_page, name="delete_page"),
     path('page/<int:page_id>/reconnect/', reconnect_page, name="reconnect_page"),
+    path('page/<int:page_id>/download-orders/', download_orders, name="download_orders"),
+    
+    # woo
+    path("connect-woo/", connect_woo, name="connect_woo"),
+    path("disconnect-woo/", disconnect_woo, name="disconnect_woo"),
     
     # Notification
-    path("notifications-read/", notifications_read, name="notifications_read"),
+    path("notification-read/", notification_read, name="notification_read"),
 
     path("system-prompts/", templates, name="system_prompts"),
     path("buy-credits/", buy_credits, name="buy_credits"),
@@ -36,6 +41,5 @@ urlpatterns = [
     # Auth
     path('auth/', include('auth.urls')),
     path('payment/', include('payment.urls')),
-    
     
 ]

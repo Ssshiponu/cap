@@ -5,15 +5,16 @@ import hmac
 import hashlib
 import requests
 import mimetypes
-
+from urllib.parse import quote
+from woocommerce import API
 from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.conf import settings
 
 from core.ai import AI
-from core.models import FacebookPage, User, Questions, Order, WebhookLog, Notification
+from core.models import FacebookPage, User, Questions, Order, WebhookLog, Notification, WooConnection
 
 from .models import Message, Conversation
 from .messenger import Messenger
@@ -22,7 +23,7 @@ from .reader import Reader
 from .generater import *
 
 # from core.chroma import ChromaDB
-from .utils import generate_conversation
+from .utils import generate_conversation, cache_file
 from core.utils import days_ago
 
 
@@ -30,7 +31,7 @@ logging.basicConfig(level=logging.DEBUG, filename='.log',)
 logger = logging.getLogger(__name__)
 
 
-def process_event(event: dict):  
+def process_event(event: dict, request):  
     message = event.get("message", {})
     
     # ignore echo messages
@@ -55,6 +56,23 @@ def process_event(event: dict):
     ai = AI(page.id, settings.GEMINI_API_KEY)
     reader = Reader(ai)
     
+
+    # wcapi = API(
+    #     url="https://dotshirt.kesug.com/",
+    #     consumer_key="ck_cc896e64781f95a3cbe14ec4d98789c73dda310d",
+    #     consumer_secret="cs_424b72a7555e92d65cbab456fe7383ceff36fae3",
+    #     version="wc/v3"
+    # )
+    woo = WooConnection.objects.filter(facebook_page=page).first()
+    
+    if woo is not None and woo.connected:
+        wcapi = API(
+            url=page.woo.store_url,
+            consumer_key=page.woo.consumer_key,
+            consumer_secret=page.woo.consumer_secret,
+            version="wc/v3"
+        )
+    
     # get or create conversation
     conversation, _ = Conversation.objects.get_or_create(
         facebook_page=page, user_id=sender_id, active=True
@@ -76,6 +94,15 @@ def process_event(event: dict):
         payload = event["postback"].get("payload", "")
         title = event["postback"].get("title") or payload
         user_text = f'user clicked: "{title}" (payload: {payload})'
+        
+        if payload.startswith("BUY_WOOCOMMERCE_PRODUCT_ID:"):
+            product_id = payload.split("ID:")[1]
+            product = wcapi.get("products/"+product_id).json()
+            print(product)
+            user_text += str(translate_woocommerce_products([product]))
+            
+            print(user_text)
+
 
         Message.objects.create(
             mid=event["postback"].get("mid"),
@@ -128,34 +155,67 @@ def process_event(event: dict):
     except Exception as e:
         logger.error(f"Invalid AI response: {reply.text}")
         return True
+    
+    i = 0
+    while i < len(reply_json):
+        reply_part = reply_json[i]
+        i += 1
         
-    for reply_part in reply_json:
-        if reply_part.get('action') == 'block':
+        tool = reply_part.get('tool')
+        
+        # internal tools
+        if tool == 'block':
             conversation.blocked = True
             conversation.save()
             logger.info("Blocking conversation...")
             continue
-        
-        if reply_part.get('action') == 'question':
-            Questions.objects.get_or_create(
-                page = page,
-                question = reply_part.get('question'),
-            )
+            
+        elif tool == 'alert':
+            # Questions.objects.get_or_create(
+            #     page = page,
+            #     question = reply_part.get('question'),
+            # )
+            #TODO: save alert for admin
             continue
         
-        if reply_part.get('action') == 'order':
+        elif tool == 'place_order':
             Order.objects.get_or_create(
                 page = page,
-                **reply_part.get('order')
+                **reply_part.get('params')
             )
+            
+            #TODO: more logic
+            #TODO: send receipt
             continue
         
-        if "products" in reply_part:
-            reply_part = generate_products(reply_part["products"])
+        # external tools
+        elif tool == 'send_text':
+            reply_part = generate_text(reply_part["params"]["text"])
             
-        if "receipt" in reply_part:
-            print(reply_part)
-            reply_part = generate_receipt(receipt=reply_part["receipt"])
+        elif tool == 'send_attachment':
+            reply_part = generate_attachment(**reply_part["params"])
+            
+        elif tool == 'send_quick_replies':
+            reply_part = generate_quick_replies(**reply_part["params"])
+        
+        elif tool == 'send_woo_products':
+            if not page.woo or not page.woo.connected:
+                logger.info("WooCommerce is not connected. Skipping...")
+                continue
+            params={"per_page": 10, "timeout": 10}
+            if "search_query" in reply_part["params"]:
+                params["search"] = reply_part["params"]["search_query"]
+                
+            p = wcapi.get("products", params=params).json()
+            
+            reply_part = translate_woocommerce_products(p)
+            reply_part = generate_products(reply_part)
+        
+        elif tool == 'send_products':
+            reply_part = generate_products(reply_part["params"]["products"])
+        
+        # elif tool == 'send_receipt':
+        #     reply_part = generate_receipt(receipt=reply_part["receipt"])
         
         sent = messenger.send_reply(reply_part)
         
@@ -240,7 +300,7 @@ def webhook_view(request):
         for entry in data.get("entry", []):
             for event in entry.get("messaging", []):
                 try:
-                    if process_event(event):
+                    if process_event(event, request):
                         return JsonResponse({"success": True})
                 except Exception as e:
                     # Catch errors in single event processing to not fail the whole batch

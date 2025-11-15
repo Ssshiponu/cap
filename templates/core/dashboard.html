@@ -20,7 +20,7 @@ window.addEventListener('online', () => {
 })
 </script>
 
-<div x-data="main()" class="flex flex-col">
+<div x-data="main()">
     <header class="lg:hidden fixed top-0 left-0 w-full bg-white/70 backdrop-blur-sm border-b border-neutral-200 z-[var(--z-header)]">
         <div class="flex items-center justify-between h-full py-3 px-4 mx-auto">
             {% include "core/partials/brand.html" %}
@@ -31,11 +31,12 @@ window.addEventListener('online', () => {
         </div>
     </header>
 
-    <div class="flex-1 flex transition-all">
-        <div x-show="sidebar" @click="sidebar = false" class="lg:hidden overlay" x-transition x-cloak></div>
+    <div class="flex h-auto min-h-dvh transition-all">
+        <div x-show="sidebar" @click="sidebar = false" class="lg:hidden overlay z-[var(--z-overlay)]" x-transition x-cloak></div>
         <aside x-init="window.addEventListener('resize', () => { if(window.innerWidth > 1024) { sidebar = true; }else{ sidebar = false; } })"
-            class="origin-left fixed p-4 pt-20 lg:pt-4 lg:static inset-y-0 left-0 overflow-hidden bg-neutral-50 border-r border-neutral-200 w-72 h-dvh z-[var(--z-sidebar)] transition-all duration-300 ease-in-out"
+            class="origin-left fixed p-4 pt-20 lg:pt-4 inset-y-0 left-0 overflow-hidden bg-neutral-50 border-r border-neutral-200 w-72 h-dvh z-[var(--z-sidebar)] transition-all duration-300 ease-in-out"
             :class="{ 'translate-x-0': sidebar, '-translate-x-full': !sidebar }"
+            
             x-cloak>
             <div class="flex flex-col justify-between h-full">
                 <div class="mb-6 hidden lg:block">
@@ -128,15 +129,7 @@ window.addEventListener('online', () => {
 
                             <hr class="my-1">
                             
-                            <a href="{% url "system_prompts" %}" class="btn-link sidebar-link">
-                                <lord-icon
-                                    src="https://cdn.lordicon.com/dutqakce.json"
-                                    trigger="hover"
-                                    target=".btn-link"
-                                    style="width:20px;height:20px">
-                                </lord-icon>
-                                System Prompts
-                            </a>
+                            
                             <a href="{% url "buy_credits" %}" class="btn-link sidebar-link">
                                 <lord-icon
                                     src="https://cdn.lordicon.com/apgkpdeb.json"
@@ -147,7 +140,6 @@ window.addEventListener('online', () => {
                                 Buy Cradits
                             </a>
                             
-                            <hr class="my-1">
                             <a href="/about/" class="btn-link sidebar-link">
                                 <lord-icon
                                     src="https://cdn.lordicon.com/yhtmwrae.json"
@@ -255,28 +247,15 @@ window.addEventListener('online', () => {
         </aside>
         
  
-        <section class="relative flex-1 mt-14 lg:mt-0 flex flex-col justify-between h-dvh overflow-y-auto lg:ml-72 bg-neutral-100" x-init="$el.classList.remove('lg:ml-72')">
+        <section class="relative flex-1 mt-14 lg:mt-0 flex flex-col justify-between h-full min-h-dvh overflow-y-auto lg:ml-72 bg-neutral-100">
             {% block content %}
                 <div class="h-auto p-4 sm:p-6">
                     <div class="flex flex-col">
-                        <div class="border-b border-neutral-200 p-2 pt-0">
-                            <h1 class="h2">Overview</h1>
-                        </div>
+
+                        {% include "core/partials/breadcrumbs.html" with title="Overview" %}
+                        
                         <div class="flex-1 py-6 space-y-4">
-                            
-                            <div class="card flex items-center gap-4 p-3 pl-4">
-                                 <div class="flex gap-3 items-center w-full justify-between flex-wrap">
-                                    <div class="flex gap-3 items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brain-icon lucide-brain"><path d="M12 18V5"/><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"/><path d="M18 18a4 4 0 0 0 2-7.464"/><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"/><path d="M6 18a4 4 0 0 1-2-7.464"/><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77"/></svg>
-                                        <p class="flex-1 text-nutral-800">A good system prompt will help you getting better response</p>
-                                        
-                                    </div>
-                                    <a class="btn-link .go">
-                                        Learn more
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
-                                    </a>
-                                </div>
-                            </div>
+                            {% include "core/partials/alerts.html" %}
                             <div class="card flex flex-col gap-4">
                                 <div class="flex-1 flex gap-3 items-center justify-between flex-wrap">
                                     <div class="flex gap-3 items-center">
@@ -286,13 +265,14 @@ window.addEventListener('online', () => {
 
                                         <div class="relative select-none" x-data="{ open: false, days: [], date: new Date() }">
                                             <div @click="open = !open" class="btn-link justify-between">
-                                                <span class="">Today</span>
+                                                <span class="">{% if order_days %}{{ order_days }} days{% else %}7 days{% endif %}</span>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
 
                                             </div>
                                             <!-- Dropdown -->
                                             <div x-show="open" @click.away="open = false" x-transition x-cloak class="absolute text-sm z-10 w-32 top-11 right-0 origin-top bg-white border border-neutral-200 rounded-xl shadow-lg">
                                                 <div class="p-1.5" role="none">
+                                                    <a href="?days=1" class="btn-link no-underline" role="menuitem">1 day</a>
                                                     <a href="?days=3" class="btn-link no-underline" role="menuitem">3 days</a>
                                                     <a href="?days=7" class="btn-link no-underline" role="menuitem">7 days</a>
                                                     <a href="?days=30" class="btn-link no-underline" role="menuitem">30 days</a>
@@ -309,8 +289,7 @@ window.addEventListener('online', () => {
                                             <!-- Dropdown -->
                                             <div x-show="open" @click.away="open = false" x-transition x-cloak class="absolute text-sm z-10 w-32 top-11 right-0 origin-top bg-white border border-neutral-200 rounded-xl shadow-lg">
                                                 <div class="p-1.5" role="none">
-                                                    <a href="#" class="btn-link no-underline" role="menuitem">Google Sheets</a>
-                                                    <a href="#" class="btn-link no-underline" role="menuitem">Excel</a>
+                                                    <a @click="open = false" href="{% url "download_orders" page.id %}?days={{ request.GET.days }}" class="btn-link no-underline" role="menuitem">CSV</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -362,47 +341,22 @@ window.addEventListener('online', () => {
                                     {% endif %}
                                 </div>
                                 {% else %}
-                                <p class="text-sm text-neutral-600 text-center py-2 w-full">If an user made an order with chating, it will appear here</p>
+                                <div class="p-8 flex flex-col gap-4 items-center justify-center text-sm text-neutral-500">
+                                    <div class="p-4 rounded-full bg-neutral-100">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3846153846153846" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package-open-icon lucide-package-open"><path d="M12 22v-9"/><path d="M15.17 2.21a1.67 1.67 0 0 1 1.63 0L21 4.57a1.93 1.93 0 0 1 0 3.36L8.82 14.79a1.655 1.655 0 0 1-1.64 0L3 12.43a1.93 1.93 0 0 1 0-3.36z"/><path d="M20 13v3.87a2.06 2.06 0 0 1-1.11 1.83l-6 3.08a1.93 1.93 0 0 1-1.78 0l-6-3.08A2.06 2.06 0 0 1 4 16.87V13"/><path d="M21 12.43a1.93 1.93 0 0 0 0-3.36L8.83 2.2a1.64 1.64 0 0 0-1.63 0L3 4.57a1.93 1.93 0 0 0 0 3.36l12.18 6.86a1.636 1.636 0 0 0 1.63 0z"/></svg>
+                                        
+                                    </div>
+                                    <span class="ml-2">No orders yet</span>
+                                </div>
                                 {% endif %}
                             </div>
-                            <div class="card flex flex-col gap-4">
-                                <div class="flex-1 flex gap-3 items-center justify-between flex-wrap">
-                                    <div class="flex gap-3 items-center">
-                                        <h2 class="h2 text-xl">Questions</h2>
-                                    </div>
-                                    <a href="{% url "settings" page.id %}" class="btn-link .go">
-                                        Update info
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
-                                    </a>
-                                </div>
-                                <div class="flex flex-wrap items-center gap-y-2 gap-x-10">
-                                    <p class="data-item text-neutral-800">{{page.get_questions.count}} questions AI doesn't know the answers to</p>
-                                </div>
-                                {% if page.get_questions %}
-                                    <div class="relative flex flex-col" x-data="{ open: {% if page.get_questions.count > 3 %}true{% else %}false{% endif %} }">
-                                        <ul x-show="open" x-cloak x-collapse.min.46px class="flex flex-col gap-2 text-sm text-neutral-800">
-                                            {% for q in page.get_questions %}
-                                            <li>{{ q.question }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                        {% if page.get_questions.count > 3 %}
-                                        <div x-show="! open" class="absolute bottom-9 w-full h-7 bg-gradient-to-b from-transparent to-white"></div>
-                                        <button @click="open = ! open" class="btn-link bg-white">
-                                            <span x-text="open ? 'Less' : 'More'"></span>
-                                            <svg :class="open ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
-                                        </button>
-                                        {% endif %}
-                                    </div>
-                                {% else %}
-                                    <p class="text-sm text-neutral-600 text-center py-2">If an user ask a question that AI doesn't know the answer to, it will be added to this list</p>
-                                {% endif %}
-                            </div>
+
                             <div class="card flex flex-col gap-4 p-3 pl-4">
                                  <div class="flex-1 flex gap-3 items-center justify-between flex-wrap">
                                     <div class="flex gap-3 items-center">
                                         <h2 class="h2 text-xl">AI Reply</h2>
                                     </div>
-                                    <a class="btn-link .go">
+                                    <a href="{% url "analytics" page.id %}" class="btn-link text-sm .go">
                                         View
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
                                     </a>
@@ -419,7 +373,7 @@ window.addEventListener('online', () => {
                                     <div class="flex gap-3 items-center">
                                         <h2 class="h2 text-xl">Credits Used</h2>
                                     </div>
-                                    <a class="btn-link .go">
+                                    <a href="{% url "analytics" page.id %}" class="btn-link text-sm .go">
                                         View
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
                                     </a>
@@ -436,6 +390,8 @@ window.addEventListener('online', () => {
                 </div>
 
             {% endblock content %}
+            
+                    
             <div class="text-sm px-3 py-4 flex items-center justify-center w-full gap-4">
                 <p class="text-neutral-600"> © 20025 Chat Autopilot</p>
                 <div class="">
@@ -443,12 +399,11 @@ window.addEventListener('online', () => {
                     <a href="/terms" class="link">Terms</a>
                 </div>
             </div>
-            
         </section>
 
-        
-        
+
     </div>
+    
 </div>
 {% endblock body %}
 
