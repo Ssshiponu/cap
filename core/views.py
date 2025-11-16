@@ -82,6 +82,16 @@ def templates(request):
 @login_required
 def dashboard(request):
     page = request.user.get_primary_page()
+    user = request.user
+    
+    if user.has_free_credits():
+        added, _ = user.add_credits(1000, name='Free')
+        if added:
+            user.notify(
+                message = "You got 1000 free credits. (10 credits per reply)",
+                type='info',
+            )
+    
     if page is not None:
         return redirect(f'/page/{page.id}/overview')
     else:
@@ -345,47 +355,57 @@ def connect_woo(request):
     consumer_secret = data.get('consumer_secret').strip()
     
     if page and store_url and consumer_key and consumer_secret:
-        woo, _ = WooConnection.objects.get_or_create(
-            facebook_page=page,
-            store_url=store_url,
-            consumer_key=consumer_key,
-            consumer_secret=consumer_secret,
-        )
-    
-        # test connection
-        wcapi = API(
-            url=store_url,
-            consumer_key=consumer_key,
-            consumer_secret=consumer_secret,
-            version="wc/v3",
-            timeout=10
-            
-        )
-        r = wcapi.get("products", params={"per_page": 1})
         
-        if r.status_code == 200:
-            # try requesting as facebook bot
-            r = requests.get(
-                store_url,
-                headers={
-                    "User-Agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
-                }
+        try:
+            WooConnection.objects.filter(facebook_page=page).delete()
+            woo = WooConnection.objects.create(
+                facebook_page=page,
+                store_url=store_url,
+                consumer_key=consumer_key,
+                consumer_secret=consumer_secret,
             )
+        
+            # test connection
+            wcapi = API(
+                url=store_url,
+                consumer_key=consumer_key,
+                consumer_secret=consumer_secret,
+                version="wc/v3",
+                timeout=10,
+                user_agent="chatautopilot"
+            )
+            r = wcapi.get("products", params={"per_page": 1})
+            
             if r.status_code == 200:
-                woo.connected = True
-                woo.save()
-                messages.success(request, f'WooCommerce connection established')
+                # try requesting as facebook bot
+                r = requests.get(
+                    store_url,
+                    headers={
+                        "User-Agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+                    }
+                )
+                if r.status_code == 200:
+                    woo.connected = True
+                    woo.save()
+                    messages.success(request, f'WooCommerce connection established')
+                
+                else:
+                    woo.error = "Your site blocking requests from facebook. make sure 'facebookexternalhits' is allowed in robots.txt"
+                    woo.save()
+                    messages.error(request, "Your site blocking requests from facebook.")
             
             else:
-                woo.error = "Your site blocking requests from facebook. make sure <span class='bg-neutral-100 rounded'>facebookexternalhits<span> is allowed in robots.txt"
+                error=f"Your site blocking us. Please make sure all fields are correct and '{wcapi.user_agent}' is allowed in robots.txt"
+                woo.error = r.text
                 woo.save()
-                messages.error(request, "Your site blocking requests from facebook.")
-                
-        else:
-            error="Your site blocking us"
+                messages.error(request, "Your site blocking us.")
+        except Exception as e:
+            print(e)
+            error = "Unknown error, please try again with valid credentials"
             woo.error = error
             woo.save()
             messages.error(request, error)
+            
             
     else:
         messages.error(request, "All fields are required")

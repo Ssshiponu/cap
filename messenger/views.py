@@ -56,7 +56,6 @@ def process_event(event: dict, request):
     ai = AI(page.id, settings.GEMINI_API_KEY)
     reader = Reader(ai)
     
-
     # wcapi = API(
     #     url="https://dotshirt.kesug.com/",
     #     consumer_key="ck_cc896e64781f95a3cbe14ec4d98789c73dda310d",
@@ -64,8 +63,11 @@ def process_event(event: dict, request):
     #     version="wc/v3"
     # )
     woo = WooConnection.objects.filter(facebook_page=page).first()
+    print(woo.store_url)
+    has_woo = woo is not None and woo.connected
+    print(has_woo)
     
-    if woo is not None and woo.connected:
+    if has_woo:
         wcapi = API(
             url=page.woo.store_url,
             consumer_key=page.woo.consumer_key,
@@ -98,12 +100,8 @@ def process_event(event: dict, request):
         if payload.startswith("BUY_WOOCOMMERCE_PRODUCT_ID:"):
             product_id = payload.split("ID:")[1]
             product = wcapi.get("products/"+product_id).json()
-            print(product)
             user_text += str(translate_woocommerce_products([product]))
             
-            print(user_text)
-
-
         Message.objects.create(
             mid=event["postback"].get("mid"),
             conversation=conversation,
@@ -113,9 +111,10 @@ def process_event(event: dict, request):
     
     if not page.user.has_credits(page.credits_per_reply()):
         page.user.notify(
-            message='No credits left',
-            description=f'You have no credits left. Replies will not be sent until you <a class="link" href="/buy-credits">buy more credits</a>.',
-            type='error'
+            message=f'You don\'t have enough credits to reply.',
+            type='error',
+            action_text="Buy more",
+            action_url="/buy-credits/",
         )
         logger.info(f"User {page.user} has not enough credits to reply. Skipping...")
         return True
@@ -185,7 +184,7 @@ def process_event(event: dict, request):
             )
             
             #TODO: more logic
-            #TODO: send receipt
+            reply_part = generate_receipt(reply_part.get('params'))
             continue
         
         # external tools
@@ -199,10 +198,10 @@ def process_event(event: dict, request):
             reply_part = generate_quick_replies(**reply_part["params"])
         
         elif tool == 'send_woo_products':
-            if not page.woo or not page.woo.connected:
+            if not has_woo:
                 logger.info("WooCommerce is not connected. Skipping...")
                 continue
-            params={"per_page": 10, "timeout": 10}
+            params={"per_page": 10}
             if "search_query" in reply_part["params"]:
                 params["search"] = reply_part["params"]["search_query"]
                 
@@ -235,9 +234,10 @@ def process_event(event: dict, request):
     
     if page.user.is_low_credits():
         page.user.notify(
-            message='Low credits',
-            description=f'You have low credits left. <a class="link" href="/buy-credits">Buy credits</a> to continue using the service.',
-            type='warning'
+            message='You have low credits.',
+            type='warning',
+            action_text="Buy more",
+            action_url="/buy-credits/",
         )
     try:
         avrage_input_tokens = conversation.input_tokens / conversation.messages.filter(role="assistant").count()

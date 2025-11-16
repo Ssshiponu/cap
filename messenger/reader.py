@@ -21,7 +21,12 @@ class Reader:
             return f"> {role} sent an {attachment_type}: {message}"
         
         elif attachment_type == "template":
-            return f"> {role} sent a {attachment['payload']['template_type']} template"
+            template_type = attachment["payload"]["template_type"]
+            
+            titels = [i["title"] for i in attachment["payload"]["elements"]] if template_type == "generic" else []
+                
+            return f"> {role} sent a {attachment['payload']['template_type']} template. {"titels\n"+', '.join(titels) if titels else ''}"
+        
             
         else:
             return f"> {role} sent an {attachment_type} - can't read"

@@ -65,16 +65,19 @@ class User(AbstractUser):
     def get_pages(self):
         return self.facebook_pages.filter(active=True)
 
-    def notify(self, message, description=None, type='info'):
+    def notify(self, message, type='info', description=None, action_text=None, action_url=None):
         # check same notification already exists in last 24 hours
         if not self.notifications.filter(
             message=message,
             created_at__gte=timezone.now() - timezone.timedelta(days=1)
         ).exists():
             Notification.objects.create(
-                user=self, message=message,
+                user=self,
+                message=message,
+                type=type,
                 description=description,
-                type=type
+                action_text=action_text,
+                action_url=action_url
             )
     
     def get_primary_page(self, page_id=None):

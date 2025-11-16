@@ -64,8 +64,11 @@
                             </button>
                             <div x-show="open" @click.outside="open = false" x-transition x-cloak class="absolute z-[10] top-10 -right-4 mt-2 w-72 bg-white border border-neutral-200 rounded-2xl shadow-lg">
                                 <div class="absolute -top-2 right-6 border-l border-t rotate-45 w-4 h-4 bg-white border-neutral-200"></div>
-                                <form action="{% url 'connect_woo' %}" method="post" class="p-3 text-wrap space-y-2">
+                                <form autocomplete="off" action="{% url 'connect_woo' %}" method="post" class="p-3 text-wrap space-y-2">
                                     <div class="text-lg font-medium ml-2">Wordpress</div>
+                                    <span class="text-xs font-medium text-black">
+                                        woocommerce > settings > advanced > REST API
+                                    </span>
                                     <p class="text-sm text-neutral-500">Enter credentials to connect</p>
                                     {% csrf_token %}
                                     <input type="hidden" name="page_id" value="{{ page.id}}">
@@ -94,7 +97,7 @@
 
                                     {% if page.woo.error %}
                                     <div class="mt-2 text-sm text-red-500">
-                                        {{ page.woo.error }}
+                                        {{ page.woo.error|safe }}
                                     </div>
                                     {% endif %}
 

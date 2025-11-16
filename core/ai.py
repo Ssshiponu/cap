@@ -18,7 +18,7 @@ CORE BEHAVIOR:
 VARIABLES:
     items_params = title, quantity, price, image_url, variation
     order_params = name, email, phone, address, payment_method, shipping_cost, items_params.
-    product = title, subtitle, image_url, price_formated, currency
+    product = title, subtitle, image_url, price, price_formated, currency
 
 TOOLS:
 

@@ -96,7 +96,7 @@ def generate_receipt(receipt: dict):
                 "street_1": address[0],
                 "street_2":"",
                 "city": address[1],
-                "postal_code":"76576",
+                "postal_code":"00000",
                 "state": address[2],
                 "country": address[3]
             },
