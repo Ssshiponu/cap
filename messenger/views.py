@@ -63,9 +63,7 @@ def process_event(event: dict, request):
     #     version="wc/v3"
     # )
     woo = WooConnection.objects.filter(facebook_page=page).first()
-    print(woo.store_url)
     has_woo = woo is not None and woo.connected
-    print(has_woo)
     
     if has_woo:
         wcapi = API(
