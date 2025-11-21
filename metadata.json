@@ -16,19 +16,20 @@
             "problems": [
                 {
                 "title": "Slow Replies",
-                "icon": "slow-reply",
                 "description": "Customers wait too long for answers, leading to frustration and missed opportunities. Delayed responses damage trust and directly impact your brand reputation.",
-                "tags": ["Lost sales", "Customer dissatisfaction"]
+                "tags": ["Lost sales", "Customer dissatisfaction"],
+                "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZjAwMDAiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jbG9jay1mYWRpbmctaWNvbiBsdWNpZGUtY2xvY2stZmFkaW5nIj48cGF0aCBkPSJNMTIgMmExMCAxMCAwIDAgMSA3LjM4IDE2Ljc1Ii8+PHBhdGggZD0iTTEyIDZ2Nmw0IDIiLz48cGF0aCBkPSJNMi41IDguODc1YTEwIDEwIDAgMCAwLS41IDMiLz48cGF0aCBkPSJNMi44MyAxNmExMCAxMCAwIDAgMCAyLjQzIDMuNCIvPjxwYXRoIGQ9Ik00LjYzNiA1LjIzNWExMCAxMCAwIDAgMSAuODkxLS44NTciLz48cGF0aCBkPSJNOC42NDQgMjEuNDJhMTAgMTAgMCAwIDAgNy42MzEtLjM4Ii8+PC9zdmc+"
+
                 },
                 {
                 "title": "High Support Workload",
-                "icon": "high-workload",
+                "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZjAwMDAiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1maWxlLXN0YWNrLWljb24gbHVjaWRlLWZpbGUtc3RhY2siPjxwYXRoIGQ9Ik0xMSAyMWExIDEgMCAwIDEtMSAxSDRhMSAxIDAgMCAxLTEtMXYtOGExIDEgMCAwIDEgMS0xIi8+PHBhdGggZD0iTTE2IDE2YTEgMSAwIDAgMS0xIDFIOWExIDEgMCAwIDEtMS0xVjhhMSAxIDAgMCAxIDEtMSIvPjxwYXRoIGQ9Ik0yMSA2YTIgMiAwIDAgMC0uNTg2LTEuNDE0bC0yLTJBMiAyIDAgMCAwIDE3IDJoLTNhMSAxIDAgMCAwLTEgMXY4YTEgMSAwIDAgMCAxIDFoNmExIDEgMCAwIDAgMS0xeiIvPjwvc3ZnPg==",
                 "description": "Your team is overwhelmed with repetitive questions and manual tasks. This reduces productivity and increases operational costs.",
                 "tags": ["Agent burnout", "Slower customer support"]
                 },
                 {
                 "title": "Inconsistent Service Quality",
-                "icon": "inconsistent-service",
+                "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZjAwMDAiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1zcXVhcmUtZGFzaGVkLWljb24gbHVjaWRlLXNxdWFyZS1kYXNoZWQiPjxwYXRoIGQ9Ik01IDNhMiAyIDAgMCAwLTIgMiIvPjxwYXRoIGQ9Ik0xOSAzYTIgMiAwIDAgMSAyIDIiLz48cGF0aCBkPSJNMjEgMTlhMiAyIDAgMCAxLTIgMiIvPjxwYXRoIGQ9Ik01IDIxYTIgMiAwIDAgMS0yLTIiLz48cGF0aCBkPSJNOSAzaDEiLz48cGF0aCBkPSJNOSAyMWgxIi8+PHBhdGggZD0iTTE0IDNoMSIvPjxwYXRoIGQ9Ik0xNCAyMWgxIi8+PHBhdGggZD0iTTMgOXYxIi8+PHBhdGggZD0iTTIxIDl2MSIvPjxwYXRoIGQ9Ik0zIDE0djEiLz48cGF0aCBkPSJNMjEgMTR2MSIvPjwvc3ZnPg==",
                 "description": "Human-only support means responses vary based on the agent, mood, or workload. Customers expect consistency—every time.",
                 "tags": ["Confusion", "Reduced customer loyalty"]
                 }
@@ -36,19 +37,19 @@
             "solutions": [
                 {
                 "title": "Instant Replies",
-                "icon": "instant-reply",
+                "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMzY2M4M2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS16YXAtaWNvbiBsdWNpZGUtemFwIj48cGF0aCBkPSJNNCAxNGExIDEgMCAwIDEtLjc4LTEuNjNsOS45LTEwLjJhLjUuNSAwIDAgMSAuODYuNDZsLTEuOTIgNi4wMkExIDEgMCAwIDAgMTMgMTBoN2ExIDEgMCAwIDEgLjc4IDEuNjNsLTkuOSAxMC4yYS41LjUgMCAwIDEtLjg2LS40NmwxLjkyLTYuMDJBMSAxIDAgMCAwIDExIDE0eiIvPjwvc3ZnPg==",
                 "description": "No more waiting. Your customers get instant, accurate responses 24/7—boosting satisfaction and conversions.",
                 "tags": ["3–5s per reply", "Happier customers"]
                 },
                 {
                 "title": "Automated Workflows",
-                "icon": "automated-workflows",
+                "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMzY2M4M2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1yb3V0ZS1pY29uIGx1Y2lkZS1yb3V0ZSI+PGNpcmNsZSBjeD0iNiIgY3k9IjE5IiByPSIzIi8+PHBhdGggZD0iTTkgMTloOC41YTMuNSAzLjUgMCAwIDAgMC03aC0xMWEzLjUgMy41IDAgMCAxIDAtN0gxNSIvPjxjaXJjbGUgY3g9IjE4IiBjeT0iNSIgcj0iMyIvPjwvc3ZnPg==",
                 "description": "AI handles repetitive questions, status updates, order tracking, and more—so your team focuses on what truly matters.",
                 "tags": ["Increased efficiency", "Lower operational costs"]
                 },
                 {
                 "title": "Consistent, Professional Support",
-                "icon": "consistent-support",
+                "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMzY2M4M2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1tZXNzYWdlLWNpcmNsZS1oZWFydC1pY29uIGx1Y2lkZS1tZXNzYWdlLWNpcmNsZS1oZWFydCI+PHBhdGggZD0iTTIuOTkyIDE2LjM0MmEyIDIgMCAwIDEgLjA5NCAxLjE2N2wtMS4wNjUgMy4yOWExIDEgMCAwIDAgMS4yMzYgMS4xNjhsMy40MTMtLjk5OGEyIDIgMCAwIDEgMS4wOTkuMDkyIDEwIDEwIDAgMSAwLTQuNzc3LTQuNzE5Ii8+PHBhdGggZD0iTTcuODI4IDEzLjA3QTMgMyAwIDAgMSAxMiA4Ljc2NGEzIDMgMCAwIDEgNS4wMDQgMi4yMjQgMyAzIDAgMCAxLS44MzIgMi4wODNsLTMuNDQ3IDMuNjJhMSAxIDAgMCAxLTEuNDUtLjAwMXoiLz48L3N2Zz4=",
                 "description": "AI ensures every customer receives the same high-quality service every time.",
                 "tags": ["Brand trust", "Stronger customer retention"]
                 }
